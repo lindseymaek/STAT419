@@ -1,3 +1,11 @@
-library(tidyverse) #all tidyverse packages
+# libraries ...
 
-library(rvest) #for accessing data from web browsers
+library(pryr);          # mem_used()
+library(lmtest);        # lmtest has lrtest
+library(MASS);          # polr
+
+library(tractor.base);  # implode
+
+library(stringr);
+library(rvest);			# imdb web scraping
+
