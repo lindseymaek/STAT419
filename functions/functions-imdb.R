@@ -252,3 +252,27 @@ grabFilmsForPerson = function(nmid)
 
   result;
 }
+
+inflationAdjust = function(actor){
+  
+  result = array(dim = 50);
+  
+  correctionFactor <-   c(2.85, 2.69, 2.60, 2.49, 2.41, 2.36, 2.28, 2.19, 2.09, 1.98, 1.90, 1.85, 1.79,
+                          1.75, 1.70, 1.65, 1.61, 1.59, 1.56, 1.50, 1.46, 1.44, 1.41, 1.37, 1.34, 1.29, 1.25,
+                          1.20, 1.21, 1.19, 1.15, 1.13, 1.11, 1.09, 1.09, 1.08, 1.06, 1.03, 1.01, 1);
+  years <-c(1981:2020);
+  inflation<- as.data.frame(years);
+  inflation$correctionFactor <- correctionFactor; ##create inflation correction factor dataset
+  
+  
+  year = actor[["movies.50"]][["year"]]
+  millions = actor[["movies.50"]][["millions"]]
+  
+  for(i in 1:50){
+    year = actor[["movies.50"]][["year"]][[i]];
+    inflate.year = filter(inflation, years == year);
+    factor = inflate.year[,2];
+    result[i] = factor*actor[["movies.50"]][["millions"]][[i]];
+  }
+  result;
+}

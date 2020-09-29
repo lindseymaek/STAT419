@@ -1,0 +1,553 @@
+\documentclass{article}
+
+%pandoc requires a tightlist decoration
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+\topmargin=-0.45in      %
+\evensidemargin=0in     %
+\oddsidemargin=0in      %
+\textwidth=6.5in        %
+\textheight=9.0in       %
+\headsep=0.25in         %
+
+
+\usepackage{graphicx,float,wrapfig}
+\usepackage{moreverb} % monospace
+\usepackage{fancyhdr} % fancy header 
+\usepackage{lastpage} % last page 
+\usepackage{setspace} % line spacing
+\usepackage{amsmath,amsfonts,amsthm,amssymb}  % math fonts 
+\usepackage{tabularx} % advanced tables
+
+%%% default RStudio packages %%%
+\usepackage[unicode=true]{hyperref}
+
+
+
+
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{listings}
+% xcolor ... #rrggbb ... 
+
+
+
+
+
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% https://github.com/svmiller/svm-r-markdown-templates/blob/master/svm-latex-memo.tex
+
+
+%\usepackage[sort]{natbib}  %% will alpha/numeric in order inline
+%	\setcitestyle{aysep={}} %% no year, comma just year
+\usepackage[numbers]{natbib}
+	
+	
+\newcommand{\hmwkCourse}{ \textbf{STATS 419 Survey of Multivariate
+Analysis} }
+\newcommand{\hmwkCourseShort}{STATS 419}
+\newcommand{\hmwkTitle}{Week 03 Assignment}
+\newcommand{\hmwkAuthor}{Lindsey Kornowske}
+\newcommand{\hmwkEmail}{\href{mailto:lindsey.kornowske@wsu.edu}{\nolinkurl{lindsey.kornowske@wsu.edu}}}
+\newcommand{\hmwkWSU}{[]}
+\newcommand{\hmwkInstructor}{Instructor: Monte J. Shaffer}
+\newcommand{\hmwkDate}{21 September 2020}
+
+
+\pagestyle{fancy}   
+\lhead{\hmwkCourseShort}
+\chead{\hmwkTitle}
+\rhead{\hmwkAuthor}
+\lfoot{}
+\cfoot{Page\ \thepage\ of\ \protect\pageref{LastPage}}
+\rfoot{}
+
+
+
+\title{\hmwkCourse \\ \hmwkTitle}
+\author{\hmwkAuthor \\ (\hmwkEmail) \\ \hmwkWSU \\[0.5in] \hmwkInstructor }
+\date{\hmwkDate}
+
+
+\usepackage{titling}
+\pretitle{\begin{flushright}\LARGE}
+\posttitle{\par\end{flushright}\vskip 0.5em}
+\preauthor{\begin{flushright}\large \lineskip 0.5em}
+\postauthor{\par\end{flushright}}
+\predate{\begin{flushright}\large}
+\postdate{\par\end{flushright}}
+
+
+%\tracingall
+
+
+
+
+\hypersetup{breaklinks=true,%
+            bookmarks=true,%
+            pdfauthor={Lindsey Kornowske},%
+            pdftitle={Week 03 Assignment},%
+            colorlinks=true,%
+            citecolor=blue,%
+            urlcolor=blue,%
+            linkcolor=magenta,%
+            pdfborder={0 0 0}%
+            }%
+            
+
+
+\begin{document}
+
+\maketitle
+
+
+
+\hypertarget{matrix}{%
+\section{Matrix}\label{matrix}}
+
+Create the ``rotate matrix'' functions as described in lectures. Apply
+to ``myMatrix'', called ``mat'' in my code.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{source}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(local.path,}\StringTok{"WEEK{-}03/functions/functions{-}matrix.R"}\NormalTok{), }\DataTypeTok{local=}\NormalTok{T);}
+
+\NormalTok{mat \textless{}{-}}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{2}\NormalTok{,}\DecValTok{0}\NormalTok{, }\DecValTok{3}\NormalTok{, }\DecValTok{0}\NormalTok{,}\DecValTok{4}\NormalTok{, }\DecValTok{0}\NormalTok{, }\DecValTok{5}\NormalTok{), }\DataTypeTok{nrow =} \DecValTok{3}\NormalTok{, }\DataTypeTok{ncol =} \DecValTok{3}\NormalTok{,}\DataTypeTok{byrow =}\NormalTok{ T);}
+\KeywordTok{rotateMatrix90}\NormalTok{(mat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    4    0    1
+## [2,]    0    3    0
+## [3,]    5    0    2
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{rotateMatrix180}\NormalTok{(mat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    5    0    4
+## [2,]    0    3    0
+## [3,]    2    0    1
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{rotateMatrix270}\NormalTok{(mat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##      [,1] [,2] [,3]
+## [1,]    2    0    5
+## [2,]    0    3    0
+## [3,]    1    0    4
+\end{verbatim}
+
+\hypertarget{iris}{%
+\section{IRIS}\label{iris}}
+
+Recreate the graphic for the IRIS Data Set using R. Same titles, same
+scales, same colors.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{data}\NormalTok{(}\StringTok{"iris"}\NormalTok{)}
+
+\NormalTok{i\textless{}{-}}\StringTok{ }\NormalTok{iris}
+
+\KeywordTok{pairs}\NormalTok{(}\OperatorTok{\textasciitilde{}}\NormalTok{Sepal.Length}\OperatorTok{+}\NormalTok{Sepal.Width}\OperatorTok{+}\NormalTok{Petal.Length}\OperatorTok{+}\NormalTok{Petal.Width, }
+      \DataTypeTok{data =}\NormalTok{ i, }
+      \DataTypeTok{pch =} \DecValTok{21}\NormalTok{,}
+      \DataTypeTok{bg =} \KeywordTok{c}\NormalTok{(}\StringTok{"red"}\NormalTok{, }\StringTok{"green3"}\NormalTok{, }\StringTok{"blue"}\NormalTok{)[}\KeywordTok{unclass}\NormalTok{(i}\OperatorTok{$}\NormalTok{Species)],}
+      \DataTypeTok{main =} \StringTok{"Iris Data (red=setosa,green=versicolor,blue=virginica)"}\NormalTok{,}
+      \DataTypeTok{cex.labels=}\DecValTok{1}\NormalTok{,}
+      \DataTypeTok{verOdd=}\NormalTok{F,}
+      \DataTypeTok{horOdd=}\NormalTok{F)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week3_notebookspractice_files/figure-latex/mychunk-IRIS-include-1.pdf}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{2}
+\tightlist
+\item
+  Write 2-3 sentences concisely definiing the IRIS dataset.
+\end{enumerate}
+
+The IRIS data set is comprised of width and length measurements for the
+petals and sepals of three Iris species that were collected by Dr.~Edgar
+Anderson and analyzed by Sir Ronal Aylmer Fisher for the
+characterization of these species (Cui). This multivariate dataset is a
+fixture in the data science community for the exemplification of
+concepts in data science and machine learning due to its combined
+completeness, simplicity, and inherent applications for classification
+\citeyearpar[ \& Graff 2019]{Dua}(Dua and Graff 2019, Wikipedia
+Contributors 2020).
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{d \textless{}{-}}\StringTok{ }\KeywordTok{read.csv}\NormalTok{(}\StringTok{"/Users/lindseykornowske/.git/STAT419/WEEK{-}03/functions/personality{-}raw.txt"}\NormalTok{, }\DataTypeTok{header =}\NormalTok{ T, }\DataTypeTok{sep =} \StringTok{"|"}\NormalTok{);}
+\NormalTok{d \textless{}{-}}\StringTok{ }\NormalTok{d[,}\OperatorTok{{-}}\DecValTok{3}\NormalTok{]}
+\NormalTok{d\textless{}{-}}\StringTok{ }\NormalTok{d }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{separate}\NormalTok{(date\_test, }\KeywordTok{c}\NormalTok{(}\StringTok{"date"}\NormalTok{,}\StringTok{"time"}\NormalTok{),}\DataTypeTok{sep =} \StringTok{" "}\NormalTok{)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{newdate \textless{}{-}}\StringTok{ }\KeywordTok{strptime}\NormalTok{(}\KeywordTok{as.character}\NormalTok{(d}\OperatorTok{$}\NormalTok{date), }\StringTok{"\%m/\%d/\%Y"}\NormalTok{)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{newdate \textless{}{-}}\StringTok{ }\KeywordTok{format}\NormalTok{(d}\OperatorTok{$}\NormalTok{newdate, }\StringTok{"\%Y{-}\%m{-}\%d"}\NormalTok{)}
+\NormalTok{d\textless{}{-}}\StringTok{ }\NormalTok{d[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{64}\NormalTok{,}\DecValTok{2}\OperatorTok{:}\DecValTok{63}\NormalTok{)]}
+\NormalTok{d \textless{}{-}}\StringTok{ }\NormalTok{d }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{separate}\NormalTok{(date, }\KeywordTok{c}\NormalTok{(}\StringTok{"Month"}\NormalTok{,}\StringTok{"Day"}\NormalTok{,}\StringTok{"Year"}\NormalTok{), }\DataTypeTok{sep =} \StringTok{"/"}\NormalTok{)}
+\CommentTok{\#d$Year \textless{}{-} numeric(d$Year)}
+\NormalTok{d}\OperatorTok{$}\NormalTok{week \textless{}{-}}\StringTok{ }\KeywordTok{strftime}\NormalTok{(d}\OperatorTok{$}\NormalTok{newdate, }\DataTypeTok{format =} \StringTok{"\%V"}\NormalTok{)}
+\NormalTok{d \textless{}{-}}\StringTok{ }\NormalTok{d[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{5}\NormalTok{,}\DecValTok{67}\NormalTok{,}\DecValTok{6}\OperatorTok{:}\DecValTok{66}\NormalTok{)]}
+\NormalTok{d\textless{}{-}}\StringTok{ }\NormalTok{d[}\KeywordTok{with}\NormalTok{(d, }\KeywordTok{order}\NormalTok{(Year, week, }\DataTypeTok{decreasing =}\NormalTok{ T)), ]}
+\NormalTok{d\textless{}{-}}\StringTok{ }\NormalTok{d[}\OperatorTok{!}\KeywordTok{duplicated}\NormalTok{(d}\OperatorTok{$}\NormalTok{md5\_email), ]}
+
+\CommentTok{\#write.csv(d, "personality{-}clean.txt", sep = "|")}
+\end{Highlighting}
+\end{Shaded}
+
+Raw File: 838 observations Clean File: 678 observations
+
+\hypertarget{summary}{%
+\section{Summary}\label{summary}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{source}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(local.path,}\StringTok{"WEEK{-}03/functions/functions{-}summary.R"}\NormalTok{), }\DataTypeTok{local=}\NormalTok{T);}
+\NormalTok{sum \textless{}{-}}\StringTok{ }\KeywordTok{doSummary}\NormalTok{(d,}\DecValTok{8}\NormalTok{,}\StringTok{"var2"}\NormalTok{,}\StringTok{"b62c73cdaf59e0a13de495b84030734e"}\NormalTok{);}
+\NormalTok{sum}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##                    V1          V2          V3          V4          V5
+## length   678.00000000 678.0000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.00000000   0.0000000   0.0000000   0.0000000   0.0000000
+## mean       3.42005900   3.5864307   2.4359882   4.0430678   4.1775811
+## median     3.40000000   3.4000000   2.6000000   4.2000000   4.2000000
+## mode       3.40000000   4.2000000   1.8000000   4.2000000   4.2000000
+## sd         1.02001187   1.0814641   1.0959317   0.8614014   0.7609168
+## variance   1.04042422   1.1695645   1.2010663   0.7420124   0.5789944
+## user       3.40000000   4.2000000   2.6000000   4.2000000   2.6000000
+## z-score   -0.01966545   0.5673506   0.1496551   0.1821824  -2.0732635
+##                   V6          V7          V8          V9         V10        V11
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.0000000 678.000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.0000000   0.000000
+## mean       3.8165192   3.8814159   3.1640118   4.3215339   3.8578171   2.997640
+## median     4.2000000   4.2000000   3.4000000   4.2000000   4.2000000   3.400000
+## mode       4.2000000   4.2000000   3.4000000   4.2000000   4.2000000   3.400000
+## sd         0.9512605   0.8987648   0.9766566   0.6952738   0.8707062   1.057739
+## variance   0.9048966   0.8077782   0.9538580   0.4834056   0.7581293   1.118813
+## user       2.6000000   4.2000000   2.6000000   3.4000000   4.2000000   4.200000
+## z-score   -1.2788496   0.3544688  -0.5774925  -1.3254260   0.3929946   1.136726
+##                  V12         V13         V14         V15         V16
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.0000000
+## mean       3.2831858   3.6725664   3.8306785   3.8991150   4.0890855
+## median     3.4000000   3.4000000   4.2000000   4.2000000   4.2000000
+## mode       3.4000000   4.2000000   4.2000000   4.2000000   4.2000000
+## sd         0.9686583   0.9235710   1.0356153   0.8256410   0.7537393
+## variance   0.9382988   0.8529834   1.0724991   0.6816831   0.5681229
+## user       3.4000000   3.4000000   4.2000000   5.0000000   3.4000000
+## z-score    0.1205938  -0.2951223   0.3566204   1.3333700  -0.9142226
+##                  V17         V18         V19         V20         V21
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.0000000
+## mean       4.3038348   4.0749263   3.4849558   2.3415929   3.0247788
+## median     4.2000000   4.2000000   3.4000000   1.8000000   3.4000000
+## mode       4.2000000   4.2000000   3.4000000   1.8000000   3.4000000
+## sd         0.7175064   0.7762670   0.8806357   0.9646079   1.1199703
+## variance   0.5148154   0.6025905   0.7755193   0.9304684   1.2543334
+## user       5.0000000   3.4000000   1.8000000   2.6000000   2.6000000
+## z-score    0.9702564  -0.8694512  -1.9133402   0.2678882  -0.3792768
+##                  V22          V23         V24        V25         V26
+## length   678.0000000 678.00000000 678.0000000 678.000000 678.0000000
+## NA Count   0.0000000   0.00000000   0.0000000   0.000000   0.0000000
+## mean       3.8436578   4.17286136   3.7917404   2.414749   4.1398230
+## median     4.2000000   4.20000000   4.2000000   2.600000   4.2000000
+## mode       4.2000000   4.20000000   4.2000000   1.800000   4.2000000
+## sd         0.9087038   0.79835563   0.8747515   1.133310   0.8504971
+## variance   0.8257426   0.63737171   0.7651902   1.284391   0.7233453
+## user       2.6000000   4.20000000   3.4000000   5.000000   2.6000000
+## z-score   -1.3686064   0.03399318  -0.4478305   2.281151  -1.8104977
+##                  V27         V28         V29         V30         V31
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.0000000
+## mean       3.6230088   3.5557522   2.9539823   3.8082596   3.8707965
+## median     3.4000000   3.4000000   2.6000000   4.2000000   4.2000000
+## mode       4.2000000   4.2000000   2.6000000   4.2000000   4.2000000
+## sd         0.8621716   1.0133762   1.0700738   0.7943242   0.9586747
+## variance   0.7433398   1.0269314   1.1450580   0.6309509   0.9190573
+## user       4.2000000   3.4000000   2.6000000   2.6000000   4.2000000
+## z-score    0.6692301  -0.1536963  -0.3308018  -1.5211165   0.3433944
+##                  V32         V33         V34         V35          V36
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.00000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.00000000
+## mean       3.6123894   3.9994100   3.8070796   3.5014749   4.18938053
+## median     3.4000000   4.2000000   4.2000000   3.4000000   4.20000000
+## mode       4.2000000   4.2000000   4.2000000   3.4000000   4.20000000
+## sd         0.9964012   0.8660337   0.9024225   0.9996591   0.74231020
+## variance   0.9928153   0.7500144   0.8143663   0.9993184   0.55102443
+## user       1.8000000   3.4000000   4.2000000   4.2000000   4.20000000
+## z-score   -1.8189355  -0.6921324   0.4354062   0.6987633   0.01430597
+##                  V37          V38         V39         V40         V41
+## length   678.0000000 678.00000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.0000000   0.00000000   0.0000000   0.0000000   0.0000000
+## mean       3.1227139   4.14218289   4.0336283   3.9439528   3.7174041
+## median     3.4000000   4.20000000   4.2000000   4.2000000   4.2000000
+## mode       3.4000000   4.20000000   4.2000000   4.2000000   4.2000000
+## sd         1.1160374   0.84059974   0.8661987   0.9014269   1.0473111
+## variance   1.2455394   0.70660793   0.7503003   0.8125705   1.0968606
+## user       2.6000000   4.20000000   2.6000000   4.2000000   4.2000000
+## z-score   -0.4683659   0.06878078  -1.6550801   0.2840465   0.4607951
+##                  V42         V43         V44         V45         V46
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.0000000
+## mean       3.8200590   3.7185841   3.7067847   3.8613569   3.9522124
+## median     4.2000000   3.4000000   3.4000000   4.2000000   4.2000000
+## mode       4.2000000   4.2000000   4.2000000   4.2000000   4.2000000
+## sd         0.9290703   0.8677258   0.9448209   0.8484651   0.9218597
+## variance   0.8631716   0.7529481   0.8926865   0.7198930   0.8498252
+## user       4.2000000   4.2000000   2.6000000   4.2000000   4.2000000
+## z-score    0.4089475   0.5548019  -1.1714227   0.3991243   0.2687910
+##                  V47         V48         V49         V50        V51         V52
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.000000   0.0000000
+## mean       3.9451327   3.5486726   3.7610619   3.3551622   3.568732   3.9687316
+## median     4.2000000   3.4000000   4.2000000   3.4000000   3.400000   4.2000000
+## mode       4.2000000   4.2000000   4.2000000   3.4000000   3.400000   4.2000000
+## sd         0.8757010   1.0356523   0.9515998   1.0289150   1.032112   0.8649221
+## variance   0.7668522   1.0725758   0.9055421   1.0586661   1.065254   0.7480903
+## user       2.6000000   3.4000000   2.6000000   4.2000000   1.800000   4.2000000
+## z-score   -1.5360640  -0.1435545  -1.2201158   0.8210958  -1.713702   0.2673864
+##                  V53         V54         V55         V56        V57         V58
+## length   678.0000000 678.0000000 678.0000000 678.0000000 678.000000 678.0000000
+## NA Count   0.0000000   0.0000000   0.0000000   0.0000000   0.000000   0.0000000
+## mean       4.2814159   4.1032448   3.3032448   3.8283186   3.783481   3.9262537
+## median     4.2000000   4.2000000   3.4000000   4.2000000   4.200000   4.2000000
+## mode       5.0000000   4.2000000   3.4000000   4.2000000   4.200000   4.2000000
+## sd         0.8088011   0.8375713   0.9868058   0.9329171   0.864852   0.9227093
+## variance   0.6541593   0.7015256   0.9737856   0.8703342   0.747969   0.8513924
+## user       2.6000000   3.4000000   4.2000000   4.2000000   1.800000   4.2000000
+## z-score   -2.0788990  -0.8396239   0.9087454   0.3984078  -2.293434   0.2966767
+##                  V59         V60
+## length   678.0000000 678.0000000
+## NA Count   0.0000000   0.0000000
+## mean       3.7327434   3.6879056
+## median     4.2000000   3.4000000
+## mode       4.2000000   4.2000000
+## sd         0.9871053   0.9868566
+## variance   0.9743768   0.9738860
+## user       2.6000000   4.2000000
+## z-score   -1.1475406   0.5189147
+\end{verbatim}
+
+\hypertarget{variance}{%
+\subsection{Variance}\label{variance}}
+
+\hypertarget{naive}{%
+\subsubsection{Naive}\label{naive}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{doSampleVariance}\NormalTok{(d[,}\DecValTok{21}\NormalTok{], }\StringTok{"naive"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.072499
+\end{verbatim}
+
+\hypertarget{two-pass}{%
+\subsubsection{Two Pass}\label{two-pass}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{doSampleVariance}\NormalTok{(d[,}\DecValTok{21}\NormalTok{], }\StringTok{"2pass"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 1.072499
+\end{verbatim}
+
+\hypertarget{mode}{%
+\subsection{Mode}\label{mode}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{doMode}\NormalTok{(d[,}\DecValTok{21}\NormalTok{])}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] 4.2
+\end{verbatim}
+
+\hypertarget{visualize}{%
+\subsection{Visualize}\label{visualize}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sum \textless{}{-}}\StringTok{ }\KeywordTok{t}\NormalTok{(sum)}
+\KeywordTok{plot}\NormalTok{(sum[,}\DecValTok{8}\NormalTok{], sum[,}\DecValTok{9}\NormalTok{], }\DataTypeTok{main =} \StringTok{"Personality Score Plot"}\NormalTok{, }\DataTypeTok{xlab =} \StringTok{"Raw Scores"}\NormalTok{, }\DataTypeTok{ylab=} \StringTok{"Z{-}Scores"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week3_notebookspractice_files/figure-latex/mychunk-summaryvarvis-include-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{hist}\NormalTok{(sum[,}\DecValTok{3}\NormalTok{], }\DataTypeTok{main =} \StringTok{"Histogram of Personality averages"}\NormalTok{, }\DataTypeTok{xlab =} \StringTok{"Raw Scores"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week3_notebookspractice_files/figure-latex/mychunk-summaryvarvis-include-2.pdf}
+The histogram of the scoring averages for the entire personality dataset
+shows the highest frequency score falls around 4.0. This follows a
+pattern I have also observed in my sensory research where panelists have
+central tendencies regarding their use of scale because the extremes
+feel too definite. The plot comparing the z-scores and raw scores for
+the
+\href{mailto:monte.shaffer@gmail.com}{\nolinkurl{monte.shaffer@gmail.com}}
+data shows a distribution around each of the scores, which is more or
+less expected because there will be variation in the score an individual
+selects relative to the population. However, as we might also expect
+given the histogram averages, the z-scores for the raw scores near 4.5
+have the greatest density of points near 0, or the center of the
+distribution.
+
+\hypertarget{denzel-vs.-will}{%
+\section{Denzel vs.~Will}\label{denzel-vs.-will}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{5}
+\tightlist
+\item
+  Compare Will Smith and Denzel Washington. {[}See 03\_n greater
+  1-v2.txt for the necessary functions and will-vs-denzel.txt for some
+  sample code and in DROPBOX:You will have to create a new variable
+  millions.2000 that converts each movie's millions based on the \$year
+  of the movie, so all dollars are in the same time frame. You will need
+  inflation data from about 1980-2020 to make this work.
+\end{enumerate}
+
+\hypertarget{movie-earnings-adjusted-for-inflation}{%
+\subsection{Movie Earnings Adjusted for
+Inflation}\label{movie-earnings-adjusted-for-inflation}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{will =}\StringTok{ }\KeywordTok{grabFilmsForPerson}\NormalTok{(}\StringTok{"nm0000226"}\NormalTok{);}
+\NormalTok{denzel =}\StringTok{ }\KeywordTok{grabFilmsForPerson}\NormalTok{(}\StringTok{"nm0000243"}\NormalTok{);}
+\NormalTok{will.adjust \textless{}{-}}\StringTok{ }\KeywordTok{inflationAdjust}\NormalTok{(will)}
+\NormalTok{denzel.adjust \textless{}{-}}\StringTok{ }\KeywordTok{inflationAdjust}\NormalTok{(denzel)}
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{));}
+\KeywordTok{boxplot}\NormalTok{(will.adjust, }\DataTypeTok{main=}\NormalTok{will}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Adjusted Millions"}\NormalTok{ );}
+\KeywordTok{boxplot}\NormalTok{(denzel.adjust, }\DataTypeTok{main=}\NormalTok{denzel}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Adjusted Millions"}\NormalTok{ );}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week3_notebookspractice_files/figure-latex/unnamed-chunk-2-1.pdf}
+
+\hypertarget{additional-metrics-comparison}{%
+\subsection{Additional Metrics
+Comparison}\label{additional-metrics-comparison}}
+
+\begin{enumerate}
+\def\labelenumi{\arabic{enumi}.}
+\setcounter{enumi}{6}
+\tightlist
+\item
+  Build side-by-side box plots on several of the variables (including
+  \#6) to compare the two movie stars. After each box plot, write 2+
+  sentence describing what you are seeing, and what conclusions you can
+  logically make. You will need to review what the box plot is showing
+  with the box portion, the divider in the box, and the whiskers.
+\end{enumerate}
+
+The median rating is higher for Denzel's movies than Will's movies.
+Will's movies have higher maximum and lower minimum ratings. The median
+adjusted millions are similar for both actors, however the highest
+earning Will Smith movie earned nearly double the highest earning Denzel
+movie and the 3rd quartile skews higher for the Will Smith movies as
+well. The median duration of each actor's movies is also similar, with
+the exception of one outlier by Denzel lasting nearly 200 minutes. The
+median production year for Denzel's movies falls before 2000, almost a
+decade before the median year for Will Smith's movies. This same pattern
+exists for the earliest movies Denzel and Will made. From these data, we
+can see that Denzel has had a longer career than Will Smith, but Will
+Smith's movies have made more money.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{par}\NormalTok{(}\DataTypeTok{mfrow=}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\NormalTok{,}\DecValTok{4}\NormalTok{));}
+\KeywordTok{boxplot}\NormalTok{(will}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{ratings, }\DataTypeTok{main=}\NormalTok{will}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Ratings"}\NormalTok{);}
+\KeywordTok{boxplot}\NormalTok{(denzel}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{ratings, }\DataTypeTok{main=}\NormalTok{denzel}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{10}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Ratings"}\NormalTok{);}
+\KeywordTok{boxplot}\NormalTok{(will.adjust, }\DataTypeTok{main=}\NormalTok{will}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Adjusted Millions"}\NormalTok{ );}
+\KeywordTok{boxplot}\NormalTok{(denzel.adjust, }\DataTypeTok{main=}\NormalTok{denzel}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim=}\KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{400}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Adjusted Millions"}\NormalTok{ );}
+\KeywordTok{boxplot}\NormalTok{(will}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{minutes, }\DataTypeTok{main=}\NormalTok{will}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{200}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Minutes"}\NormalTok{);}
+\KeywordTok{boxplot}\NormalTok{(denzel}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{minutes, }\DataTypeTok{main=}\NormalTok{denzel}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{0}\NormalTok{,}\DecValTok{200}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Minutes"}\NormalTok{);}
+\KeywordTok{boxplot}\NormalTok{(will}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{year, }\DataTypeTok{main=}\NormalTok{will}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{1980}\NormalTok{,}\DecValTok{2022}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Year"}\NormalTok{);}
+\KeywordTok{boxplot}\NormalTok{(denzel}\OperatorTok{$}\NormalTok{movies}\FloatTok{.50}\OperatorTok{$}\NormalTok{year, }\DataTypeTok{main=}\NormalTok{denzel}\OperatorTok{$}\NormalTok{name, }\DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{1980}\NormalTok{,}\DecValTok{2022}\NormalTok{), }\DataTypeTok{ylab=}\StringTok{"Year"}\NormalTok{);}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{Week3_notebookspractice_files/figure-latex/unnamed-chunk-3-1.pdf}
+
+
+
+
+\newpage
+\bibliographystyle{./../biblio/chicago}
+\bibliography{./../biblio/master} % this is master.bib located in the biblio subfolder ... you could have multiple files here if need be ... one is easier ...
+
+
+\end{document}

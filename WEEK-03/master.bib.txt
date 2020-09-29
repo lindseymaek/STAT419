@@ -1,0 +1,53 @@
+%% http://gking.harvard.edu/files/natnotes2.pdf
+%% http://tex.stackexchange.com/questions/101696/formatting-multiple-references-containing-the-same-author
+%% http://tex.stackexchange.com/questions/120722/how-to-modify-a-bibliography-style-to-surround-titles-in-quotes-in-a-bibliograph
+\Sort{
+  Mode{on}
+  Collation{mixed}
+  SortTypeOrder{key,name}
+  NameOrder{descending}
+  Key{{author,editor}}
+  KeyOrder{ascending,nulls first}
+  StringSort{ascending}
+}
+
+
+
+% this is a key that must be unique in your reference list ...
+% Google scholar may not get it correct ...
+
+
+
+@Misc{Cui,
+  author = {{Cui Y}},
+  title	= {{The Iris Dataset - A Little Bit of History and Biology}},
+  institution =	 {{Towards Data Science}},
+  howpublished = {(Accessed: September 6, 2020)},
+note = {\\ {\tiny \url{https://towardsdatascience.com/the-iris-dataset-a-little-bit-of-history-andbiology-fb4812f5a7b5}}}
+}
+
+
+@Misc{Dua & Graff 2019,
+  year= 2019,
+  author = {{Dua D and Graff C}},
+  title	= {{UCI Machine Learning Repository}},
+  institution =	 {{University of California, School of Information and Computer Science.}},
+  howpublished = {(Accessed: September 6, 2020)},
+note = {\\ {\tiny \url{https://towardsdatascience.com/the-iris-dataset-a-little-bit-of-history-andbiology-fb4812f5a7b5}}}
+}	
+
+@Misc{Wikipedia Contributors 2020),
+  year = 2020,
+  author = {{Wikipedia, Cetus}},
+  title	= {{Iris flower data set}},
+  institution =	 {{Wikipedia, The Free Encyclopedia}},
+  howpublished = {(Accessed: September 8, 2020)},
+note = {\\ {\tiny \url{https://en.wikipedia.org/w/index.php?title=Iris_flower_data_set&oldid=976242275}}}
+}
+	
+
+
+
+
+
+

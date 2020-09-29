@@ -1,0 +1,168 @@
+---
+title: "Week 03 Assignment"
+author: "Lindsey Kornowske"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    citation_package: natbib
+    template: ./../latex-templates/homework.tex
+instructor: "Monte J. Shaffer"
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: "STATS 419"
+email: "lindsey.kornowske@wsu.edu"
+fig_caption: yes
+number_sections: yes
+---
+
+```{r include=FALSE}
+library(devtools);
+local.path = "/Users/lindseykornowske/.git/STAT419/";
+source( paste0(local.path,"functions/libraries.R"), local = T);
+source(paste0(local.path,"functions/functions-imdb.R"), local = T);
+
+```
+# Matrix
+Create the "rotate matrix" functions as described in lectures. Apply to "myMatrix", called "mat" in my code.
+```{r matrix, message=FALSE}
+source( paste0(local.path,"WEEK-03/functions/functions-matrix.R"), local=T);
+
+mat <- matrix(c(1, 0, 2,0, 3, 0,4, 0, 5), nrow = 3, ncol = 3,byrow = T);
+rotateMatrix90(mat)
+rotateMatrix180(mat)
+rotateMatrix270(mat)
+```
+
+# IRIS
+Recreate the graphic for the IRIS Data Set using R. Same titles, same scales,
+same colors.
+```{r, mychunk-IRIS-include,message=FALSE}
+data("iris")
+
+i<- iris
+
+pairs(~Sepal.Length+Sepal.Width+Petal.Length+Petal.Width, 
+      data = i, 
+      pch = 21,
+      bg = c("red", "green3", "blue")[unclass(i$Species)],
+      main = "Iris Data (red=setosa,green=versicolor,blue=virginica)",
+      cex.labels=1,
+      verOdd=F,
+      horOdd=F)
+```
+
+3. Write 2-3 sentences concisely definiing the IRIS dataset.
+
+The IRIS data set is comprised of width and length measurements for the petals and sepals of
+three Iris species that were collected by Dr. Edgar Anderson and analyzed by Sir Ronal Aylmer
+Fisher for the characterization of these species (Cui). This multivariate dataset is a fixture in the
+data science community for the exemplification of concepts in data science and machine
+learning due to its combined completeness, simplicity, and inherent applications for
+classification (Dua and Graff 2019, Wikipedia Contributors 2020).
+```{r, mychunk-personality-include,message=FALSE}
+d <- read.csv("/Users/lindseykornowske/.git/STAT419/WEEK-03/functions/personality-raw.txt", header = T, sep = "|");
+d <- d[,-3]
+d<- d %>% separate(date_test, c("date","time"),sep = " ")
+d$newdate <- strptime(as.character(d$date), "%m/%d/%Y")
+d$newdate <- format(d$newdate, "%Y-%m-%d")
+d<- d[,c(1,64,2:63)]
+d <- d %>% separate(date, c("Month","Day","Year"), sep = "/")
+#d$Year <- numeric(d$Year)
+d$week <- strftime(d$newdate, format = "%V")
+d <- d[,c(1:5,67,6:66)]
+d<- d[with(d, order(Year, week, decreasing = T)), ]
+d<- d[!duplicated(d$md5_email), ]
+
+#write.csv(d, "personality-clean.txt", sep = "|")
+```
+Raw File: 838 observations
+Clean File: 678 observations
+
+# Summary
+```{r,mychunk-summary-include,message=FALSE}
+source( paste0(local.path,"WEEK-03/functions/functions-summary.R"), local=T);
+sum <- doSummary(d,8,"var2","b62c73cdaf59e0a13de495b84030734e");
+sum
+```
+
+## Variance
+### Naive
+```{r,mychunk-summaryvarnaive-include,message=FALSE}
+
+doSampleVariance(d[,21], "naive")
+```
+
+### Two Pass
+```{r,mychunk-summaryvar2pass-include,message=FALSE}
+doSampleVariance(d[,21], "2pass")
+```
+## Mode
+```{r,mychunk-summarymode-include,message=FALSE}
+doMode(d[,21])
+```
+## Visualize
+```{r,mychunk-summaryvarvis-include,message=FALSE}
+sum <- t(sum)
+plot(sum[,8], sum[,9], main = "Personality Score Plot", xlab = "Raw Scores", ylab= "Z-Scores")
+hist(sum[,3], main = "Histogram of Personality averages", xlab = "Raw Scores")
+```
+The histogram of the scoring averages for the entire personality dataset shows the highest
+frequency score falls around 4.0. This follows a pattern I have also observed in my sensory
+research where panelists have central tendencies regarding their use of scale because the
+extremes feel too definite. The plot comparing the z-scores and raw scores for the
+monte.shaffer@gmail.com data shows a distribution around each of the scores, which is more
+or less expected because there will be variation in the score an individual selects relative to the
+population. However, as we might also expect given the histogram averages, the z-scores for
+the raw scores near 4.5 have the greatest density of points near 0, or the center of the
+distribution.
+
+
+# Denzel vs. Will
+6. Compare Will Smith and Denzel Washington. [See 03_n greater 1-v2.txt for the necessary
+functions and will-vs-denzel.txt for some sample code and in DROPBOX:You will
+have to create a new variable millions.2000 that converts each movie's millions based on the
+$year of the movie, so all dollars are in the same time frame. You will need inflation data from
+about 1980-2020 to make this work.
+
+## Movie Earnings Adjusted for Inflation
+
+```{r}
+will = grabFilmsForPerson("nm0000226");
+denzel = grabFilmsForPerson("nm0000243");
+will.adjust <- inflationAdjust(will)
+denzel.adjust <- inflationAdjust(denzel)
+par(mfrow=c(1,2));
+boxplot(will.adjust, main=will$name, ylim=c(0,400), ylab="Adjusted Millions" );
+boxplot(denzel.adjust, main=denzel$name, ylim=c(0,400), ylab="Adjusted Millions" );
+
+```
+
+## Additional Metrics Comparison
+7. Build side-by-side box plots on several of the variables (including #6) to compare the two
+movie stars. After each box plot, write 2+ sentence describing what you are seeing, and what
+conclusions you can logically make. You will need to review what the box plot is showing with
+the box portion, the divider in the box, and the whiskers.
+
+The median rating is higher for Denzel’s movies than Will’s movies. Will’s movies have higher
+maximum and lower minimum ratings. The median adjusted millions are similar for both actors,
+however the highest earning Will Smith movie earned nearly double the highest earning Denzel
+movie and the 3rd quartile skews higher for the Will Smith movies as well. The median duration
+of each actor’s movies is also similar, with the exception of one outlier by Denzel lasting nearly
+200 minutes. The median production year for Denzel’s movies falls before 2000, almost a
+decade before the median year for Will Smith’s movies. This same pattern exists for the earliest
+movies Denzel and Will made. From these data, we can see that Denzel has had a longer
+career than Will Smith, but Will Smith’s movies have made more money.
+```{r}
+par(mfrow=c(2,4));
+boxplot(will$movies.50$ratings, main=will$name, ylim = c(0,10), ylab="Ratings");
+boxplot(denzel$movies.50$ratings, main=denzel$name, ylim = c(0,10), ylab="Ratings");
+boxplot(will.adjust, main=will$name, ylim=c(0,400), ylab="Adjusted Millions" );
+boxplot(denzel.adjust, main=denzel$name, ylim=c(0,400), ylab="Adjusted Millions" );
+boxplot(will$movies.50$minutes, main=will$name, ylim = c(0,200), ylab="Minutes");
+boxplot(denzel$movies.50$minutes, main=denzel$name, ylim = c(0,200), ylab="Minutes");
+boxplot(will$movies.50$year, main=will$name, ylim = c(1980,2022), ylab="Year");
+boxplot(denzel$movies.50$year, main=denzel$name, ylim = c(1980,2022), ylab="Year");
+
+
+```
+

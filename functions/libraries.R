@@ -1,5 +1,6 @@
 # libraries ...
 
+library(tidyverse);
 library(pryr);          # mem_used()
 library(lmtest);        # lmtest has lrtest
 library(MASS);          # polr
