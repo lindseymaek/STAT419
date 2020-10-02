@@ -1,12 +1,14 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.21 (MiKTeX 20.7) (preloaded format=pdflatex 2020.9.3)  5 SEP 2020 22:01
+This is pdfTeX, Version 3.14159265-2.6-1.40.21 (TeX Live 2020) (preloaded format=pdflatex 2020.9.29)  29 SEP 2020 09:18
 entering extended mode
-**./homework.tex
-(homework.tex
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**homework
+(./homework.tex
 LaTeX2e <2020-02-02> patch level 5
-L3 programming layer <2020-08-07>
-("C:\Program Files\MiKTeX\tex/latex/base\article.cls"
+L3 programming layer <2020-09-24>
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2019/12/20 v1.4l Standard LaTeX document class
-("C:\Program Files\MiKTeX\tex/latex/base\size10.clo"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/base/size10.clo
 File: size10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
 )
 \c@part=\count168
@@ -21,31 +23,36 @@ File: size10.clo 2019/12/20 v1.4l Standard LaTeX file (size option)
 \belowcaptionskip=\skip48
 \bibindent=\dimen134
 )
-("C:\Program Files\MiKTeX\tex/latex/graphics\graphicx.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphicx
+.sty
 Package: graphicx 2019/11/30 v1.2a Enhanced LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files\MiKTeX\tex/latex/graphics\keyval.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics/keyval.s
+ty
 Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
 \KV@toks@=\toks15
 )
-("C:\Program Files\MiKTeX\tex/latex/graphics\graphics.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics/graphics
+.sty
 Package: graphics 2019/11/30 v1.4a Standard LaTeX Graphics (DPC,SPQR)
 
-("C:\Program Files\MiKTeX\tex/latex/graphics\trig.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics/trig.sty
 Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
 )
-("C:\Program Files\MiKTeX\tex/latex/graphics-cfg\graphics.cfg"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics-cfg/grap
+hics.cfg
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
 Package graphics Info: Driver file: pdftex.def on input line 105.
 
-("C:\Program Files\MiKTeX\tex/latex/graphics-def\pdftex.def"
-File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/graphics-def/pdft
+ex.def
+File: pdftex.def 2020/08/26 v1.2 Graphics/color driver for pdftex
 ))
 \Gin@req@height=\dimen135
 \Gin@req@width=\dimen136
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/float\float.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/float/float.sty
 Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \c@float@type=\count176
 \float@exts=\toks16
@@ -53,8 +60,8 @@ Package: float 2001/11/08 v1.3d Float enhancements (AL)
 \@float@everytoks=\toks17
 \@floatcapt=\box46
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/wrapfig\wrapfig.st
-y"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/wrapfig/wrapfig.s
+ty
 \wrapoverhang=\dimen137
 \WF@size=\dimen138
 \c@WF@wrappedlines=\count177
@@ -62,10 +69,12 @@ y"
 \WF@everypar=\toks18
 Package: wrapfig 2003/01/31  v 3.6
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/moreverb\moreverb.
-sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/moreverb/moreverb
+.sty
 Package: moreverb 2008/06/03 v2.3a `more' verbatim facilities
- ("C:\Program Files\MiKTeX\tex/latex/tools\verbatim.sty"
+
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/tools/verbatim.st
+y
 Package: verbatim 2019/11/10 v1.5r LaTeX2e package for verbatim enhancements
 \every@verbatim=\toks19
 \verbatim@line=\toks20
@@ -75,8 +84,8 @@ Package: verbatim 2019/11/10 v1.5r LaTeX2e package for verbatim enhancements
 \tab@size=\count179
 \listing@line=\count180
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/fancyhdr\fancyhdr.
-sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/fancyhdr/fancyhdr
+.sty
 Package: fancyhdr 2019/01/31 v3.10 Extensive control of page headers and footer
 s
 \f@nch@headwidth=\skip49
@@ -89,31 +98,38 @@ s
 \f@nch@O@olf=\skip56
 \f@nch@O@orf=\skip57
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/lastpage\lastpage.
-sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/lastpage/lastpage
+.sty
 Package: lastpage 2015/03/29 v1.2m Refers to last page's name (HMM; JPG)
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/setspace\setspace.
-sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/setspace/setspace
+.sty
 Package: setspace 2011/12/19 v6.7a set line spacing
-) ("C:\Program Files\MiKTeX\tex/latex/amsmath\amsmath.sty"
+)
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsmath.s
+ty
 Package: amsmath 2020/01/20 v2.17e AMS math features
 \@mathmargin=\skip58
 
 For additional information on amsmath, use the `?' option.
-("C:\Program Files\MiKTeX\tex/latex/amsmath\amstext.sty"
+
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amstext.s
+ty
 Package: amstext 2000/06/29 v2.01 AMS text
 
-("C:\Program Files\MiKTeX\tex/latex/amsmath\amsgen.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsgen.st
+y
 File: amsgen.sty 1999/11/30 v2.0 generic functions
 \@emptytoks=\toks21
 \ex@=\dimen139
 ))
-("C:\Program Files\MiKTeX\tex/latex/amsmath\amsbsy.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsbsy.st
+y
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
 \pmbraise@=\dimen140
 )
-("C:\Program Files\MiKTeX\tex/latex/amsmath\amsopn.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsmath/amsopn.st
+y
 Package: amsopn 2016/03/08 v2.02 operator names
 )
 \inf@bad=\count181
@@ -154,7 +170,8 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 734.
 LaTeX Info: Redefining \[ on input line 2859.
 LaTeX Info: Redefining \] on input line 2860.
 )
-("C:\Program Files\MiKTeX\tex/latex/amsfonts\amsfonts.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amsfonts
+.sty
 Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
@@ -162,7 +179,7 @@ LaTeX Font Info:    Redeclaring math symbol \hbar on input line 98.
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
 (Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/amscls\amsthm.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amscls/amsthm.sty
 Package: amsthm 2020/05/29 v2.20.6
 \thm@style=\toks26
 \thm@bodyfont=\toks27
@@ -173,13 +190,15 @@ Package: amsthm 2020/05/29 v2.20.6
 \thm@postskip=\skip62
 \thm@headsep=\skip63
 \dth@everypar=\toks31
-) ("C:\Program Files\MiKTeX\tex/latex/amsfonts\amssymb.sty"
+)
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/amssymb.
+sty
 Package: amssymb 2013/01/14 v3.01 AMS font symbols
 )
-("C:\Program Files\MiKTeX\tex/latex/tools\tabularx.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/tools/tabularx.st
+y
 Package: tabularx 2020/01/15 v2.11c `tabularx' package (DPC)
-
-("C:\Program Files\MiKTeX\tex/latex/tools\array.sty"
+ (/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/tools/array.sty
 Package: array 2019/08/31 v2.4l Tabular extension package (FMi)
 \col@sep=\dimen148
 \ar@mcellbox=\box50
@@ -197,25 +216,26 @@ Package: array 2019/08/31 v2.4l Tabular extension package (FMi)
 \TX@cols=\count193
 \TX@ftn=\toks33
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/natbib\natbib.sty"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/natbib/natbib.sty
 Package: natbib 2010/09/13 8.31b (PWD, AO)
 \bibhang=\skip66
 \bibsep=\skip67
 LaTeX Info: Redefining \cite on input line 694.
 \c@NAT@ctr=\count194
 )
-("C:\Users\Alexander Nevsky\AppData\Roaming\MiKTeX\tex/latex/titling\titling.st
-y"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/titling/titling.s
+ty
 Package: titling 2009/09/04 v2.1d maketitle typesetting
 \thanksmarkwidth=\skip68
 \thanksmargin=\skip69
 \droptitle=\skip70
-) ("C:\Program Files\MiKTeX\tex/latex/l3backend\l3backend-pdfmode.def"
-File: l3backend-pdfmode.def 2020-08-07 L3 backend support: PDF mode
+)
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/l3backend/l3backe
+nd-pdftex.def
+File: l3backend-pdftex.def 2020-09-24 L3 backend support: PDF output (pdfTeX)
 \l__kernel_color_stack_int=\count195
 \l__pdf_internal_box=\box52
-)
-(homework.aux)
+) (./homework.aux)
 \openout1 = `homework.aux'.
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 62.
@@ -232,37 +252,30 @@ LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
 LaTeX Font Info:    ... okay on input line 62.
 LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 62.
 LaTeX Font Info:    ... okay on input line 62.
- ("C:\Program Files\MiKTeX\tex/context/base/mkii\supp-pdf.mkii"
-[Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count196
-\scratchdimen=\dimen155
-\scratchbox=\box53
-\nofMPsegments=\count197
-\nofMParguments=\count198
-\everyMPshowfont=\toks34
-\MPscratchCnt=\count199
-\MPscratchDim=\dimen156
-\MPnumerator=\count266
-\makeMPintoPDFobject=\count267
-\everyMPtoPDFconversion=\toks35
-) ("C:\Program Files\MiKTeX\tex/latex/epstopdf-pkg\epstopdf-base.sty"
+
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/epstopdf-pkg/epst
+opdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
 Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
 85.
-)
+
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/latexconfig/epsto
+pdf-sys.cfg
+File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Liv
+e
+))
 Package lastpage Info: Please have a look at the pageslts package at
 (lastpage)             https://www.ctan.org/pkg/pageslts
 (lastpage)             ! on input line 62.
 LaTeX Font Info:    Trying to load font information for U+msa on input line 71.
 
 
-("C:\Program Files\MiKTeX\tex/latex/amsfonts\umsa.fd"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsa.fd
 File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Trying to load font information for U+msb on input line 71.
 
-
-("C:\Program Files\MiKTeX\tex/latex/amsfonts\umsb.fd"
+(/Users/lindseykornowske/Library/TinyTeX/texmf-dist/tex/latex/amsfonts/umsb.fd
 File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 )
 <graphics/myfigure.png, id=1, 531.9875pt x 530.98375pt>
@@ -275,32 +288,38 @@ File: graphics/pdffigure.pdf Graphic file (type pdf)
 <use graphics/pdffigure.pdf>
 Package pdftex.def Info: graphics/pdffigure.pdf  used on input line 93.
 (pdftex.def)             Requested size: 216.81pt x 216.80946pt.
- [1
+[1
 
-{C:/Users/Alexander Nevsky/AppData/Local/MiKTeX/pdftex/config/pdftex.map}] [2 <
-./graphics/myfigure.png> <./graphics/pdffigure.pdf>] (homework.bbl) 
+{/Users/lindseykornowske/Library/TinyTeX/texmf-var/fonts/map/pdftex/updmap/pdft
+ex.map}] [2 <./graphics/myfigure.png> <./graphics/pdffigure.pdf>]
+(./homework.bbl) 
 AED: lastpage setting LastPage
-[3] (homework.aux) ) 
+[3] (./homework.aux) ) 
 Here is how much of TeX's memory you used:
- 3284 strings out of 481212
- 42788 string characters out of 2915693
- 283260 words of memory out of 3000000
- 18826 multiletter control sequences out of 15000+200000
- 542049 words of font info for 56 fonts, out of 3000000 for 9000
- 1141 hyphenation exceptions out of 8191
- 36i,10n,45p,270b,229s stack positions out of 5000i,500n,10000p,200000b,50000s
-<C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmb
-x12.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmex10.pfb><C:/
-Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmmi10.pfb><C:/Program File
-s/MiKTeX/fonts/type1/public/amsfonts/cm/cmr10.pfb><C:/Program Files/MiKTeX/font
-s/type1/public/amsfonts/cm/cmr12.pfb><C:/Program Files/MiKTeX/fonts/type1/publi
-c/amsfonts/cm/cmr17.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm
-/cmr6.pfb><C:/Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr7.pfb><C:/
-Program Files/MiKTeX/fonts/type1/public/amsfonts/cm/cmr8.pfb><C:/Program Files/
-MiKTeX/fonts/type1/public/amsfonts/cm/cmti10.pfb>
-Output written on homework.pdf (3 pages, 122729 bytes).
+ 3006 strings out of 482823
+ 40714 string characters out of 5954425
+ 276393 words of memory out of 5000000
+ 18336 multiletter control sequences out of 15000+600000
+ 542049 words of font info for 56 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 36i,10n,45p,264b,229s stack positions out of 5000i,500n,10000p,200000b,80000s
+</Users/lindseykornowske/Library/TinyTeX/texmf-dist/fonts
+/type1/public/amsfonts/cm/cmbx12.pfb></Users/lindseykornowske/Library/TinyTeX/t
+exmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></Users/lindseykornowske/Li
+brary/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></Users/lind
+seykornowske/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pf
+b></Users/lindseykornowske/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfon
+ts/cm/cmr12.pfb></Users/lindseykornowske/Library/TinyTeX/texmf-dist/fonts/type1
+/public/amsfonts/cm/cmr17.pfb></Users/lindseykornowske/Library/TinyTeX/texmf-di
+st/fonts/type1/public/amsfonts/cm/cmr6.pfb></Users/lindseykornowske/Library/Tin
+yTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr7.pfb></Users/lindseykornowsk
+e/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></Users/li
+ndseykornowske/Library/TinyTeX/texmf-dist/fonts/type1/public/amsfonts/cm/cmti10
+.pfb>
+Output written on homework.pdf (3 pages, 116220 bytes).
 PDF statistics:
- 61 PDF objects out of 1000 (max. 8388607)
+ 63 PDF objects out of 1000 (max. 8388607)
+ 43 compressed objects within 1 object stream
  0 named destinations out of 1000 (max. 500000)
  11 words of extra memory for PDF output out of 10000 (max. 10000000)
 

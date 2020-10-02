@@ -1,0 +1,22 @@
+---
+title: "Week 03 Assignment"
+author: "Lindsey Kornowske"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    citation_package: natbib
+    template: ./../latex-templates/homework.tex
+instructor: "Monte J. Shaffer"
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: "STATS 419"
+email: "lindsey.kornowske@wsu.edu"
+fig_caption: yes
+number_sections: yes
+---
+
+Lindsey says hello about the IRIS datasets \citep{Gladwell:2008, Shaffer:2011}.
+
+\citet{Gladwell:2008} says something about machine learning.
+
+
