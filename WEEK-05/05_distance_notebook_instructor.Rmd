@@ -3,12 +3,15 @@ title: 'R Notebook sandbox: Playing with Distance'
 output:
   html_document:
     df_print: paged
-    toc: true
-    toc_float: true
+    toc: yes
+    toc_float: yes
     toc_depth: 4
-    fig_caption: true
-    number_sections: true
-my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+    fig_caption: yes
+    number_sections: yes
+  pdf_document:
+    toc: yes
+    toc_depth: '4'
+my-var: monte
 ---
 
 
@@ -186,18 +189,42 @@ nyc = as.data.frame( matrix( c(  nyc.timesquare.latlong,
 
 nyc;
 
+dist(nyc, method="manhattan", diag=F, upper=TRUE);  #a literal distance matrix with "taxi cab" distances between all of these locations in manhattan in coordinate units??
+
+latitude.factor = 69;  # rough mile estimate  # 68.703 ?
+
+nyc$x.lat = nyc$latitude*latitude.factor;
+
+# how many miles is 1 degree of longitude
+longitude.factor = 54.6;  # rough mile estimate  
+
+nyc$y.lat = nyc$longitude*longitude.factor;
+
+nyc;
+
+dist(nyc[,3:4], method="manhattan", diag=FALSE, upper=TRUE); #manhattan distance in meters
+
+#this works, times square to the bull on wall street is listed as 4 miles on google maps
+conv_unit(  distm( nyc[,2:1], fun=distHaversine),  "m", "mi"); # meters to miles
+conv_unit(  distm( chicago[,2:1], fun=distMeeus),  "m", "mi"); # meters to miles
+conv_unit(  distm( chicago[,2:1], fun=distGeo),  "m", "mi"); # meters to miles
 
 
 ```
+
 In this RNotebook, write brief responses to the questions:
 
 ####  *Question 1:*  When would the "angle of rotation" for NYC matter to compute the Manhattan Distance?
+The angle of rotation will influence the coordinates that define the location, but should not change the Manhattan Distance. If the coordinate vectors are the same length, than ultimately those distances should be the same.
 
 ####  *Question 2:*  How does Di Fara Pizza complicate things?  How would you really have to compute distance in this scenario (thing Google Maps "walking" or "driving directions")?
+Di Fara Pizza is across the water, therefore the exact distance isn't practical information for actually travelling there. The distance needs to incorporate access to a bridge, then distance from the bridge to Di Fara Pizza.  
 
-####  *Question 3:*  Which distance metric seems to be most conservative (overstating distance:  Manhattan, Euclidean, Haversine)?
+####  *Question 3:*  Which distance metric seems to be most conservative (overstating distance:  Manhattan, Euclidean, Haversine)? 
+Manhattan distance appears to be most conservative, followed by Haversine, followed by Euclidean.  Although when the shape of the Earth is considered, it is possible that Manhattan distance is too 2-dimensional and will end up undershooting the distance as a result.
 
 ####  *Question 4:*  Which Spherical Ellipsoid Distance is most accurate (Haversine, Meeus, or Geo)?  How can you verify that?
+Haversine produces larger distances relative to Meeus, which produces larger distances relative to Geo based on the Chicago distance set.  According to some R documentation, Geo is the most accurate, although it isn't clear entirely why, but perhaps that the ellipsoid that is used in the calculations most closely represents the globe.  You could verify that in silico by applying Haversine or Meeus distances to the best globe approximation.  You could verify that in situ by actual travel? assuming that external variables such as wind are accounted for.
 
 # Store Locator
 I did some work for a company called 'organicgirl' a few years back.  We built a store locator as part of their brand presence online.  It was in production for about 8 years.  You can check out their "updated version" that doesn't full operate.
@@ -229,7 +256,7 @@ library(RMySQL); # install.packages("RMySQL", dependencies=TRUE);
 mysql.connection = dbConnect(RMySQL::MySQL(),
                             user = db.user,
                             password = db.passwd,
-                            dbname = db.name ,
+                            dbname = db.name,
                             host = db.host);
 
 
@@ -307,11 +334,83 @@ result.neighbors;
 
 #### TODO:  Take this information and you compute the pair-wise distances using the best Spherical Ellipsoid method.  Recall the focal zipcode (99163) are the distances we care about.  Add as column to the dataframe `result.neighbors$distance` with the ppropriate values in miles.  Add another column `result.neighbors$incircle` which is TRUE/FALSE depending on the distance provided as the input.  Remove the specific row for the focal zipcode (99163) at the very end.
 
+```{r}
+
+##my code solution to evaluating the ellipsoid distance with the distGeo function, then determining whether the provided locations relative to the zipcode really fall within the search query
+
+result.neighbors$distance <- conv_unit(  distm( x = result.neighbors[, 3:2], y = result[,3:2], fun=distGeo),  "m", "mi"); # meters to miles
+
+result.neighbors <- result.neighbors %>% mutate(incircle = ifelse(distance > radius.miles, FALSE, TRUE))
+
+result.neighbors
+```
+
+
 #### TODO:  Choose a zipcode of your choice (not Pullman), and repeat everything above for that zipcode.
+
+```{r}
+## I repeated the exercise for a zip code in Salt Lake City, with a wider mile radius
+
+zipcode = '84102';  # CANADA allows strings for zipcodes, I removed, so only U.S.
+
+mysql.query.template = "SELECT * FROM {tablename} WHERE zipcode = '{zipcode}';";
+mysql.query = gsub("{tablename}",db.table.zipcodes, mysql.query.template, fixed=TRUE);
+mysql.query = gsub("{zipcode}",zipcode, mysql.query, fixed=TRUE);
+
+mysql.query;
+  
+#result = dbSendQuery(mysql.connection, mysql.query);
+result = dbGetQuery(mysql.connection, mysql.query);
+
+result;
+
+radius.miles = 50;
+# let's build a box
+my.latitude = result$latitude[1];
+my.longitude = result$longitude[1];
+
+delta.latitude = radius.miles / 68.703 ;
+delta.longitude = radius.miles / (69.172 * cos(deg2rad(my.longitude))); 
+
+# 4 sides of the square ... CREATE A BOUNDING BOX
+latitude.lower = my.latitude - delta.latitude;
+latitude.upper = my.latitude + delta.latitude;
+
+longitude.lower = my.longitude - delta.longitude;
+longitude.upper = my.longitude + delta.longitude;
+
+## longitude signs are opposite of latitude, would that be different outside US?
+mysql.query.template = "SELECT * FROM {tablename} WHERE latitude > {latitude.lower} AND latitude < {latitude.upper} AND longitude < {longitude.lower} AND longitude > {longitude.upper} ORDER BY zipcode ASC;";
+mysql.query = gsub("{tablename}",db.table.zipcodes, mysql.query.template, fixed=TRUE);
+mysql.query = gsub("{zipcode}",zipcode, mysql.query, fixed=TRUE);
+mysql.query = gsub("{latitude.lower}",latitude.lower, mysql.query, fixed=TRUE);
+mysql.query = gsub("{latitude.upper}",latitude.upper, mysql.query, fixed=TRUE);
+mysql.query = gsub("{longitude.lower}",longitude.lower, mysql.query, fixed=TRUE);
+mysql.query = gsub("{longitude.upper}",longitude.upper, mysql.query, fixed=TRUE);
+
+mysql.query;
+
+result.neighbors = dbGetQuery(mysql.connection, mysql.query);
+
+result.neighbors;
+
+result.neighbors$distance <- conv_unit(  distm( x = result.neighbors[, 3:2], y = result[,3:2], fun=distGeo),  "m", "mi"); # meters to miles
+
+result.neighbors <- result.neighbors %>% mutate(incircle = ifelse(distance > radius.miles, FALSE, TRUE))
+
+## finally, filter results that are within the specified radius per the incircle results
+result.neighbors <- filter(result.neighbors, incircle == TRUE)
+
+result.neighbors
+
+```
+
 
 # String distances
 
 Distance can also be applied to strings, based on various methods.  For example, if I am typing the word `the`, I may accidently transpose some of `hte` characters.
+
+## my question - is this the concept behind fuzzy search? some kind of "tolerance" for strings?
 
 ```{r,chunk-string-distance}
 
@@ -349,6 +448,13 @@ levenshteinDist(w1, w3);
 ```
 
 
-#### Question:  What do you notice about w1, w2, w3 when we sort the characters that compose each string?  What is the term for this type of equality (e.g., `ant` and `tan` mixing up the same characters to form a new string that has its own meaning)? Is there a string function that would find such examples?
+#### Question:  What do you notice about w1, w2, w3 when we sort the characters that compose each string? 
+
+They get sorted alphabetically
+
+#What is the term for this type of equality (e.g., `ant` and `tan` mixing up the same characters to form a new string that has its own meaning)? 
+Anagram?  
+#Is there a string function that would find such examples?
+We can use distances to identify identical compositions of letters.  In theory, you could also write a function that examines each string for its character components, and determine how they compare, although that would be extremely inefficient.
 
 We will revisit string distances again.  This was just a brief introduction to the idea.
