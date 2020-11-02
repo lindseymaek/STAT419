@@ -33,9 +33,9 @@ Variance measures the spread of a variable.  Consider the following three exampl
 library(humanVerseWSU); 
 # You need R tools for this to work:  https://cran.r-project.org/bin/windows/Rtools/
 # You may want to see if you have the latest version...
-# library(devtools);
-# detach(package:humanVerseWSU);
-# install_github("MonteShaffer/humanVerseWSU/humanVerseWSU"); 
+#library(devtools);
+#detach(package:humanVerseWSU);
+#install_github("MonteShaffer/humanVerseWSU/humanVerseWSU"); 
 # Choose (3) None to minimize headaches ....
 
 
@@ -50,7 +50,7 @@ normalDiagnosticPlot = function(x,  normalityTest=TRUE,
   x.stats = doStatsSummary(x);
   # x.table = table(x);
   
-  # library(KernSmooth); # install.packages("KernSmooth", dependencies=TRUE);
+  # library(KernSmooth);  #install.packages("KernSmooth", dependencies=TRUE);
   # bin.count = dpih(xx);
   # mybreaks = 100 * bin.count;
   
@@ -166,8 +166,10 @@ Notice that they all have different amounts of "spread" yet have about the same 
 
 TODO: Review the one-sided and two-sided t-test \url{https://en.wikipedia.org/wiki/Student%27s_t-test}.  Demonstrate your knowledge of those two tests by applying it to one or more of the x-data prepared above (e.g., `x.0.1`).
 
+T-tests are used to test the null hypothesis of equal means for two small samples (of equal size?) that are normally distributed. If two sided, the null hypothesis is that the means of the two groups are equal, and the alternative hypothesis is that they are not, In a one-sided t-test, the null hypothesis is that
+
 ```{r, chunck-student-t}
-#t.test(x.0.1, x.0.1b, paired=FALSE, var.equal=FALSE);
+t.test(x.0.2, x.0.3, alternative = "greater", conf.level = 0.05, paired=FALSE, var.equal=FALSE);
 
 ```
 
@@ -188,7 +190,7 @@ Above we review when two "independent" samples may have different means or varia
 plot(x.0.1, x.0.1b);
     cor(x.0.1, x.0.1b, method="pearson");  # default
     cor(x.0.1, x.0.1b, method="kendall");
-    cor(x.0.1, x.0.1b, method="spearman");
+    cor(x.0.1, x.0.1b, method="spearman"); # this is non-parametric
 
 cor.test(x.0.1, x.0.1b, method="pearson");  # default
 cor.test(x.0.1, x.0.1b, method="kendall");
@@ -216,6 +218,8 @@ library(corrgram); # install.packages("corrgram",dependencies=TRUE);
               main="My title");
 
 library(Hmisc); # install.packages("Hmisc",dependencies=TRUE);
+
+##this is useful because the correlation values as well as the pvalues are provided
     rcorr(as.matrix(x.df), type="pearson");
 
 # corrplot::corrplot(
@@ -224,6 +228,8 @@ library(Hmisc); # install.packages("Hmisc",dependencies=TRUE);
 
 ```
 Notice that since the data was randomly generated "independently", the "correlation" is close to zero.  
+
+i know what that's like...
 
 ### Functionally Dependent 
 ```{r, chunck-interdependence2}
@@ -282,7 +288,7 @@ Y = iris.df$Sepal.Length;
 X = iris.df$Sepal.Width;
 myData = data.frame(cbind(Y,X));
 
-
+##what does predict linear model do?
 plot(X,Y, xlim=range(X), ylim=range(Y) );
   linear.model = lm(Y~X, myData );
   linear.model.summary = summary(linear.model);
@@ -511,7 +517,17 @@ You should read the "Vitrian Man" reading found in the Dropbox for this week.  T
 ## At the top-level of your "WSU_STATS419_FALL2020" repository add a folder "PROJECT-01" if you haven't done so yet.  Remember to only move "public-information" into that folder ... nothing private.  Private would be participant's names, passwords, and so on...
 
 ## maybe add a section to your 01_notebook in your project folder called # Correlation and perform the analyses there (or here or BOTH, it's up to you).
+local.path = "/Users/lindseykornowske/.git/STAT419/";
+myMeasureData <- read.csv(file = paste0(local.path, "datasets/measure/measure.txt"), sep = "|", header = T)
 
+#wingspan vs arm reach #significant pval, strong positive correlation
+cor.test(myMeasureData$arm.span...NA, myMeasureData$arm.reach...right, method = "pearson")
+
+#foot length vs head height #pval not significant, weak negative correlation
+cor.test(myMeasureData$foot.length...left, myMeasureData$head.height...NA, method = "pearson")
+
+#hand span vs hand height
+cor.test(myMeasureData$hand.length...right, myMeasureData$hand.width...right, method = "pearson")
 
 ```
 
@@ -593,6 +609,12 @@ cor(X,Y);  ## Getting closer
 # build a Y that is a function of X such that correlation is 0.
 # it can be close to zero with isClose function
 # ?isClose
+
+## this gives me an NA - what is that? #solve with use complete.obs
+Y = (((X^(0.5)*sd(X)+X^2)^.123 / (mean(X) + (X - 10*X)- X^2)^11) )+(2/X);
+cor(X,Y, use = "complete.obs")
+
+
 
 # maybe review the formula for correlation
 # \url{https://en.wikipedia.org/wiki/Correlation_and_dependence#Sample_correlation_coefficient}

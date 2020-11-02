@@ -1,0 +1,2299 @@
+---
+title: 'R Notebook midterm: 419 Survey of Multivariate Methods'
+name: Lindsey Kornowske
+email: lindsey.kornowske@wsu.edu
+output:
+  pdf_document:
+    toc: yes
+    toc_depth: '6'
+  html_document:
+    df_print: paged
+    toc: yes
+    toc_float: yes
+    toc_depth: 6
+    fig_caption: yes
+    number_sections: no
+params:
+  knitChunkSetEcho: yes
+  knitChunkSetWarning: no
+  knitChunkSetMessage: yes
+  knitChunkSetCache: yes
+  knitChunkSetFigPath: graphics/
+my-var: monte
+---
+# Top of the world
+<https://brand.wsu.edu/visual/colors/>
+```{r setup, include=FALSE}
+# I am now setting parameters in YAML header, look above
+knitr::opts_chunk$set(echo = params$knitChunkSetEcho);
+knitr::opts_chunk$set(warning = params$knitChunkSetWarning);
+knitr::opts_chunk$set(message = params$knitChunkSetMessage);
+
+# ... just added ... take a look at how this builds ... you now have your raw files ...
+knitr::opts_chunk$set(cache = params$knitChunkSetCache);
+knitr::opts_chunk$set(fig.path = params$knitChunkSetFigPath);
+
+###########################
+options(scipen  = 999);
+
+library(humanVerseWSU);
+packageVersion("humanVerseWSU");  # ‘0.1.4.2’+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+path.mshaffer = "http://md5.mshaffer.com/WSU_STATS419/";
+
+source( paste0(path.github,"misc/functions-midterm-F2000.R") );  # should be 2020 ... oh well
+
+source( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") );  # EDA functions ...
+
+
+library(parallel);
+parallel::detectCores(); # 16 # Technically, this is threads, I have an 8-core processor 
+
+```
+## TESTING PROCEDURE
+ 
+This midterm exam (Rnotebook-midterm) is worth 150 points.  For each question, review how much the item is worth in terms of points and plan your time wisely. 
+
+I would deem it "unwise" to spend hours on a question that is only worth 5 points.
+
+### Static/Existing Resources Are Allowed
+ 
+This is an open-book examination.  You can use your course notebooks (digital and old-school).  You can use Internet resources (stackoverflow, Wikipedia, and Youtube).  
+
+### Dynamic/Living Resources Are _ **NOT**_  Allowed
+
+**You cannot use a living resource on the exam.**  That would include a classmate, student, sibling, parent, a tutor, online forums (where you ask the question after the exam period has begun). 
+
+If you have questions that need clarifying, please **email the instructor** and he will try to answer them by email or ZOOM.  He will be checking his email often during the week of the exam, to make himself available to you.
+
+### Levels of Mastery
+
+* Do You **Remember**?
+* Do You **Understand**?
+* Can You **Apply** what you remember/understand to another similar problem?
+* Can You **Analyze** and **Synthesize** Data?
+* Can You **Evaluate** your analyses?
+* Can You **Create** meaningful visualizations and summaries?  
+
+### Rubric of Mastery 
+ 
+For every 10 points, this is the general breakdown.
+ 
+| Emerging       | Developing     | Mastering    |
+| :------------- | :----------:   | -----------: |
+| 0-4            |  5-7           | 8 - 10       |
+
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+# EXPLORATORY DATA ANALYSIS (EDA)
+
+Exploratory data analysis (EDA) is the process of analyzing data to summarize its main characteristics.
+
+Confirmatory data analysis (CDA) is the process of applying specific statistical methods to analyze the data.  The goal is also to summarize its main characteristics.  We commonly refer to CDA as "statistical hypothesis testing".  CDA generally makes assumptions about how the data is distributed.  Or wants to apply a specific model to the data.
+
+So the two approaches have the same objective:  summarize the main characteristics of the data.  How they achieve that objective is very different.  
+
+## Introduction 
+
+### John Tukey
+John Tukey is the father of "Exploratory Data Analysis" (EDA) <https://en.wikipedia.org/wiki/John_Tukey>.  My favorite statistics book is his 1977 book (not surprising) entitled "Exploratory Data Analysis."
+
+### Exploratory vs Confirmatory
+From Wikipedia (Accessed October 2020):  Tukey "also contributed to statistical practice and articulated the important distinction between exploratory data analysis and confirmatory data analysis, **believing that much statistical methodology placed too great an emphasis on the latter**."
+
+I belong to the "Tukey" camp. I believe too much emphasis is place on "formal statistical methods and tests".  I believe more emphasis should be placed on the underlying nature of the data.  These underlying principles are how the statistical methods developed.  
+
+As a data analyst, I believe that first and foremost, we should let the data speak.  That is why the first half of the semester started in this form.  The second half (confirmatory data analysis) will rely on what is labeled by many as "formal statistical methods".
+
+### Tukey and "Bell Labs"
+
+In 1965, Tukey divided his time between working at Princeton University and working at Bell Labs (a research think tank).  
+
+#### Robust Statistics as Nonparametric
+
+Tukey proposed that five summary data are essential to understanding numerical data:  `min`, `max`, `median` (technically `Q2`), and `Q1` and `Q3` (the quartiles).  In `R`, the function `summary` has only added `mean` to Tukey's proposal from years ago.
+
+#### Box and Whisker Plot 
+
+In 1975, Tukey invented the "box and whisker" plot that identifies the median, inter-quartile range (IQR), and outliers of data.  The visualization displays the data without making any assumptions about its statistical distribution.  The boxplot is a working demonstration of EDA.  **Let the data speak!**
+
+### John Chambers and `S` and `R`
+At the same time as John Tukey, three other men were also working at Bell Labs (John Chambers, Rick Becker, and Allan Wilks) on a statistical programming language `S` that emphasized EDA.  This "statistical computing" language was programming mostly in `Fortran` with some `C` programming.    Chambers published his first "statistical computing" text in 1977, titled "Computational methods for data analysis" <https://archive.org/details/computationalmet0000cham/page/n11/mode/2up>
+
+Between 1988 and 1991, Chambers updated the engine of `S` to make it more robust.  That same engine still powers much of `R` today.  That is, much of the base code of `S` was written by Chambers himself. `R` today still uses much of that `S` codebase under the hood.  
+
+`R` was an open-source offshoot (a "fork") of `S` which occurred in the mid 1990s.  Today, Chambers is still active in the `S`-now`R` community.  My favorite book of his is titled (2008): "Software for data analysis programming with R".  My second-favorite book of his is titled (1998): "Programming with data: a guide to the S language".  In 2016, he authored another book that I still need to read "Extending R."  
+
+Modern `R` is written in `Fortran`, `C`, and `C++`.  
+
+Since its foundation is primarily `C`, we can use standard "make" and "make-install" tools to compile R or its packages from the source code.  That is why we needed `Rtools` on Windows.  The MacOS is now linux based, so no additional tools are required.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+## Summary
+
+EDA as exploration is an iterative process.  
+
+### Analogy: learning a foreign language
+I like to use the analogy of learning a foreign language using the "immersion" approach. For example, I studied Spanish in high school, learned vocabulary and grammar, and really could not speak the language well.  
+
+I did learn to speak the language well by being dropped into a foreign country for nearly two years.  Some key ingredients to learn a language in an "immersive" environment are listed below:  
+
+- surround yourself with others speaking the language to be learned [e.g., I did not spend a lot of time with other Americans speaking English]. 
+- be present when engaged in the language.  Listen intently and try to understand as much as you can, not worrying about what you don't fully understand.  
+
+- reflect after language engagement.  Try to synthesize what "gaps" you have and then develop study habits to fill in those gaps.
+
+- practice what you have learned.
+
+To some degree, my success was likely accelerated because I had precursory training.  Regardless, "immersive" practices benefit learning new languages.
+
+### Proficiency in Data Analytics
+
+[As part of your journey, I have asked you to keep a "paper-and-pencil" notebook to write down words/phrases/ideas.  For example, in this section, there may be words/terms/phrases/ideas you don't fully understand.]
+
+Proficiency requires an iteration of these key features described above.  But first, you have to understand what language you are trying to speak.  Is it `R`?  Is it Statistics?  Mathematics?  What exactly is the language?
+
+In my opinion, the language is the "language of data". 
+
+### The "language of data"
+
+How do you think mathematics developed?  It likely started with simple data, based on real-world experience:  two hands, five fingers on each hand gives me the number ten.  Counting in a base-10 system likely resulted.  An entire domain of mathematics called "number theory" devotes its studies to these integer values.
+
+How do you think statistics developed?  People went out and started measuring things.  One person would literally walk down the street in the late 1800s and ask if he could measure a person's proportions.  Another person would study crop yields at different locations and tried to ascertain if they were different. 
+
+The foundation of mathematics and statistics is data. So I believe, we should let the data speak.
+
+### Let the data speak
+
+So I am definitely an EDA-guy.  Some people are, some people are not.  I personally am a strong believer that we should **let the data speak**, learn how to describe the data without imposing any restrictions on it, and always think about the data first and foremost.  
+
+I also believe that we should use logic, intuition, and insight before we develop any formal "confirmatory" hypothesis testing.  I have intentionally architected this course to emphasis EDA.
+
+### Quality data provenance
+
+I am also very adamant about **data provenance** as I believe the "outputs" of any analysis (whether exploratory or confirmatory) is as only as good as the data quality.  I call this `data intimacy`.  You should care just as much about the process to get quality data as you do to analyze said data.
+
+The term **GIGO** (garbage-in, garbage-out) in my estimation represents what happens when care for quality data is treated lightly.  
+
+### Iterative Exploration
+This full EDA approach is a multi-lens approach.  View the data from as many different perspectives as possible before arriving at a conclusion.  Base your conclusion on a synthesis of what you analyzed from those different perspectives.
+
+- We do initial EDA (using mathematical foundations), 
+- then we may do confirmatory analyses (traditional statistical methods), and 
+- then we synthesize our findings and do a higher-ordered EDA using the original analysis and the confirmatory analysis to make final decisions using sound logic and intuition.
+- this process will enlighten our understand and possibly help us formulate new suppositions and think about what additional data would inform the topic.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+## (10 points) YOUR "EDA" OPINION 
+[
+I have expressed my opinion about the study of data and the importance of EDA in that study.  What is your opinion on this topic?
+
+This is worth 10 points, a minimal answer should be at least 3 paragraphs. Agreeing/Disagreeing with my opinion is not how you will be evaluated.  How well you express YOUR opinion is what is important.]
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The importance of Exploratory Data Analysis (EDA) for contextualizing Confirmatory Data Analysis (CDA) is such that all fields using statistical methods should reevaluate requirements for publication to include elements of EDA in conjunction with the traditionally-accepted CDA. In recent years, a conversation around 'p-hacking' and appropriate significance thresholds has been held within several disciplines. However, re-evaluation of standard significance thresholds, and even study pre-registration, does not sufficiently address the underlying motivation of these debates to improve study reproducibility. EDA is arguably a much more effective tool for this mission because it contextualizes the CDA and therefore introduces accountability to the analysis process by filling in the analysis narrative such that the reader can understand the appropriateness of the CDA and how much weight to give its results.  
+
+Other discussions in science have considered the idea of publishing 'non-findings' in addition to findings in scenarios where perhaps the experimental variables did not produce a significant (historically equated with publishable) result. This naturally leads to the question, "what is a non-finding?" Is it one where the researchers have truly controlled for risk of Type II error? Or is it one where the data collection or analysis were not rigorous enough to show differences that might be there given better practices? Most scientists might select the former, but in large multi-component exploratory studies, this line can be blurred. Inclusion of EDA is an excellent solution to this because it shows more clearly where other questions could be asked, or where perhaps the analysis should be questioned.  Through this lens, it appears utterly backwards that many "exploratory research studies" include CDA and coerce results where the purpose of the study was to interrogate systems for where more questions should be asked. This is likely because many researchers in fields where statistics are traditionally of lower emphasis do not make the distinction between EDA and CDA, which points to a larger issue about how statistics is understood and a barrier to the widespread willingness to lend more weight to EDA.
+
+The solution to improving study reproducibility by the normalized application of EDA into results reporting is a challenging one because it requires individual accountability on the behalf of study designers and reviewers to curate a statistical literacy beyond what is required for minimum interpretation skills of p-value-centered CDA. Therefore, this distinction between EDA and CDA should be at the core of the curriculum for even the most basic of statistics classes; one should not be able to graduate from a scientific undergraduate degree and work for a year in a scientific graduate program before becoming familiar with EDA in a class that is not a part of their degree (hypothetically speaking, of course, albeit with some personal accountability acknowledged). In science degrees, data collection may be covered meticulously, as well as with the potential for error, and in this way, the foundations of EDA and data provenance are already introduced, but the dots are seldom connected to the analysis process.
+
+In summary, my feeling about EDA is not just that it is important, but that I believe that more researchers working with statistics recognize its importance than a lot of CDA-centered journals would have one believe, it just isn't a fully identified or normalized part of the process because it isn't incorporated into the education system in the ways that it easily could be. In my personal experience, I recognized that EDA was missing from my research without even knowing what to call it, but recognizing that there were potential ways my CDA could be misleading. Distinguishing this analysis from CDA has been a big break through for me, because it has helped me understand how I can even begin putting iterative exploration into practice.
+
+</pre>
+
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## SIMULATING DATA 
+
+### (10 points) Basic Simulation 
+
+- Pick a `set.seed` choice so the code is replicable.  Verify that every time you run the commands, the data is not changing with the seed "you chose".
+- Use the functions `rnorm`, `runif` to simulate data.  
+- Simulate `n=9999;` data for each.  
+- Call `x.rnorm` the data for the first and `x.runif` the data for the second.  
+- Plot a histogram `graphics::hist` and report the summary statistics ``base::summary` of each. 
+- Then, plot them using `plot(x.rnorm, x.runif);`.  
+- Finally, `plot(x.rnorm, sample(x.rnorm) );` and compare it to `plot(x.runif, sample(x.runif) );`.  
+
+
+#### Code of simulation
+```{r, chunk-simulating-rnorm-runif, cache.rebuild=TRUE}
+
+x.rnorm = rnorm(n=9999, mean = 0, sd = 1);
+set.seed(4); x.rnorm;
+set.seed(4); graphics::hist(x.rnorm);
+set.seed(4); base::summary(x.rnorm)
+
+x.runif = runif(n=9999, min = 0, max = 1);
+set.seed(4); x.runif;
+set.seed(4); graphics::hist(x.runif);
+set.seed(4); base::summary(x.runif);
+
+set.seed(4); plot(x.rnorm, x.runif);
+
+set.seed(4); plot(x.rnorm, sample(x = x.rnorm));
+set.seed(4); plot(x.runif, sample(x = x.runif));
+
+```
+
+#### **Describe `rnorm`, `runif`**
+
+- Describe what each function `rnorm` and `runif` does. How are they similar?  How are they different?  
+
+
+- What does the `sample` function do?
+
+- How was `plot(x.rnorm, x.runif);` different from `plot(x.rnorm, ( x.rnorm.sample = sample(x.rnorm) ) );` and `plot(x.runif, ( x.runif.sample = sample(x.runif) ) );`?  How would you describe the shape of each of these plots?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+rnorm() generates a specified number of random data points that fit the normal distribution. 
+This is why in all plots with rnorm, we see the greatest density at the center, because the probability is also highest at the ceenter of the normal distribution.
+
+runif() generates a specified number of random data points that fit a uniform distribution or rectangular distribution, where the probability is constant. (https://mathworld.wolfram.com/UniformDistribution.html) This is why in the runif plots, there is equal distribution over the entire coordinate system.
+
+These functions are similar in that they enable a user to easily generate a lot of random data that can be easily fixed with set.seed() and are both confined by 1. They differ because these different distributions represent different probabilities, and therefore model completely different scenarios.
+
+sample() is another function that generates random data. However it differs from rnorm() and runif() because it only randomly selects numbers within a provided range, and not according to a particular distribution.
+
+
+</pre>
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### (5 points) "Easter-Egg" Simulation 
+
+- There was an "Easter Egg" that related to setting the seed `set.seed` using `rbinom`.  If you search in the BlackBoard discussion forum for `easter` you will see the discussion about August 25-27.
+- In the "Easter Egg", the goal was to find a scenario using a specific `set.seed` that would simulate flipping a coin 100 times and getting one result (heads/tails) exactly 52 times. 
+- In this problem, the search criteria has changed.  Simulate flipping a coin 1000 times and getting one result (heads/tails) exactly 555 times. 
+- You need to report 5 values for `set.seed` that achieves this objective.  You can report more.  
+- You should explicitly have the code print `length(x)` where `x` is a vector of the values that meet the objective.
+
+
+```{r, chunk-simulating-rbinom, cache.rebuild=TRUE}
+
+nsim = 500000; # I just re-worked your code from the easter egg thread, I hope that was appropriate?
+y = 1:nsim;
+ns = 0;
+x = numeric(0);
+
+for (i in y){
+  set.seed(i);
+  res = rbinom(n = 1, size = 1000, prob = 0.5);
+  
+  if (res == 555) {
+    cat(i,sep = "\n");
+    ns = 1+ns;
+  x = c(x, i);
+  }
+}
+
+length(x); #number of seeds that meet objective out of nsim simulations
+
+```
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+-- OPTIONAL WRITING ... CODE SHOULD BE SELF EXPLANATORY --
+</pre>
+
+
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### Rolling the Dice
+
+- You have 3 dice.
+- Each dice has the numbers `1:10` ... they are ten-sided die ("decader" die).
+- Write the necessary `for-loops` to capture all possible outcomes of rolling the three dice at the same time.
+- A dataframe `myrolls` should have three columns: `dice.1`, `dice.2`, `dice.3` plus a fourth column `roll.total` which is the sum `dice.1 + dice.2 + dice.3` of one iteration of the nested `for loop`.
+- Report the dimensions `dim` of `myrolls`.
+- Create a table `outcomes.table` that summarizes the counts of the `myrolls$roll.total` 
+- Transform the table to a dataframe `outcomes.df`. Name the columns: c("roll.total", "count");
+- Report the sum of `outcome.df$count`
+- Create a new column `outcomes.df$prob` (Probability) that determines the probability of that row given the total sum of the `count` column.
+- Display the dataframe.
+
+#### Setting Up the Dice Scenario 
+```{r, chunk-simulating-dice, cache.rebuild=TRUE}
+
+## your code goes here ...
+
+dice.1 = dice.2 = dice.3 = 1:10;
+
+myrolls = NULL;
+for(d1 in dice.1)
+  {
+  for(d2 in dice.2)
+    {
+    for(d3 in dice.3)
+      {
+      roll.total = d1 + d2 + d3;
+      row = c(d1, d2, d3, roll.total);
+      myrolls = rbind(myrolls, row);
+      }
+    }
+  }
+
+myrolls = as.data.frame(myrolls);
+colnames(myrolls) = c("dice.1", "dice.2", "dice.3", "roll.total");
+
+myrolls;
+print("Dimensions of myrolls");
+dim(myrolls);
+
+outcomes.table = table(myrolls$roll.total);
+outcomes.df = as.data.frame(outcomes.table);
+  colnames(outcomes.df) = c("roll.total", "count");
+
+outcomes.df
+
+total.sum = sum(outcomes.df$count);
+print("Sum of outcomes.df$count");
+total.sum;
+
+outcomes.df$prob = outcomes.df$count / total.sum;
+outcomes.df;
+
+```
+#### Viewing a subset of data to answer a question  
+
+- How many ways can I roll a 23 when I throw the dice at the same time?  What is the probability that I roll a 23 on a single throw?
+
+```{r, chunk-simulating-dice-subset-a, cache.rebuild=TRUE}
+# if you don't have the latest version of humanVerseWSU, you can access the function as follows:
+# library(devtools);
+# source_url(paste0( path.github, "humanVerseWSU/R/functions-dataframe.R" ));
+
+library(tidyverse)
+
+#sub.myrolls = subsetDataFrame(myrolls, "roll.total", "==", 23);
+
+sub.myrolls = filter(myrolls, roll.total == 23);
+sub.myrolls;
+
+
+#sub.outcomes.df = subsetDataFrame(outcomes.df, "roll.total", "==", 23);
+
+sub.outcomes.df = filter(outcomes.df, roll.total == 23);
+sub.outcomes.df;
+
+
+```
+ 
+
+#### (10 points) Questions from the Dice simulation 
+
+##### **Roll 23**
+- How many ways can I roll a 23 when I throw the dice at the same time?  What is the probability that I roll a 23 on a single throw?
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+There are 36 ways a 23 can be rolled with three D10s. The probability a 23 will be rolled in a throw is 0.036, or 3.6%.
+
+</pre>
+
+##### **Roll 12 or 22** 
+- What is the probability that I roll a 12 or a 22 on a single throw?
+
+```{r, chunk-simulating-dice-subset-b, cache.rebuild=TRUE}
+
+sub.myrolls.1222 = filter(myrolls, roll.total == 12 | roll.total == 22);
+sub.myrolls.1222;
+
+sub.outcomes.1222 = filter(outcomes.df, roll.total == 12 | roll.total == 22);
+sub.outcomes.1222;
+
+sum(sub.outcomes.1222$count) #total combined outcomes for 12 and 22
+sum(sub.outcomes.1222$prob) #total probabilty for 12 and 22
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The total probability that rolling 3 D10s will result in a 12 or 22 is 0.1 or 10%.
+
+</pre>
+
+
+##### **Roll 26 or 29** 
+- What is the probability that I roll a 26 or a 29 on a single throw?
+
+```{r, chunk-simulating-dice-subset-c, cache.rebuild=TRUE}
+
+sub.outcomes.2629 = filter(outcomes.df, roll.total == 26 | roll.total == 29);
+sub.outcomes.2629;
+
+sum(sub.outcomes.2629$count) #total combined outcomes for 12 and 22
+sum(sub.outcomes.2629$prob) #total probabilty for 12 and 22
+
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The total probability that rolling 3 D10s will result in a 26 or 29 is 0.018 or 1.8%.
+
+</pre>
+
+##### **Roll 3 once/twice in a row** 
+- What is the probability that I roll a 3 on a single throw?  What is the probability that I roll a 3 twice in a row?  First throw = 3 **AND** second throw = 3?
+
+```{r, chunk-simulating-dice-subset-d, cache.rebuild=TRUE}
+
+sub.outcomes.3 = filter(outcomes.df, roll.total == 3);
+sub.outcomes.3$prob; #roll a 3 in a single throw
+
+sub.outcomes.3$prob * sub.outcomes.3$prob; #roll a 3 twice in a row
+
+
+
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The total probability that rolling 3 D10s will result in a 3 is 0.001 or 0.1%. The probability that a 3 will be rolled twice in a row is 0.0001%.
+
+</pre>
+
+##### **Roll 12 or lower** 
+
+- What is the probability that I roll at most a 12 on a single throw?  That is, a 12 or lower ...
+
+```{r, chunk-simulating-dice-subset-e, cache.rebuild=TRUE}
+
+outcomes.df$roll.total = as.numeric(outcomes.df$roll.total)
+sub.outcomes.12 = filter(outcomes.df, roll.total <= 12);
+sum(sub.outcomes.12$prob);  #roll a 12 or below in a single throw
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The total probability that rolling 3 D10s will result in a 12 or lower is 0.352 or 35.2%.
+
+</pre>
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## INITIAL EXPLORATION OF REAL DATA
+
+We are going to use exploratory techniques to examine some Indeed.com data.  If you recall, this `job` data examines how many jobs reference a certain keyword.  Every Monday morning at 12:00:00AM EST (using a scheduler `crontab`), this data collection is performed.  A few weeks ago, I added some new keys words.  The data set we have consists of 5 weeks:  `2020-38` to `2020-42`.
+
+- For each "search phrase", I go to Indeed.com and download the first page of results.  
+- From this first page, I grab the "total count"
+- An example is shown in a screenshot, taken this week. 
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Big-data.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### Import "jobs" data
+- Run code to import the data `jobs`.
+
+```{r, chunk-plotting-load-jobs, cache.rebuild=TRUE}
+jobs = utils::read.csv( paste0(path.mshaffer, "_data_/indeed-jobs.txt"), header=TRUE, quote="", sep="|");
+
+colnames(jobs) = c("year.week", "search.query", "job.count");
+jobs;
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+- Create a `hist` and `boxplot` and report `summary(jobs$job.count)`.
+
+### (5 points) Histogram and Box Plot 
+```{r, chunk-plotting-jobs-boxplot, cache.rebuild=TRUE}
+hist(jobs$job.count,col = "gray", breaks = 10, xlab = "Job Count", ylab = "Frequency", main = "Frequencies of job counts observed for all search queries"); #histogram
+
+boxplot(jobs$job.count); #boxplot
+
+jobs.summ=summary(jobs$job.count);
+jobs.summ; #report summary count
+
+#further investigations
+max.hits = jobs.summ[6];
+min.hits = jobs.summ[1];
+
+top.query = filter(jobs, job.count ==  max.hits)
+top.query;
+
+lowest.query = filter(jobs, job.count == min.hits)
+lowest.query;
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The histogram is left-skewed; most of the query/week combinations return 50,000 jobs or fewer, while some result in over 400,000 listings. 
+
+The boxplot corroborates this; the average job counts returned for each search is well below 50,000 hits, which is about where the 3rd quartile appears to fall. The queries that appear to return over 100,000 hits are outliers. These hits are likely skills that are required in a large number of working contexts.
+
+The summary shows that the median result is 1734 hits, which is well below the mean hit count of 15170, which is likely influenced by the smaller number of queries that returned over 100,000 hits. The maximum hit count is 404527 and the minimum hit count is 0. Filtering the jobs data set for the maximum count shows that the top-returning hit was for "Excel" - not only is Excel used in a large variety of contexts, but it is possible that it has been somewhat genericized and is used as a stand-in for other statistical or data organizational tools. There were 22 search.query/year.week combinations that returned 0 hits - Zebra BI, Polling Analyst, Actuary analysis, Git, Actuary analysis, Datapine, and highcharter were skills that did not return hits (I find it curious that Polling analyst returned zero hits in a major election year, it is possible that these key words do not align with the terms employers are using).  
+
+</pre>
+[What does the histogram tell you about the data?  What does the boxplot tell you about the data?  What does `summary` tell you about the data?]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Subset some keywords relevant to this course
+```{r, chunk-plotting-jobs-subset, cache.rebuild=TRUE}
+
+deep.dive = c("Microsoft Office", "C++", "SQL", "Computer Science", "Python", "Java", "Statistics", "Data analysis", "Data analytics", "Javascript", "machine learning", "Git", "Tableau", "Business intelligence", "PHP", "Mysql", "MariaDB", "SAS", "SPSS", "Stata",  "Data entry", "Big data", "Data science", "Power BI");  # I intentionally do not include "R" because it is return irrelevant results, I should have searched for "R programming" or "R statistics" ... which I am now doing...
+
+
+#or = "";
+#for(search in deep.dive)
+#  {
+# or = paste0(or, " jobs$search.query == '",search,"' | ");
+#  }
+#or = substr(or,0, strlen(or) - 2);
+
+## TODO ... update subsetDataFrame to allow "OR" logic, currently only does "AND" ...
+
+# jobs.subset = jobs[ or , ];  # doesn't work ...
+jobs.subset = jobs[ jobs$search.query == 'Microsoft Office' |  jobs$search.query == 'C++' |  jobs$search.query == 'SQL' |  jobs$search.query == 'Computer Science' |  jobs$search.query == 'Python' |  jobs$search.query == 'Java' |  jobs$search.query == 'Statistics' |  jobs$search.query == 'Data analysis' |  jobs$search.query == 'Data analytics' |  jobs$search.query == 'Javascript' |  jobs$search.query == 'machine learning' |  jobs$search.query == 'Git' |  jobs$search.query == 'Tableau' |  jobs$search.query == 'Business intelligence' |  jobs$search.query == 'PHP' |  jobs$search.query == 'Mysql' |  jobs$search.query == 'MariaDB' |  jobs$search.query == 'SAS' |  jobs$search.query == 'SPSS' |  jobs$search.query == 'Stata' |  jobs$search.query == 'Data entry' |  jobs$search.query == 'Big data' |  jobs$search.query == 'Data science' |  jobs$search.query == 'Power BI'  , ];
+
+# stem(jobs.subset$job.count);
+# subsetDataFrame(jobs.subset, "job.count", "==", 0);
+
+
+```
+
+
+#### Histogram and Box Plot of Subset
+```{r, chunk-plotting-jobs-boxplot-subset, cache.rebuild=TRUE}
+
+hist(jobs.subset$job.count);
+boxplot(data = jobs.subset, job.count~search.query); # this version may be interesting to compare for fewer search queries
+
+boxplot(jobs.subset$job.count)
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+There is a similar left-skewed distribution in this subset. The higher end of the job hits is not represented here. Similarly to the complete data set, the average number of hits is below 50k, where as the 3rd quartile falls near 50k. At a first glance, based on the similarities between these plots for both the subset and the full data set, the subset is reasonably representative of the total data.
+
+The second plot - the boxplot comparing the search queries, would be interesting for a smaller subset of data for evaluating mean job counts among multiple key words, but that's getting ahead of ourselves, as that is a progression of the section following this one.
+
+</pre>
+[What does the histogram tell you about the data?  What does the boxplot tell you about the data?]
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+### (10 points) Trends in Relevant Subset 
+```{r, chunk-plotting-jobs-trends-intro, cache.rebuild=TRUE}
+
+jobs.subset$year.week = as.numeric( gsub("-",".",jobs.subset$year.week, fixed=TRUE) );
+
+
+jobs.subset = sortDataFrameByNumericColumns(jobs.subset, c("year.week","job.count"), c("ASC","DESC") );
+# easier to manage as "how many thousand jobs"
+jobs.subset$job.count.k = jobs.subset$job.count / 1000;
+
+
+## there was an issue with plotJobs - there's an extra "==" in the subset dataframe function that appears to already be a part of that function and not need to be there. solved initially by just creating a new function without the ==, but it appears to be working correctly now
+
+
+do.nothing = plotJobs(jobs.subset, myy.lim=c(0,43));
+do.nothing
+```
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Initial Perspective
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Initial perspective: It is unsurprising that "data analysis" is the top scoring keyword, as it is incredibly broad. This is also interesting because "data analytics" is extremely close, but just the altered diction narrows the job counts by half. I think the lines are parallel-ish probably because there is some overlap between the job hits and these different descriptions - or it is just possible that the amount of time we are looking at is not enough to view major changes in job listings (which gets particularly curious when viewed through the lens that a global pandemic is happening). Overall, the trends for most of these keywords is slightly upward (one could say just by observation of this plot, that there is a positive correlation between them). If there were more terms included here related to this inquiry, I also would expect to see a trend where key words for open-source platforms like R and python are ranked higher than expensive programs, such as SPSS and STATA, because I would expect no-cost methods to be more wide-spread and therefore correlate with more job listings. 
+
+Data analysis is trending upwards. It would be interesting to have more historical data to understand the duration of this upward trend. I do think that, because of access to technology, more industries have more data than ever before and therefore that data analysis is becoming of greater importance to more jobs, however it is unclear whether this slight upward trend is capturing that movement.
+
+</pre>
+[What is your initial "perspective" of this data, now that you see it?  Why are the lines "parallel-ish"?  What kind of a trend is that?
+
+Now comment on the line of data for "Data analysis".  How is it trending?  How does it compare to other Search-Query Words?
+
+What is your first perspective?
+
+]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Missing Data "Git" Week 40?
+
+
+```{r, chunk-plotting-jobs-trends-github-problem, cache.rebuild=TRUE}
+
+do.nothing = plotJobs(jobs.subset, myy.lim = c(0,20) );
+
+```
+
+
+**Git-40/Git-41 data history, notice the date-time and file sizes ...** 
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Git-40.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/Git-41.png" style="border: 2px black solid;" />
+<div>**Source: Data provenance history**</div>
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Given the nature of listings on indeed.com, and the demand of jobs for "git" approaching 20k, the dip in the graph suggests that the data is simply missing for that time point, and not that listings dropped to zero then immediately resumed.
+
+In this situation, there are two options; one is to ignore that week across all search queries, which is not a particularly responsible option because it needlessly removes data. The second option is to impute the data for "git" just for that week. This could be done by fitting an equation to the git curve, or potentially by looking at the weekly trends for terms that frequently share job hits with git and to make an informed prediction with those data, or most simply by averaging the data points before and after the missing point. Additional confidence is provided that the hits simply didn't drop to zero for a week by considering the fact that the trends for the other terms stayed relatively constant.
+
+</pre>
+
+[Is this data missing or did it just drop to zero that week?  How does this relate to the other data (remember the idea of "continuity" in mathematics)?  What should you do about it?]
+
+```{r, chunk-plotting-jobs-trends-github-solution, cache.rebuild=TRUE}
+
+idxs.week.40 = which(jobs.subset$year.week == 2020.40);
+idxs.Git     = which(jobs.subset$search.query == "Git");
+
+# set notation
+my.idx = intersect(idxs.Git,idxs.week.40);
+
+git.subset = jobs.subset[idxs.Git,];
+jobs.subset[my.idx,];
+
+git.wk39 = git.subset %>% filter(year.week== 2020.39);
+git.wk41 = git.subset %>% filter(year.week==2020.41);
+
+## change this if you feel appropriate?  To what number? 
+#job count
+jobs.subset[my.idx,3] = (git.wk39$job.count+git.wk41$job.count)/2;         # job.count
+jobs.subset[my.idx,4] = jobs.subset[my.idx,3]/1000;    # job.count.k (in thousands) ...
+
+do.nothing = plotJobs(jobs.subset, myy.lim = c(0,20) );
+
+```
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Is "Microsoft Office" bigger than "C++"?
+
+I use the term "bigger" or "better" intentionally.  We are comparing two items, and these are generic ways of communicating such a comparison.  In context of this data problem, a formalized form of the question would be something like:  "Utilizing job count for a given search query, determine if the query 'Microsoft Office' has a larger job count than the query 'C++'?"  This question will need to be formalized if we are trying to draw specific conclusions, but the initiation of analysis "which is bigger" allows us to understand what the data says or does not say, through exploration.  
+
+To answer the question:
+
+Mathematically, if two lines are parallel, and one is above the other, can we use **distance** to draw a conclusion?  Now, many times in statistics we deal with noise in the data, it is not "deterministic" but "stochastic" ... so we need to understand the variability.  Based on the data we see, can we not use  "parallel-line" logic to conclude that they are different?  This is one dimension of EDA, use mathematics. ("mathematics")
+
+```{r, chunk-plotting-jobs-trends-microsoft, cache.rebuild=TRUE}
+
+do.nothing = plotJobs(jobs.subset, myy.lim = c(80,250) );
+
+boxplotJobQueryComparison(jobs.subset, "Microsoft Office", "C++");
+
+```
+Tukey invented the boxplot as a nice EDA representation of the data.  What logical inference can we make about the distances between the boxplots and the fact that no data is overlapping.  This is another dimension of EDA, use "distance" and the boxplot "IQR" to compare two elements.  What conclusion would we make? ("boxplot")
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+By mathematics and boxplots, we would assume that the mean job hits for C++ are lower than for Microsoft office. However, these methods do not give us information about the variability of these jobs data. The logical inferences from the boxplots and math are a fundamental starting place around which a hypothesis might be formed for inferential statistical tests. In this instance, the CDA we would perform is a t-test, which accounts for this variability with the standard deviation and our accepted confidence to quantify the range within which we expect our mean observations to fall 1-alpha percent of the time. If there is still distance between the confidence intervals of these variables, then we can say they are different for our confidence level. 
+
+In this way, CDA methods provide important uniformity to the process of evaluating distance - we can use t.tests for an endless list of two-sample scenarios, with very different datasets. Nonetheless, it is also erroneous to consider only these formal tests, without evaluating how they are informed by the underlying data. To do so would be to assume that all variability in the data can be described by standard deviation and confidence intervals, which based on how we understand that some of these terms may be inter-related, may not be true. This is how EDA and CDA can both evaluate the same questions from fundamentally different approaches and should both be considered in an analysis. With EDA, we had to personally view and evaluate the data itself, whereas with CDA, we could have used the equation without a lot of thought. In this case, we would arrive at the same conclusion, though that does not suggest one can always stand-in for the other.
+
+</pre>
+
+[Can we conclude the data are different based on "mathematics" or "boxplot"?
+
+Would a formal "inferential statistical test" tell us something different than logical inference?  
+
+How do you think "formal tests" were derived if not from "mathematics" and "boxplot" (EDA)?]
+
+```{r, chunk-plotting-jobs-trends-microsoft-answer, cache.rebuild=TRUE}
+
+# courage in trusting your intuition may require a fall-back ... for those that need it ...
+
+t.test.jobs(jobs.subset, "Microsoft Office", "C++"); 
+
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Is "Statistics" bigger than "Java"?
+
+```{r, chunk-plotting-jobs-trends-statistics, cache.rebuild=TRUE}
+
+do.nothing = plotJobs(jobs.subset, myy.lim = c(49,53) );
+
+do.nothing = boxplotJobQueryComparison(jobs.subset, "Statistics", "Java");
+
+#reworked function to evaluate the one-sided null hypothesis that statistics is not greater than java
+t.test.onesided.jobs=function(jobs.subset, search.query.1 = "Statistics", search.query.2 = "Java")
+  {
+  x = subsetDataFrame(jobs.subset, 
+                          "search.query", "==", search.query.1)$job.count.k;
+  y = subsetDataFrame(jobs.subset, 
+                          "search.query", "==", search.query.2)$job.count.k;
+  
+  t.test(x,y, alternative = "g");
+}
+
+t.test.onesided.jobs(jobs.subset, "Statistics", "Java")
+
+```
+
+For this data, I can descriptively report that the third-quartile `Q3` of "Statistics" is about equal to the `median` of "Java".  The inter-quartile range (`IQR`) of each overlap.  The minimum value of "Java" is larger than the minimum value of "Statistics".  The maximum value of "Java" is slightly smaller than the maximum value of "Statistics".
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Mathematics - simply by evaluating the line graphs of the data, it is not possible to answer the question whether statistics is bigger than java. It appears that java is bigger, until the trend inverts at week 42. 
+
+Boxplot - It does not appear as though statistics is larger than java, particularly given the fact that the median, first and third quartiles, and minimum values are lower than those for java. That said, it is challenging to definitively state whether java is actually larger - there is not a lot of separation just based on this graph.
+
+ttest - the pvalue for the test of equal means is greater than 0.05 (assuming this is an acceptable alpha for this context) which means that we failed to reject the null hypothesis of equal means and that there is insufficient evidence to claim that statistics is bigger than java.
+
+</pre>
+
+[Use "mathematics" and "boxplot" and "ttest" to answer the question: Is "Statistics" bigger than "Java"?]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### What about "Data science" and "Big data"?
+
+```{r, chunk-plotting-jobs-trends-big-data, cache.rebuild=TRUE}
+
+do.nothing = plotJobs(jobs.subset, myy.lim = c(14,17) );
+
+boxplotJobQueryComparison(jobs.subset, "Data science", "Big data");
+
+t.test.jobs(jobs.subset, "Data science", "Big data");
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Null hypothesis - the mean job counts for data science and big data are equal
+
+mathematics - data science appears to be less than big data, although this trend inverts between 41 and 42 weeks.
+
+boxplot - data science and big data appear to be the same - the minimum and maximum values for big data fall within the range of data science, although the median of big data falls above the 3rd quartile for data science.
+
+t-test - at the 95% confidence level, the p-value 0.3096 is greater than 0.05. We can not reject the null hypothesis; there is insufficient evidence to claim that the meann job counts for datat science and big data are not equal.
+
+As I've referenced earlier, I think it is extremely likely that many of the jobs listings share these terms. The concepts themselves are inherently related, so I would expect to see this relationship in the data. This is probably why the mean job counts do not differ between data science and big data. Based on this, I would expect comparisons between less-related skillsets to be more valid - such as "qualtrics" vs "datapine" - I think for paid services like that, companies are more likely to require one or the other, though even this is not isolated from the possibility of overlap. To really evaluate this, we would have to understand more about the degree of overlap between two key words and the job hit count - perhaps to understand the likelihood that if a listing has "data science" as a key word, the likelihood that it will also include "big data," or some other metric of this relationship between variables.  This is also valuable output for this analysis - if we can learn not just which individual skills are valuable, but which combination of skills are most valuable, then ideally we can make ourselves better job candidates.
+
+</pre>
+
+[Use "mathematics" and "boxplot" and "ttest" to make a conclusion.  
+
+Next, think carefully about the nature of the data.  Is the "collection-approach" flawed to make a conclusion comparing job-counts of these specific keywords? How likely is it that a single-job posting may have both keywords?
+
+This is an example where "data-integrity" knowledge would surpass the other three logical conclusions.
+
+This intuition requires an understanding of what mathematicians call "set theory".  If I am doing an independent search on keywords, is it possible that one job would show up in multiple searches.  That is, being counted twice or more. 
+
+Intuition and logic would also allow us to conclude that our other comparisons are "very likely okay".  Why?
+
+What would be an improved approach to collecting the data that would allow me to more accurately compare these two keywords?
+
+This is representative of why exploratory data analysis is essential.  It provides us insight into the domain and highlights the need for better data, if we can find it.
+
+]
+
+### Conclusions on logical inference
+
+Distance is a fundamental unit of comparison.  We can use our "mathematical" understanding of distance.  We can use an "EDA" understanding of the data (e.g., the boxplot).  We need to understand the data sourcing and how that will relate to the logical conclusions we are trying to draw. 
+
+When we transition to "confirmatory inferential statistics", we cannot leave our understanding of "maths" and "EDA" behind.  They are the foundation from which "inferential statistics" is built.  They are "logical inference".
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## COMPUTING DISTANCES
+
+If you recall, we had a notebook on collecting data from Wikipedia.  We documented the "data-provenance" protocols to make this happen.  We have documented and can replicate our data-collection strategies.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### (10 points) Data Provenance defined
+
+Imagine you are preparing for a job interview.  Write a 90-second blurb describing "what is data provenance" and "why it matters".  I would suggest the STAR(S) approach mentioned in one of the notebooks.  Reference the "Wikipedia" project as an example of how one can implement the features.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Data provenance is the process of responsible, reproducible, and documented collection and cleaning of data in preparation for analysis. It is important because decisions made at this step will influence the kind of data that is collected, the potential variability of that data, and therefore the methods that will ultimately be appropriate for analyzing that data. This process may elucidate questions that should be asked of the analysis, or other data that should be collected to maximize the inferences of the research question. This means that attention to this step and the documentation of these decisions may mean the difference as to whether or not a study is reproducible, or if reviewers have the information necessary to understand if the results are reliable. This is accomplished with thorough notetaking of the data collection and cleaning process paired with version control to track changes. Researchers who gloss over data provenance will end up with interpretations made as a consequence of it (or lack there of), but without an understanding as to how they got these interpretations. Because data will ultimately limit the questions we can ask, I think data provenance is an inseparable part of the scientific method.
+
+</pre>
+[What is data provenance?
+
+Probably about 200-250 words (with the 90 second limit)
+]
+
+### Geospatial distances
+
+"Geo-spatial" studies are becoming much more common in the "data analytics" community, so let's use basic "latitude/longitude" data to formally talk about "distance."
+
+So we will look at the 50 state capitals of America (USA).  Before that, let's examine some basic principles of distances using my hometown.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### (5 points) Distance from one input to multiple outputs
+
+#### My Hometown "Columbia Falls, Montana" `cfalls`
+
+- Find all ZIP codes within 22 miles of Columbia Falls, MT `cfalls` (use lat/long provide from the Wikipedia lookup)... build the bounding "box" and perform the post-hoc "radial distance" computations (as we did in the homework).
+
+```{r, chunk-distances-compute-cfalls, cache.rebuild=TRUE}
+
+# copy/paste __student_access__/_SECRET_/_SECRET_database_.txt into console...  or this won't work
+
+cfalls.latitude = 48.37028; 
+cfalls.longitude = -114.18889;
+my.radius = 22; my.units = "mi"; #miles
+
+# THIS is where these exam functions live ...
+source( paste0(path.github,"misc/functions-midterm-F2000.R") );  # should be 2020 ... oh well
+
+cfalls.info = getNeighborsFromLatLong(22, 48.37028, -114.18889, "mi");
+
+cfalls.info$neighbors;
+
+############## plotting ##############
+brown = "#ffe4c4";
+green = "#014421";
+
+my.state = "montana";
+my.state.color = "#ffe4c4";
+
+my.county = "flathead";
+my.county.color = "#014421"; 
+
+##plot twist - i had to specify the maps package for each map function, otherwise I would get an error because my Rstudio was expecting inputs for the map() in the purrr library
+plotNeighbors.2= function(info, state="montana", county="flathead", 
+    state.color = "#ffe4c4", county.color = "#014421", 
+    state.border = 0.05, county.border = 0.05,
+    nearby.states = c("idaho", "washington", "oregon"), 
+    nearby.states.color = "white", 
+    center.color = "yellow", center.pch=20, center.cex = 1.25, 
+    inbox.color = "black", inbox.pch=20, inbox.cex = 1, 
+    inradius.color = "white", inradius.pch=20, inradius.cex = 0.75,
+    box.color = "black", box.lwd = 2,
+    ellipse.color = "white", ellipse.pch=20, ellipse.cex = 0.25
+)
+  {
+  state = tolower(state); 
+  county = tolower(county); 
+  nearby.states = tolower(nearby.states);
+  my.region = c(state, nearby.states);
+    region = maps::map('state', region=my.region, plot=FALSE);
+  state.idx = findAllIndexesWithValueInVector(region$names, state);
+    region.colors = rep(nearby.states.color, times=1+length(nearby.states));
+  region.colors[state.idx] = state.color;
+  ### plot state with regional neighbor states
+  maps::map('state', region=my.region, col=region.colors, 
+              plot = TRUE, fill = TRUE, myborder=state.border);
+  
+  
+  data(county.fips);
+  county.fip = county.fips$fips[ 
+                  match( paste(state,county,sep=",") ,
+                    county.fips$polyname)];
+  state.fips = county.fips$fips[ 
+                  match( maps::map("county", state, plot=FALSE)$names,
+                    county.fips$polyname) ];
+  
+  state.colors = rep(state.color, times=length(state.fips) );
+  county.fip.idx = findAllIndexesWithValueInVector(state.fips, county.fip);
+  
+  state.colors[county.fip.idx] = county.color;
+  ### plot counties, highlighting this county of interest ...
+  maps::map('county', state, col=state.colors,
+                plot = TRUE, fill = TRUE, myborder=county.border);
+  
+  ### plot county of interest
+  maps::map('county', paste(state,county,sep=","), 
+              col=county.color, bg=state.color,
+              plot = TRUE, fill = TRUE, myborder=county.border);
+  # flathead lake not found ...
+  # my.lakes = map("lakes", "montana,flathead", plot=FALSE);
+  
+  ### overlay center target point (star on map)
+  points( x = info$good.neighbors$longitude[1], 
+          y = info$good.neighbors$latitude[1], 
+          col=center.color, pch=center.pch, cex=center.cex);
+  ### overlay bounding box
+  rect( info$box[4], info$box[1], info$box[3], info$box[2], 
+                          border = box.color, lwd = box.lwd );
+  ### plot all candidates
+  points( x = info$copy.neighbors$longitude[-1],
+          y = info$copy.neighbors$latitude[-1], 
+          col=inbox.color, pch=inbox.pch, cex=inbox.cex);
+  ### overlay center target point (star on map)
+  points( x = info$good.neighbors$longitude[1], 
+          y = info$good.neighbors$latitude[1], 
+          col=center.color, pch=center.pch, cex=center.cex);
+  ### plot all "good" candidates
+  points( x = info$good.neighbors$longitude[-1],
+          y = info$good.neighbors$latitude[-1], 
+          col=inradius.color, pch=inradius.pch, cex=inradius.cex);
+  ### box is not square due to "mercator" projections
+  # as a result, the circle will be an ellipse.  We have the center of the radius, and the radius.x and radius.y (by subtraction with the box data).
+  ### EASTER EGG +5 ... overlay an ellipse to represent the "circle" region ...
+  ### Since this is a midterm exam, this is available to everyone that gets it correct, not just the first person
+  ##############################################################
+  # the code below sort-of works, 
+  # https://stackoverflow.com/questions/41820683
+      # ellipse based on v box ...
+      # phi = 0;
+      # xc = info$good.neighbors$longitude[1];
+      # yc = info$good.neighbors$latitude[1];
+      # b = ( info$good.neighbors$latitude[1] - box[1]);
+      # a = ( box[3] - info$good.neighbors$longitude[1]);
+      # 
+      # t <- seq(0, 2*pi, 0.01) 
+      # x <- xc + a*cos(t)*cos(phi) - b*sin(t)*sin(phi);
+      # y <- yc + a*cos(t)*cos(phi) + b*sin(t)*cos(phi);
+      # 
+      # points(x=x, y=y, col=ellipse.color, pch=ellipse.pch, cex=ellipse.cex);
+  
+  }
+
+
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The box is rectangular because degrees of latitude and longitude are not equivalent. They are slightly different correction factors representing the geometry of the earth. If the earth were perfectly spherical and the correction factors were the same, then the box would be a square.
+
+The rectangle overlaps some of the points on the plot, which impedes the visualization. It isn't exactly clear what these dots indicate, therefore labels would be useful for the cities, as well as the 'zoomed out' regional plots. Depending on the question, I think that one of these would have to be selected and fine-tuned to follow the "one graphic" rule - as having three separate maps is excessive.
+
+</pre>
+[
+- why is the box not a square, but a rectangle? ... see `factor.lat` and `factor.long` in function `buildBoundingBoxFromRadiusAndGivenLatitudeLongitude`
+- critique the visualization ... what do you like? what would make it better?
+]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Your Hometown of something like it
+Instead of `cfalls.info`, you do `hometown.info` 
+
+- a location in the continental US of your choosing (not in Montana, Alaska, or Hawaii). [Graphing will not work for Alaska/Hawaii, Alaska has "boroughs" not counties.]
+- find the latitude/longitude of the location you have selected (how and where to look that up?)
+- Initially start with a radius of `13 miles`
+- When you run the code, note how many total "neighbors"; if it is less than 20; increase the "miles" so at least 20 results are returned.
+- In the end, you should select a location and radius that works for you.  And its visualization also works.
+- Be certain to review and update the parameters before calling these functions.
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+hometown.latitude = 00.00000; 
+hometown.longitude = -000.00000;
+my.radius = 13; my.units = "mi"; #miles
+hometown.info = getNeighborsFromLatLong( ???? );
+plotNeighbors(hometown.info, ????);  # you are going to have to change some of these parameters ... 
+<pre>
+
+```{r, chunk-distances-compute-hometown, cache.rebuild=TRUE}
+
+hometown.latitude = 40.7608; 
+hometown.longitude = -111.8903;
+my.radius = 13; my.units = "mi"; #miles
+
+
+hometown.info = getNeighborsFromLatLong(my.radius = my.radius, 
+                                        my.latitude = hometown.latitude,
+                                        my.longitude = hometown.longitude,
+                                        my.units = my.units);
+
+# plotNeighbors(hometown.info, ????);  # you are going to have to change some of these parameters 
+hometown.info$neighbors;
+
+brown = "#ffe4c4";
+green = "#014421";
+
+my.state = "utah";
+my.state.color = "#ffe4c4";
+
+my.county = "salt lake";
+my.county.color = "#014421"; 
+
+my.nearby.states = c("idaho", "nevada","wyoming","new mexico","colorado", "arizona");
+
+plotNeighbors.2(hometown.info, 
+                    state          = my.state, 
+                    state.color    = my.state.color,
+                    state.border   = 0.05,
+                    county         = my.county, 
+                    county.border   = 0.05,  # if you don't see the box, increase this to like 0.75
+                    county.color   = my.county.color, 
+                    nearby.states  = my.nearby.states); 
+```
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+
+### U.S. State Capitals (cities)
+
+From Wikipedia, we grabbed one page that listed the 50 U.S. cities that are the designated capitals of each individual state in America (United States of America).
+
+Using the power of a `for-loop` we make our functions work for us.  We now have the data ready to go.
+
+```{r, chunk-distances-load-data, cache.rebuild=TRUE}
+
+capitals = utils::read.csv( paste0(path.mshaffer, "_data_/state-capitals/final/state-capitals.txt"), header=F, quote="", sep="|");
+
+colnames(capitals) = c("state", "capital", "latitude", "longitude", "capital.since", "area.sq.miles", "population.2019.est", "population.2019.est.MSA", "population.2019.est.CSA", "city.rank.in.state", "url");
+
+capitals = capitals[-1,];
+
+# hack-add from https://en.wikipedia.org/wiki/ISO_3166-2:US
+# TODO, grab this table "appropriately" as a new function
+# Is there a dictionary for shortened city names?
+# the long-field names is also an issue that needs to be improved upon in the next iteration.
+
+capitals$st = c("AL","AK","AZ","AR","CA","CO","CT","DE","FL","GA","HI","ID","IL","IN","IA","KS","KY","LA","ME","MD","MA","MI","MN","MS","MO","MT","NE","NV","NH","NJ","NM","NY","NC","ND","OH","OK","OR","PA","RI","SC","SD","TN","TX","UT","VT","VA","WA","WV","WI","WY"); # ,"DC","AS","GU","MP","PR","UM","VI");
+
+myLabels = paste0(capitals$capital, ", ", capitals$st);
+
+capitals;
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Initial Plotting
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+- Plot the data on `usmap` (ggplot2)
+
+```{r, chunk-distances-plot_usmap, cache.rebuild=TRUE}
+
+latlong = removeAllColumnsBut(capitals,c( "state", "st", "capital", "latitude", "longitude", "population.2019.est") );
+
+# first two elements have to be this
+latlong = moveColumnsInDataFrame(latlong, c("longitude","latitude"), "before", "state");
+str(latlong)
+latlong$longitude = as.numeric(latlong$longitude);
+latlong$latitude = as.numeric(latlong$latitude);
+
+# for transform to work
+library(usmap);   
+library(ggplot2);
+latlong.transform = usmap_transform(data = latlong);
+
+
+### plot_usmap ...  
+
+plot_usmap(fill = "#53565A", alpha = 0.25) +
+  ggrepel::geom_label_repel(data = latlong.transform,
+             aes(x = longitude.1, y = latitude.1, label = capital),
+             size = 3, alpha = 0.8,
+             label.r = unit(0.5, "lines"), label.size = 0.5,
+             segment.color = "#981E32", segment.size = 1,
+             seed = 1002) +
+  scale_size_continuous(range = c(1, 16),
+                        label = scales::comma) +
+  labs(title = "U.S. State Capitals",
+       subtitle = "Source: Wikipedia (October 2020)") +
+  theme(legend.position = "right")
+
+
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+- Plot the data using maths `voronoi` (tripack)
+
+```{r, chunk-distances-map, cache.rebuild=TRUE}
+
+
+colors = rainbow(50, s = 0.6, v = 0.75);
+
+## initial visualization ...
+library(tripack);
+# plot( voronoi.mosaic(latlong[,4:3], duplicate="remove"), col=colors, xlab="");
+plot( voronoi.mosaic(x = latlong$longitude, y = latlong$latitude), col=colors, xlab="");
+text(x = latlong$longitude, y = latlong$latitude, labels = latlong$capital, col=colors, cex=0.5);
+
+
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+- Plot the data on `map` (base)
+
+```{r, chunk-distances-map-base, cache.rebuild=TRUE}
+
+### how is any of the other visualizations really any better than a simple map ... with actual locations for Alaska/Hawaii?
+library(maps); 
+maps::map('state', plot = TRUE, fill = FALSE, 
+    col = "blue", myborder = 0.5
+    );
+points(x = latlong$longitude, y = latlong$latitude, 
+                  col = "red", pch = "*", cex = 1);
+
+
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### (5 points) Comparing "Visualization Options"
+
+Above, the data was displayed using three different visualization packages.
+
+The first `plot_usmap` uses the ``ggplot2` methodology which is tied to the "tidyverse" landscape of the `R` community.
+
+The second `voronoi.mosaic` uses the graph-theory topology known as Voroni partitioning <https://en.wikipedia.org/wiki/Voronoi_diagram> with the "base" plot function to visualize the topology.
+
+The last one `map` is from the "base" environment.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+I'm assuming that the ggplot version is not appearing as it should - I may troubleshoot that if I have time (if it isn't, then it is definitely the worst graphic because the labels aren't even pointing to what they are labeling).  I prefer the ggplot aesthetic, and I do think the labels are useful in this case for communicating the data most efficiently, however it is a lot of labeling and additional lines. Someone once explained ggplot to me as the R graphing version of layering overhead transparencies to form an image, and I like how this modular approach allows me to add functionality and form as I think about my graphics. That said, The repel function only helps so much before over-plotting returns as an issue - I would clean up this graphic if I were to use it to avoid additional clutter if possible. 
+
+The mosaic is interesting, although it doesn't fit the way that I think a lot of people are used to looking at maps - I would evaluate my audience and purpose before using something like that. A key factor that would determine the appropriateness of the Alaska/Hawaii placement is whether accurate representation of distance and proximity are essential to the function of the map.  A road map of the region from Washington to Alaska versus a map of the US capitals has different requirements.
+
+</pre>
+[
+Visually, which is the most appealing to you?  Why?
+
+Functionally, which presents the data most effectively? Why?
+
+When we create visualizations, it is essential to portray the data accurately.  For example, there are times when putting Alaska/Hawaii next to California might be appropriate, and other times it might not be.
+
+What is a one key factor that would determine this appropriateness?
+
+]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### (5 points) Building the distance matrix
+
+The dataframe we are using has been named `latlong` to represent the latitudes and longitudes of the 50 U.S. cities in America.
+
+
+```{r, chunk-distances-setup, cache.rebuild=TRUE}
+
+# manual conversion
+# how many miles is 1 degree of latitude
+latitude.factor = 69;  # rough mile estimate  # 68.703 ?
+latlong$x.lat = latlong$latitude * latitude.factor;
+
+longitude.factor = 54.6;  # rough mile estimate  
+latlong$y.long = latlong$longitude * longitude.factor;
+
+latlong = moveColumnsInDataFrame(latlong, c("y.long","x.lat"), "before", "longitude");
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+Let's start with geo-spatial distances.  I will do `distMeeus` and you will do `distHaversine`
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+##### **Meeus**
+These distance formulas can utilize the true geo-spatial coordinates.  The distance table is getting large, so there is a helper function to lookup a certain value.
+
+```{r, chunk-distances-meeus, cache.rebuild=TRUE}
+
+library(geosphere);
+library(measurements);
+
+
+dist.meeus = conv_unit(  distm( latlong[,3:4],
+                  fun=distMeeus),  "m", "mi");  # default meters to miles
+
+dist.meeus.m = as.matrix( dist.meeus );
+  rownames(dist.meeus.m) = 
+  colnames(dist.meeus.m) = myLabels;
+
+dist.meeus.df = as.data.frame( round( dist.meeus.m, digits=1) );
+
+dist.meeus.df;  ## too big
+
+lookupPairwiseValue(dist.meeus.df, "Juneau, AK", "Montgomery, AL");
+
+```
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+##### **Haversine**
+```{r, chunk-distances-haversine, cache.rebuild=TRUE}
+
+
+dist.haversine = conv_unit(  distm( latlong[,3:4],fun = distHaversine),"m", "mi");  # default meters to miles
+
+dist.haversine.m = as.matrix( dist.haversine );
+  rownames(dist.haversine.m) = 
+  colnames(dist.haversine.m) = myLabels;
+
+dist.haversine.df = as.data.frame( round( dist.haversine.m, digits=1) );
+
+lookupPairwiseValue(dist.haversine.df, "Juneau, AK", "Montgomery, AL");
+```
+
+
+You can compare the two with the code below (currently in comments).
+
+```{r, chunk-distances-haversine-comparison, cache.rebuild=TRUE}
+# 
+x = dist.meeus.df[,2] # Juneau ... pick one location
+y = dist.haversine.df[,2];
+# 
+my.lim = c(0, 4000 );
+# 
+plot(x, y,  
+             xlab="Meeus", 
+             ylab="Haversine", 
+             main="dist( Juneau, AK )",
+             xlim=my.lim, 
+             ylim=my.lim);
+ 
+ plotXYwithBoxPlots(x, y,  
+             xlab="Meeus", 
+             ylab="Haversine", 
+             main="dist( Juneau, AK )",
+             xlim=my.lim, 
+             ylim=my.lim);
+
+```
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+The meeus distance from Juneau to Montgomery is 3312.1 miles and the haversine distance is 3323.4 miles.
+There is not a lot of difference between the calculations, which is indicated by the linear relationship between the two, in conjunction with the fact that each x value has a nearly equivalent y value (slope ~ 1).
+
+Both distances represent an "as the crow flies" approach that accounts for the spherical shape of the Earth. The difference is that the haversine distance assumes a perfect sphere while the meeus distance accounts for the fact that the Earth is an ellipsoid. (R documentation)
+
+</pre>
+[
+Examining the data above, is there much difference between these two calculations? 
+
+What is the conceptual difference between these two calculations?  Try `?distMeeus` or `?distHaversine`
+
+Are the results similar?
+
+Is there a more accurate distance algorithm for geo-spatial calculations?  If so, what is it?
+
+]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+Let's now do `manhattan` and `euclidean` which are more common in the "statistical clustering" domain.  I will do `euclidean`.
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+##### **Manhattan**
+```{r, chunk-distances-manhattan, cache.rebuild=TRUE}
+dist.manhattan = dist( latlong[,1:2],
+                      method="manhattan", diag=TRUE, upper=TRUE);
+dist.manhattan.m = as.matrix( dist.manhattan );
+  rownames(dist.manhattan.m) = 
+  colnames(dist.manhattan.m) = myLabels;
+
+dist.manhattan.df = as.data.frame( round( dist.manhattan.m, digits=1) );
+
+
+lookupPairwiseValue(dist.manhattan.df, "Juneau, AK", "Montgomery, AL");
+
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+##### **Euclidean**
+We have converted the true latitude/longitude to a miles-type format, so the resulting table will report miles.
+```{r, chunk-distances-euclidean, cache.rebuild=TRUE}
+
+dist.euclidean = dist( latlong[,1:2],
+                      method="euclidean", diag=TRUE, upper=TRUE);
+dist.euclidean.m = as.matrix( dist.euclidean );
+  rownames(dist.euclidean.m) = 
+  colnames(dist.euclidean.m) = myLabels;
+
+dist.euclidean.df = as.data.frame( round( dist.euclidean.m, digits=1) );
+
+dist.euclidean.df;  ## too big
+
+lookupPairwiseValue(dist.euclidean.df, "Juneau, AK", "Montgomery, AL");
+
+
+```
+You can compare the two with the code below (currently in comments).
+
+
+```{r, chunk-distances-euclidean-comparison, cache.rebuild=TRUE}
+ 
+x = dist.manhattan.df[,2]; # Juneau ... pick one location
+y = dist.euclidean.df[,2];
+ 
+ my.lim = c(0, 4000 );
+ 
+ plot(x, y,
+             xlab="Manhattan",
+             ylab="Euclidean",
+             main="dist( Juneau, AK )",
+             xlim=my.lim,
+             ylim=my.lim);
+ 
+ plotXYwithBoxPlots(x, y,
+             xlab="Manhattan",
+             ylab="Euclidean",
+             main="dist( Juneau, AK )",
+             xlim=my.lim,
+             ylim=my.lim);
+
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+The Manhattan distance from Juneau to Montgomery is 4291.8 miles and the Euclidean distance is 3285.5 miles.
+
+Manhattan distance, or taxi cab distance, does not calculate distance on a diagonal, rather it minimizes the x/y travel on a grid coordinate system. Because lines drawn between 2 points must be orthogonal to each other, this often over approximates distance relative to other methods.
+
+Euclidean distance calculates distance by calculation of the shortest hypotenuse that can be drawn between 2 points with the Pythagorean theorem. 
+
+These results do reflect the tendency of Manhattan distance to over-approximate the distance relative to other measures. In general, we see that the slope of the trend line would be less than 1, because for a given point, the Manhattan distance is greater than the Euclidean distance.  These measures also appear to correlate less well with greater distance - after about 2000 miles, the spread between the points increases.
+</pre>
+[
+What is the difference between these two calculations? 
+
+Are the results similar?
+
+]
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## HIERARCHICAL clustering as a function of distance
+
+Aggregating or agglomerating data is typically called "clustering" and is generally considered to be a "unsupervised learning" method.
+
+
+### Introduction
+We use `hclust` to perform Hierarchical Clustering.  The word "hierarchical" is used because the nature of the data is organized like a family genealogy.  The bottom of the tree represents the descendants that eventually "link" to a common ancestor.
+
+If you type `?hclust` you can review the parameter options which we explored in a notebook.  `hclust` is primarily a function of `dist()` [distance], and we have just computed some distances, so we could try and apply `hclust` to our data to see if our state capitals will cluster into meaningful regions.
+
+There are several agglomeration methods ("linkage") one could choose from.  Each method takes the `dist` <https://en.wikipedia.org/wiki/Hierarchical_clustering#Metric> and performs some pairwise distance algorithm called a linkage criteria <https://en.wikipedia.org/wiki/Hierarchical_clustering#Linkage_criteria>.
+
+I generally use either the "complete" linkage method or the "ward.D2" linkage method.  You can read help `?hclust` to better appreciate why: "A number of different clustering methods are provided. Ward's minimum variance method aims at finding compact, spherical clusters. The complete linkage method finds similar clusters."
+
+If you are trying to link binary data (zeroes and ones) or genomic data (where the distances were computed using a genetic-distance algorithm), you may want to try the UPGMA approach: "average" or "centroid".  
+
+### Analogy of Family
+
+Since I am from a large family, I will make a family tree analogy.  For me, I am the 5th of 11 siblings (5 brothers, 5 sisters).  If I wanted to cluster the siblings in a pair-wise fashion, how would I begin?
+
+First, I would ask, which other sibling is most like me?  Since this is a pair-wise approach, and there are 11 siblings, maybe at the initial stage, I will not be paired with another sibling.
+
+In fact, at least one will not be paired because the total number is 11.  And maybe more than one will not be paired in the initial stage.  Remember "similarity" is being defined based on some distance-linkage method.  And to use this approach, "similarity" needs to numerical data.
+
+At each stage, pair-wise joining occurs until there is nothing left to join.  The tree contains all of the elements.  Every element (branch) eventually joins the main branch (trunk) of the tree.  
+
+### Clustering U.S. capital cities based on latitude, longitude
+
+We already have some data for the U.S. capitals and have computed a Euclidean distance using a capital-city's longitude and latitude.  Let's choose to cut the result into `12` agglomerations.  Why 12?  It was a choice based on my life experience and intuition.  As I reflected on why, I did some external searching that validates a choice in that range <https://en.wikipedia.org/wiki/List_of_regions_of_the_United_States>.  You certainly could run this analysis with another choice  It is exploratory, and your intuition matters.
+
+Geographically, I am saying the capital-city does represent the state.  An ideal representation may be in the center (centroid) of the state.  Remember this when we see the linkages with "New York", the city is Albany, not Manhattan.
+
+```{r, chunk-distances-hclust-euclidean, cache.rebuild=TRUE}
+
+## ward.D2
+hclust.ward2.dist.euclidean = hclust(dist.euclidean, method="ward.D2");
+
+plot( hclust.ward2.dist.euclidean, 
+      labels= myLabels );
+rect.hclust( hclust.ward2.dist.euclidean, k=12 );
+
+## complete
+# 
+hclust.complete.dist.euclidean = hclust(dist.euclidean, method="complete");
+
+plot( hclust.complete.dist.euclidean, 
+      labels= myLabels );
+rect.hclust( hclust.complete.dist.euclidean, k=12 );
+   
+
+```
+
+### Understanding the `cutree`
+
+In the above example, the tree was cut into 12 groups based on the "distance" formula used and based on the "agglomeration" linkage technique invoice.  I likely should have used a "geo-spatial" distance, but we will see that mere "euclidean" distance seems to perform okay.  
+
+A fancy word for this statistical tree is a "dendrogram".  I call each element of the tree a branch.  The smallest branches (twigs) are the fundamental elements, in this case the cities.  Over time, they merge with other small branches, and so on.
+
+The relative height when this smallest branch merges with another branch demonstrates when the branch has found a similar pair-wise match (with another smallest branch or a merging branch).  I call "Honolulu Hawaii" an isolate because the vertical height when it merges with another branch is the highest of all of the smallest branches (e.g., cities).  "Juneau Alaska" is another isolate, but it does merge before "Hawaii".
+
+It would be nice if we could decompose this information and look at one `cutree` at a time.  And color-code the distinctions.  Using the function `plot.hclust.sub` we can do this.
+
+```{r, chunk-distances-hclust-euclidean-sub, cache.rebuild=TRUE}
+
+source( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") );  # EDA functions ...
+
+
+hclust.ward2.dist.euclidean$labels = myLabels;
+plot.hclust.sub(hclust.ward2.dist.euclidean, k=12);
+
+# plot.hclust.sub(hclust.complete.dist.euclidean, k=12);
+```
+
+### (10 points) Review one clustering tree (dendrogram)
+
+Choose either `hclust.ward2.dist.euclidean` or `hclust.complete.dist.euclidean` and review how the U.S. state capitals are clustered.  [I commented out one form, so you will have to re-run if you want to select that one.]
+
+Comment on the "face validity" of this approach based on your understanding about how the U.S. regions are defined?  Are the North/South Dakotas together?  What about the North/South Carolinas?  What about the Pacific Northwest?  While living in Kentucky, some people called the area "Kentuckiana" meaning Kentucky/Indiana.  Does that show up?  Also note anything that seems peculiar.
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+SubTree 3 - I am surprised that Idaho is not included here - it is a much shorter drive to Boise from SLC than to Denver. Not to mention the fact that Colorado and Nevada sandwhich Utah, but they were clustered more closely together.
+
+SubTree 2 - I am confused by the clustering of Maine with Oregon, as they are on opposite coasts, and per my earlier comment - the fact that Idaho is clustered more closely with Maine than with Utah is suspicious. I also would have expectected Juneau to be an isolate - that distance from Washington is as far as Texas.
+
+SubTrees 6, 8, and 10 do seem to reflect the regions appropriately. Texas is an isolate, which is not too surprising given its large size and corresponding distance from the capital relative to the others in this cluster.
+
+SubTrees 11 and 12 - I was originally surprised that North and South Carolinas were not clustered, but with a closer look, these clusters contain reasonable neighbors. It is interesting that the way that I think about these states in relation to each other informs my expectations - if they both weren't called "Carolina," it may not have occurred to me to group them.
+</pre>
+
+
+### Additional remarks about `hclust`
+
+I find `hclust` to be a nice initial perusal of the data.  
+
+If you want to understand the stability of a particular `hclust` to use it for something other than an "initial perusal of the data," I would recommend `pvclust` which I introduced in the weekly notebooks.  It is often used in peer-reviewed research, as it provides a `p-value` of sorts regarding the **stability** of the `hclust` structure.
+
+
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## GENERIC clustering 
+Aggregating or agglomerating data is typically called "clustering".  In exploration, we can create some generic clustering techniques.  Below we will create two adhoc clustering rules.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### Arbitrary Aggregation
+
+Recall the "movie dataset" with "Will Smith" and "Denzel Washington".  We have a collection of movies, and how much money each movie made at the box office.  We could organize those movies by some arbitrary rules.  For example:
+
+- Cluster 1:  NA.  We have missing data regarding the money.  So let's put all movies that are NA into that cluster.
+- Cluster 2:  Under a million dollars
+- Cluster 3:  1-4.99... million dollars (greater than or equal to one, but less than 5)
+- Cluster 4:  5-49.99... 
+- Cluster 5:  50+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+#### (5 points) Movie Aggregation [Arbitrary] for Will and Denzel
+```{r, chunk-aggregate-arbitrary, cache.rebuild=TRUE}
+
+library(devtools);
+source( paste0(path.mshaffer, "will") );
+source( paste0(path.mshaffer, "denzel") );
+
+movies.50 = rbind(will$movies.50, denzel$movies.50);
+
+unique(movies.50$ttid); # are they in any shared movies ???
+
+loadInflationData();
+
+movies.50 = standardizeDollarsInDataFrame(movies.50, 
+                2000, 
+                "millions", 
+                "year", 
+                "millionsAdj2000");
+
+movies.50$cluster.arbitrary = NA;
+str(movies.50);
+
+## you do something here ... 
+
+# (1) populate cluster.arbitrary
+## cluster by audience rated 1 -not rated 2 - is PG 3 - PG-13 4 - R
+movies.50.1 = movies.50 %>% filter(rated == "Not Rated");
+movies.50.1$cluster.arbitrary = 1;
+movies.50.2 = movies.50 %>% filter(rated == "PG");
+movies.50.2$cluster.arbitrary = 2;
+movies.50.3 = movies.50 %>% filter(rated == "PG-13");
+movies.50.3$cluster.arbitrary = 3;
+movies.50.4 = movies.50 %>% filter(rated == "R");
+movies.50.4$cluster.arbitrary = 4;
+
+movies.50 = as.data.frame(rbind(movies.50.1, movies.50.2, movies.50.3, movies.50.4));
+# (2) summarize how many movies live in each (table count)
+
+arbclusts = c(1,2,3,4);
+membership = c("Not Rated","PG","PG-13","R");
+counts = c(length(movies.50.1$cluster.arbitrary), length(movies.50.2$cluster.arbitrary), length(movies.50.3$cluster.arbitrary), length(movies.50.4$cluster.arbitrary));
+
+as.data.frame(cbind(arbclusts, membership,counts));
+
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### Aggregating using Quantiles
+
+John Tukey emphasized that ordering the data and then splitting it based on the ordering was a fundamental premise of exploratory data analysis.  
+
+#### Tukey's Summary Data
+
+John Tukey proposed five elements as primary data for analysis.
+
+- the minimum `min`
+- the maximum `max`
+
+Sorting the data makes it easiest to find these data, and will be useful to find the other three exploratory summary features.
+
+This is what I would call "slice and dice".  The data is cut in half, and the value of that middle "cutting point" is the `Q2` which we call the `median`.
+
+Next, the lower half could also be cut in half, and the value of that middle "cutting" point is `Q1`.
+
+Then, the upper half could also be cut in half, and the value of that middle "cutting" point is `Q3`.
+
+A common metric derived from this "median-split" procedure is called the interquartile range `IQR` which is defined as the distance between `Q3` and `Q1`.  It literally represents the middle 50% of the data; 50% of the elements of the dataset are between `Q3` and `Q1`.  
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+#### Quartile Example 
+```{r, chunk-quartiles, cache.rebuild=TRUE}
+
+x = 1:99;
+length(x);
+
+median(x);
+x[50];
+
+median(x[1:49]);
+x[25];
+
+median(x[51:99]);
+x[75];
+
+# probability-approach ... 
+# algorithm: the default type=7
+stats::quantile(x, prob = c(0.25, 0.5, 0.75), type=1);
+
+```
+
+Algorithms address various issues associated with dividing numbers and whether or not to include the dividing number in the subset division, but the principle holds.
+
+We can generalize this idea by not always cutting the data in half (median-split as `n=2`, median-median-split as `n=4`).  Instead, we could cut by tens (we call them deciles).  Or we could cut by hundreds (we call them centiles).  The function `quantile` performs this operation, and if you dig into the `doStatsSummary` function used in this course, you can see its application.
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+#### (5 points) Movie Aggregation [Decile] for Will and Denzel
+
+```{r, chunk-aggregate-quantiles, cache.rebuild=TRUE}
+
+movies.50$cluster.deciles = NA;
+str(movies.50);
+
+## you do something here ... 
+
+stats::quantile(movies.50$ratings, prob=seq(0.1,0.9,by=0.1), type=1 );
+# (1) how many NA's are there ... keep them NA's
+# 0 NAs in ratings
+# (2) for the rest of the data, break it up into deciles
+# (3) $cluster.deciles for a given movie should be NA, 1, 2, 3, ... 10
+# (4) summarize how many movies live in each (table count)
+
+length.movies = length(movies.50$cluster.deciles);
+  count.1 = 0;
+  count.2 = 0;
+  count.3 = 0;
+  count.4 = 0;
+  count.5 = 0;
+  count.6 = 0;
+  count.7 = 0;
+  count.8 = 0;
+  count.9 = 0;
+  count.10= 0;
+for(i in 1:length.movies){
+  if(movies.50$ratings[i] <=5.6) {
+    movies.50$cluster.deciles[i] = 1;
+    count.1 = count.1+1;
+  } else if(movies.50$ratings[i] > 5.6 && movies.50$ratings[i] <= 6.0) {
+    movies.50$cluster.deciles[i] =2;
+    count.2 = count.2+1;
+  } else if(movies.50$ratings[i] > 6 && movies.50$ratings[i] <= 6.3){
+    movies.50$cluster.deciles=3;
+    count.3 = count.3+1;
+  } else if(movies.50$ratings[i] > 6.3 && movies.50$ratings[i] <= 6.6) {
+    movies.50$cluster.deciles=4;
+    count.4 = count.4+1;
+  } else if(movies.50$ratings[i] > 6.6 && movies.50$ratings[i] <= 6.7) {
+    movies.50$cluster.deciles=5;
+    count.5 = count.5+1;
+  } else if(movies.50$ratings[i] > 6.7 && movies.50$ratings[i] <= 6.8) {
+    movies.50$cluster.deciles=6;
+    count.6 = count.6+1;
+  } else if(movies.50$ratings[i] > 6.8 && movies.50$ratings[i] <= 7.1) {
+    movies.50$cluster.deciles=7;
+    count.7 = count.7+1;
+  } else if(movies.50$ratings[i] > 7.1 && movies.50$ratings[i] <= 7.3) {
+    movies.50$cluster.deciles=8;
+    count.8 = count.8+1;
+  } else if(movies.50$ratings[i] > 7.3 && movies.50$ratings[i] <= 7.6) {
+    movies.50$cluster.deciles=9;
+    count.9 = count.9+1;
+  } else if(movies.50$ratings[i] > 7.6) {
+    movies.50$cluster.deciles=10;
+    count.10 = count.10+1;
+  }
+  count = c(count.1, count.2, count.3, count.4, count.5, count.6, count.7, count.8, count.9, count.10);
+  quantile = c(1:10);
+  
+  table = as.data.frame(cbind(quantile, count));
+  table;
+}
+
+table;
+
+```
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+
+## CENTROID clustering (k-means) as a function of distance
+
+### Introduction
+Rather than clustering on distance-linkage in a pair-wise fashion, we can cluster based on randomly selecting just `k` points in our data and begin identifying their nearest neighbors using some distance approach.
+
+For example, if `k=3`, we would randomly select three of our data points.  We would then compute the distances from all of the remaining points to these `3` anchor points.  The points that are closest to a given anchor will be assigned to that anchor.  At the end of the stage, we now have new data, so a new centroid is determined.  At this point, the centroid <https://en.wikipedia.org/wiki/Centroid> is likely not one of our data points, but a location within the given centroid cluster.  In the "naive" approach, you merely take an average (mean) of all the members of your cluster.  More advanced approaches (the default "Hartigan-Wong" of `kmeans`) utilize deviations from the average, called a sum-of-squares approach.  This is why in our `kmeans-notebook` we analyzed the `wss` to ascertain how many clusters `k` should we use.
+
+Regardless, after the new centroids (centers) for the clusters are determined, the process iterates.  All distances are computed from all points to the new centroids; points are assigned to a given centroid cluster (in this example: 1, 2, 3); a new centroid center is computed, and we repeat the process until a stopping rule is reached: maybe we have exhausted the number of iterations allowed (`iter.max` parameter of `kmeans`)?  Or maybe we are not changing membership of any of the data points?  Or maybe we have met some objective (like `wss`)?
+
+It is possible to get a `kmeans` result by merely starting with `3 different` random points.  In general, `kmeans` is fast (and our computers are so much faster than the computers of 1990: the first computer I built in 1995 had 32MB of RAM, a Pentium processor <https://en.wikipedia.org/wiki/Pentium#Pentium> and a 900MB Cheetah hard-drive).
+
+Anyway, we can utilize the parameter `nstart` to try many different starting values, and let the program identify the best, most consistent solution.
+
+### My recommendations
+
+I would recommend the default algorithm `Hartigan-Wong` with `iter.max=100` and `nstart=100`.  You can test the timings from the default values: `iter.max=10` and `nstart=1`.  Since the data is likely multidimensional `stars` are the best way to summary the results and membership of `kmeans`.  Please see the "kmeans-notebook" for examples.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+### WIKIPEDIA CLIMATE DATA
+
+For the 50 U.S. cities, we harvested climate data.  In the "Wikipedia" notebook, details of that data provenance were outlined.  If we want to compare the cities using the climate data, we have to build a matching dataframe, which means we have to select features that exist in each city's climate data set.
+
+There are four temperature features that are always present:
+
+- Record high F (C) ... we will call it "high.max"
+- Average high F (C) ... we will call it "high.avg"
+- Average low F (C) ... we will call it "low.avg"
+- Record low F (C)  ... we will call it "low.max" [probably not the best name choice, but it is parallel in form to the first element]
+
+Additionally, for precipitation we have:
+
+- Average precipitation inches (mm) ... we will call it "rain"
+- Average snowfall inches (cm) ... we will call it "snow"
+
+For each of these features we have 12 months of data.  This is a nice dataset.  Let's see what we can do with it.
+
+
+#### Basic Background Research
+We should begin by doing a bit of peripheral research on the topic, to gain "domain knowledge" so we know what to do with the data.  A few elements that would benefit.
+
+
+<https://www.forbes.com/sites/brianbrettschneider/2018/07/08/when-does-the-hottest-day-of-the-year-usually-occur/#78141f47548c>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/max-temp.jpg" style="border: 2px black solid;" />
+<div>**Source: https://bit.ly/359HAnY**</div>
+
+<https://www.climate.gov/news-features/featured-images/whats-coldest-day-year>
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### One Graph
+
+When graphing data to visualize, it is essential that you keep the scales uniform so quick-visual comparisons are accurate.  I gave you a task to practice the idea of creation that "one informative" research graphic.  And I now present my version for you to use and critique based on your efforts.  I am a `plot` guy, so some of you may have a different ``ggplot2` type solution.  Ultimately, the intent of this graphic is to best summarize the data in a meaninful way for exploratory analysis.
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+##### (5 points) One Research Graph
+
+```{r, chunk-hclust-climate-one-research-graph, cache.rebuild=TRUE}
+climate = utils::read.csv( paste0(path.mshaffer, "_data_/state-capitals/final/state-capitals-climatedata.txt"), header=TRUE, quote="", sep="|");
+
+
+plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Helena");
+
+plotTemperatureFromWikipediaData(climate, city.key="capital", city.val="Baton Rouge");
+
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+I like that this graphic comprehensively conveys the dataset. The record and average high/lows and the precipitation for each month, as well as the record high are all present. I also like that this plot appears to be color blind friendly, although the contrast in the 0-40 range would be hard to discern for some sight conditions.
+
+I do not like that it is not obvious from this plot what these temperature ranges represent; the mean and record values are represented with the exact same points so it is hard to tell that they are actually different data. We also cannot tell where these averages come from - although this is background information that is easily provided in a caption. It is not obvious what the fill color between these ranges is communicating, and the black is distracting for the Helena plot to where I would consider a different color range. I find the rain precipitation scale confusing - why are there two blue dots? And why is rain indicated with a blue dot, but snow is written out?  We also don't have units for precipitation. 
+
+With some of these changes, this plot would be quite functional. For example, I do think, that without any background information, I would have surmised that the sun/number combination indicates the record hottest day. 
+
+It isn't bad, but I do not find this plot particularly aesthetically pleasing. That may be because I prefer graphics with the minimum amount of information needed to convey the data. The temperature scale in the middle of the plot is unnecessary clutter. I don't like busy cartoons or extra text because I get distracted by them.  I also get confused when the same color represents two different things (blue for snow and cold in this case). 
+</pre>
+[
+What do you like about this graphic?  
+
+What do you dislike?
+
+Is it aesthetically pleasing?
+Is it functional?
+
+]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+We can achieve a side-by-side comparison using the function described below.  The first city will be graphed on the left, the second city on the right. 
+
+```{r, chunk-hclust-climate-one-research-graph-comparison, cache.rebuild=TRUE}
+
+compareTwoCitiesClimates(climate, city.key="capital", city.1="Helena", city.2="Baton Rouge");
+
+
+```
+
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+I like that I understand that this graph is communicating the Wikipedia climate data for the purpose of comparing two regions, but I don't think it really qualifies as one graphic - I think that if color, opacity, and line type were used in concert, these could be placed on the same graph.  Currently, the difference in the y axes in both scale and range makes it confusing to compare the two, which would detract from the purpose of the graph. I know that there are two schools of thought on this - one that believes the graphics should do everything possible not to mislead the reader, and one that believes the onus is on the reader to interpret the graph correctly, but this currently makes the data for each city look fairly similar, even though a closer look permits us to see that they vary quite drastically in range. I don't know that I belong to a particular school of thought - I think it depends on the context, but I would rather remove this possible confusion by merging the graphics.
+
+The approach to showing the precipitation is only somewhat effective at communicating the data - I don't understand what the numbers for 'snow =' indicate - snow fall for a given month (then which month?). Rainfall is plotted more like a scatter plot, whereas the snowfall is plotted as a density plot, made confusing by the whitespace left for the rainfall labels. I would commit to one way or the other for both types of precipitation, though I most prefer the individual points because that most easily allows for the labeling of the individual rainfall value for each month. 
+
+</pre>
+[
+What do you like about this graphic?  
+
+What do you dislike?
+
+Are the y-axis the same scale?  Are the visible gridlines for each the same?
+
+What is the difference between rain and snow on the graphic?  Was that a good approach?  How would you have done it?
+
+]
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+##### (5 points) One Publication Graph
+
+We are in exploration, so the "one" research graphic may be very different than the "one" formal graphic designed for a client.  Typically, the final graphic needs to meet certain criteria:
+
+- Very pleasing aesthetically 
+- Interactive if possible
+- Live data feeds if possible
+- Served in a secure, safe, private location (if required by the client)
+
+To demonstrate the differences, I created a mockup of our 50 U.S. cities and put it into a nice finalized product form called "highcharts".  
+
+<http://md5.mshaffer.com/WSU_STATS419/_EXAMPLES_/fiddle_usmap/>
+
+It pulls data in real time (using AJAX) to grab the weather at the latitudes/longitudes we defined in our Wikipedia notebook.  
+
+- You can use your mouse to draw a box to zoom in.  
+- The third-wheel on the mouse also helps you zoom in/out.
+- Hold down CNTRL with your left hand and use your mouse key to drag the map.  It seems to only "pan" in the x-direction at the moment.  
+- The data in the popup displayed can be customized.  I report the temperature in Celsius/Fahrenheit and also display the population data we gathered from Wikipedia. 
+
+Once you have a template built, it is rather easy to modify it.  Here I changed the background map, and all of the data/features stay the same:
+
+<http://md5.mshaffer.com/WSU_STATS419/_EXAMPLES_/fiddle_usmap/world.html>
+
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+### Which Features to Include in the Analysis
+
+* months, you can pick all of them `1:12` or maybe just one month per season (April, July, October, January)
+* X, depending on what you chose for months, you can now select what climate columns you want to use
+  - Some of Temperature Data
+  - All of Temperature Data
+  - Precipitation Data
+  - Everything (All of Temperature Data, Precipitation Data)
+  
+If we want to cluster cities, which decisions seem best?  Why?  As you can see from the code below, you just comment out two options, and can quickly rerun the analysis.
+
+- WHICH MONTHS
+- WHICH COLUMNS
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+#### WHICH MONTHS & WHICH COLUMNS
+```{r, chunk-climate-which-features, cache.rebuild=TRUE}
+
+climate = utils::read.csv( paste0(path.mshaffer, "_data_/state-capitals/final/state-capitals-climatedata.txt"), header=TRUE, quote="", sep="|");
+
+##################### WHICH MONTHS #####################
+########################################################
+months = 1:12; # all the data
+#months = c(1,4,7,10); # one month of each of the four seasons
+########################################################
+
+
+month.abb;  # ?month.abb
+month.name;  
+
+month.name[months];  # these are the names of the months you are selecting ...
+
+
+# this function would allow us to use different months as criteria and different climate-data keys.  It is variadic and flexible.  `key.n` are the names we will use for our new columns ...
+
+climate.df = buildClimateDataFrame(climate, months, keys=c("Record high F (C)", "Average high F (C)", "Average low F (C)", "Record low F (C)", "Average precipitation inches (mm)", "Average snowfall inches (cm)"), keys.n = c("highmax", "highavg",  "lowavg", "lowmin", "rain", "snow") );
+
+climate.df;
+names(climate.df); # this helps you see the indexes ...
+
+##################### WHICH COLUMNS #####################
+########################################################
+#X = climate.df[,5:52];  # temperature
+X = climate.df[,5:76];  # everything (includes rain)
+#X = climate.df[,5:20];  # temperature, 1 month per season
+#X = climate.df[,5:28];  # everything (includes rain), 1 month per season
+########################################################
+
+
+  rownames(X) = climate.df$labels;
+Xs = scale(X);
+```
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+### To scale or not to scale, that is the question
+
+```{r, chunk-distances-X-or-Xs, cache.rebuild=TRUE}
+
+X = climate.df[,5:76];  # everything ... you have to change months above to get this dataframe to be the correct size ... months = 1:12
+  rownames(X) = climate.df$labels;
+Xs = scale(X);
+
+```
+
+
+So let's do some analysis with all of the data available to us.  Most of the data is in Temperature, with ranges from -42 degrees Fahrenheit (Helena, Montana) to 122 (Phoenix, Arizona).
+
+The precipitation data (rain and snow) is measured in inches.  So should we scale the data.  The answer in PCA and orthogonal projections is absolutely YES, but for `hclust` and `kmeans` is that always the case?
+
+You can make a choice below, and observe how it influences your answers. 
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+#### WHICH X
+```{r, chunk-distances-whichX, cache.rebuild=TRUE}
+#I think scaling makes the most sense in the context where the measurements and their scales are so different, but the kmeans code below did not work on the scaled data, so I changed it.  Here, I don't think that is totally inappropriate - because rainfall numbers and temperatures are in the same order of magnitude range 
+whichX = X;
+#whichX = Xs;
+
+```
+
+<HR divider="5" style="border: 5px solid #981e32; border-radius: 5px;">
+### Perform `k-means` on All Climate Features
+
+With the selected features let's perform k-means.  Let's select k=12.  I will select all of the features, but you can change that if you wish.
+
+#### Descriptives of Sample
+```{r, chunk-distances-kmeans-setup-temp, cache.rebuild=TRUE}
+
+colors = rainbow(50, s = 0.6, v = 0.75); # 50 colors for 50 states
+
+# descriptive star plot to start
+stars(whichX, len = 0.5, key.loc=c(12,2), draw.segments = TRUE);
+
+## too busy, let's group them
+x.start = 1;
+x.end = 10;
+for(i in 1:5)
+  {
+  stars( whichX[x.start:x.end,] , 
+          len = 0.5, key.loc=c(6,2), draw.segments = TRUE);
+  x.start = 1 + x.end;
+  x.end = 10 + x.end;
+  }
+
+```
+
+
+<HR divider="1" style="border: 1px solid #981e32; border-radius: 1px;">
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The "fuller" circles are Phoenix, Honolulu, Baton Rouge, Jackson, Oklahoma City and Columbia. These cities have a higher amount of observations that reach the upper end of the range for each measurement. (https://www.itl.nist.gov/div898/handbook/eda/section3/starplot.htm) 
+
+Santa Fe, Hartford, Boise, and Carson City are more sparse - because each "star point" is indicating where on the range of over all data a particular city falls for a particular measurement, this suggests that these cities are on the lower end for many of the measurements.  
+It is easy to assume this means presence/absence, as in rainfall. But for temperature, this could mean that they are colder, while the fuller cities are warmer.
+</pre>
+[Above, you are just analyzing the general shapes.  Which ones are "fuller" circles?  Why?  
+
+Which ones are not very "full circles"?  Why?]
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Computation of Clusters/Centroids
+
+
+```{r, chunk-distances-kmeans-run-temp, cache.rebuild=TRUE}
+# 4 clusters seems appropriate - when run with more, clusters 5 and 6 were similar to cluster 3
+k = 4;
+iterations = 10000;
+number.starts = 100;
+
+## I could not get this to run on the scaled data - whichX is unscaled
+whichX.kmeans = kmeans(whichX, k, 
+                    iter.max=iterations, 
+                    nstart = number.starts);  # default algorithm
+stars(whichX.kmeans$centers, len = 0.5, key.loc = c(10, 3),
+        main = "Algorithm: DEFAULT [Hartigan-Wong] \n Stars of KMEANS=12", draw.segments = TRUE);
+
+```
+
+<HR divider="2" style="border: 2px solid #981e32; border-radius: 2px;">
+
+#### Cluster Membership and Centroid Attributes
+
+
+```{r, chunk-distances-kmeans-table-temp, cache.rebuild=TRUE}
+
+
+
+membership = matrix( whichX.kmeans$cluster, ncol=1);
+membership = membership[order(membership),];
+membership = as.data.frame(membership);
+        rownames(membership) = climate.df$labels;
+        colnames(membership) = c("Cluster");
+
+membership;
+
+print( table(membership) ) ; 
+
+# I believe in an older version of R these were called $centroids
+attributes = as.data.frame( whichX.kmeans$centers );
+    rownames(attributes) = paste0("Cluster.",1:k);
+  attributes;
+    
+```
+
+#### (10 points) Summarize Findings
+
+- Identify which states share a common cluster. 
+- For a given cluster, what are its primary characteristics 
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+I think that 4 clusters is sufficient, so I wrote my conclusions based on this.
+
+Cluster 1 - Includes Alaska, Colorado, California, Arizona, Florida, Kansas, Maryland, Idaho, Hawaii
+- this cluster doesn't feature the extremes of any one measurement, rather in falls in the middle of the range for temperatures and precipitation.
+
+Cluster 2 - Includes Missouri, Mississippi, Nevada, New Jersey, New York - this cluster has the highest maximum temperatures in the summer months, and the highest rainfall year-round.
+
+Cluster 3 - Includes Oregon, Rhode Island, Washington, Utah, and Virginia - this cluster has the highest snow fall, the lowest minimum and average minimum temperatures year-round, as well as the lowest maximum and average maximum temperatures year-round.
+
+Cluster 4 - Wyoming - is characterized by higher maximum temperatures and precipitation in winter months, and lower max temperatures in summer. Its lowest average and lowest minimum temperatures are also higher than the other clusters.
+
+When split into 12 clusters - membership is harder to discern - but greater diffences also emerged between the clusters relative to 4. Cluster 6 has the highest rainfall (Maryland), while cluster 9 was the lowest (North Carolina...that seems wrong? because NC has lots of wetlands?). Cluster 4 was characterized with the coldest winter temperatures (Kansas, Kentucky, Louisiana).
+
+
+</pre>
+
+[
+Summarize your k-means findings for 12 clusters.
+]
+
+
+## (15 points) Correlation
+
+Correlation, like distance, is an important feature of multivariate analysis.  So let's review some basic correlation related to our climate data.  For simplicity, let's consider "Record High Temperature" and "Record Low Temperature" and see how they correlate with other factors we have gathered from Wikipedia.
+
+Recall, in this table, "Jan-Dec" are different months of the same temperature variable.  
+
+```{r, chunk-correlations-high, cache.rebuild=TRUE}
+
+library(Hmisc); # p-values for correlation
+
+high = subsetDataFrame(climate, c("key", "units"), "==", c("Record high F (C)",1));
+high = merge(high, capitals, by=c("capital","state"));
+
+high.X = (high[,c(5:18, 21)]); # numeric data 
+high.X$latitude = as.numeric(high.X$latitude);
+high.X$longitude = as.numeric(high.X$longitude);
+high.X$population.2019.est = as.numeric(high.X$population.2019.est);
+
+high.cor = round( cor(high.X), digits=2);
+# high.cor.p = rcorr(as.matrix(high.X), type="pearson");  # p-values for statistical significance ... # str(high.cor.p);
+
+# examine July (idx = 7)
+
+as.data.frame( high.cor ) ; # so it will render nicely in RStudio
+
+high.cor.july = high.cor[,7];
+high.cor.july;
+
+plot(high.cor.july[c(1:12)],xaxt = "n");
+axis(1, at = 1:12, labels = c("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"));
+abline(h=0.3)
+abline(h=0.8)
+
+```
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+The record high temperature in July is strongly positively correlated (r^2 > 0.8) with the records in the other 'summer-ish' months. May, June, August and September. It is moderately positively correlated with the records in March, April, October, and November and has low positive correlation with the high temperatures in January and December. This indicates that seasonality affects high temperature trends across our selected cities. In the summer months hot areas may tend to stay consistently hot, which is thus reflected in the records for adjacent months, but may be more likely to have cooler temperatures in the spring and winter. 
+
+One real-world way this trend can be thought about is through the difference between Olympia, WA and Salt Lake City, UT. Olympia has a more temperate climate and therefore the temperatures do not swing as much over the year as they do in Salt Lake City; the record highs in Salt Lake are much higher than in Olympia, but because it also gets colder in Salt Lake in the winter, the record highs in  Olympia are higher than in Salt Lake. 
+
+Latitude is strongly negatively correlated with maximum winter temperatures and weakly negatively correlated with maximum summer temperatures.  The lower the latitude (closer to the equator) the higher the maximum winter temperature, which makes sense because warmer areas will generally have warmer winters.  The higher the latitude, the farther from the equator (and therefore likely cooler), the lower the maximum temperature. Summer temperatures are less correlated with latitude than winter temperatures perhaps because other factors that happen in the summer such as duration and angle may have a greater influence on the maximum temperature than latitude. Longitude is weakly positively correlated with maximum temperatures for all months, which suggests it has much less influence on maximum temperatures than latitude.
+</pre>
+
+Describe the correlation of July in "Record high F (C)" to the other numeric factors printed above. 
+
+**x is correlated with y (0.00).  This correlation is positive/negative which means ...  This correlation is strong/weak because ... overall, this suggests ... **
+
+- July perfectly correlates with July (1.00).  This correlation is positive and very strong.  This is because they are the same data.
+- With the months, you can note each, or plot a trend showing them, and discussing them briefly as a trend.
+- latitude is a measure of north/south, so be certain to apply the correlation value with some meaning.  be certain you know which direction is positive or negative to correctly interpret the sign of the correlation.
+- longitude is a measure of east/west, so be certain ...
+- population is the size of the city  
+
+- intuitively, which months do you think correlate most with latitude for this data?  which correlate the least?  is the correlation always the same sign (positive/negative), or does it change? [You can use the dataframe output to do this analysis, or create your own subset]
+
+```{r, chunk-correlations-low, cache.rebuild=TRUE}
+
+library(Hmisc); # p-values for correlation
+
+low = subsetDataFrame(climate, c("key", "units"), "==", c("Record low F (C)",1));
+low = merge(low, capitals, by=c("capital","state"));
+
+low.X = (low[,c(5:18, 21)]); # numeric data 
+low.X$latitude = as.numeric(low.X$latitude);
+low.X$longitude = as.numeric(low.X$longitude);
+low.X$population.2019.est = as.numeric(low.X$population.2019.est);
+
+low.cor = round( cor(low.X), digits=2);
+
+# low.cor.p = rcorr(as.matrix(low.X), type="pearson");  # p-values for statistical significance ... # str(low.cor.p);
+
+# examine Jan (idx = 1)
+
+as.data.frame( low.cor ) ; # so it will render nicely in RStudio
+
+low.cor.january = low.cor[,1];
+low.cor.january;
+
+```
+
+Describe the correlation of January in "Record low F (C)" to the other numeric factors printed above. 
+
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+Unlike the record high temperatures, all of these correlations are strong correlations across all months. This suggests that cities associated with the coldest record temperatures for one month, are also associated with coldest record temperatures for the others. This is not as intuitive to hypothesize about as with the hot temperatures, but perhaps extreme climates that get cold winter temperatures are also more subject to rare fronts in other months (it snowed in May one year while I was living in Salt Lake, for example, but clearly more data would be required to evaluate these kinds of anecdotal postulations).
+
+Longitude is weakly positively correlated for the lows, as it was for the record highs. The latitude is strongly negatively correlated; this is expected based on what was observed in the record high data because we expect the cities that are furthest from the equator (higher latitude value) to have lower temperatures. 
+
+
+</pre>
+
+Similar to "high" writeup, but for the "low" data.
+
+## "So What" is DATA ANALYSIS?
+
+In the social sciences (e.g., Karl Weick), the concept of "sense making" refers to "the process by which people give meaning to their collective experiences".  I have used this framework in my high-technology innovation research (See Figure 1 of <http://www.mshaffer.com/arizona/pdf/LoneGenius.pdf>, my rubric concept comes from learning-theory growth models:  Nascent, Adolescent, Mature.) 
+
+This final topic is reflective:  we are thinking about how we think.
+
+### Statistics
+
+The syllabus defined statistics as "the discipline that concerns the collection, organization, analysis, interpretation and presentation of data." (See <https://en.wikipedia.org/wiki/Statistics>)
+
+There are 5 elements mentioned:  collection, organization, analysis, interpretation, and presentation of "data".  Are those equally weighted?  That is, should we devote 20% of our time to each of those?  Now, consider the "analysis" stage.  I have suggested there are two camps:  exploratory and confirmatory data analysis.  Are those equally weighted?  That is, should we devote 50% of our time to each of those?  Now, in an "equally-likely" scenario, we would have.
+
+```{r, chunk-conclusion-equally-likely, cache.rebuild=TRUE}
+
+x = c(20,20,10,10,20,20);
+x.labels = c("collection", "organization", "EDA analysis", "CDA analysis", "interpretation", "presentation");
+x.colors = c("blue", "lightgreen", "green", "darkgreen", "orange", "red");
+
+barplot(x, 
+        col = x.colors,
+        ylim = c(0, 20),
+        ylab = "Proportion: (Sums to 100)",
+        main="Statistics as the Study of 'Data'");
+
+
+text(1.14* (1:6), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+```
+
+### Data Analytics
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/data-analytics.png" style="border: 2px black solid;" />
+<div>**Source: https://data-analytics.wsu.edu/197-2/ ** (Accessed October 2010) </div>
+
+"Data analytics is the application of powerful new methods—drawn from computer science, mathematics and statistics, and domain sciences—to collect, curate, analyze, discover and communicate knowledge from 'big data'." <https://data-analytics.wsu.edu/> (Accessed October 2010)
+
+
+#### Importance of 'Data'
+
+I love data.  
+
+I also love math/physics.  I also love exploratory data analysis.  I also love computational statistics or statistical computing <https://en.wikipedia.org/wiki/Computational_statistics>.  I also love thinking about developing the one graphic to summarize data most effectively.
+
+#### Apprenticeship as Learning a Trade
+The idea of sharing in the learning process is an important aspect of the apprenticeship model.  You are learning a trade (data analytics).  I have experience in this trade.  My job as the instructor is to provide you with a variety of "situated-learning" experiences To help you understand the nature of the trade.   This exam is an example of such an experience.
+
+#### Tools of the Trade
+
+Below are the core requirements for the data analytics program:
+
+* Calculus and linear algebra (10 credits)
+* Computer science fundamentals (11 credits)
+* Machine learning and data management (9 credits)
+* Statistics (15 credits)
+* Data analytics introduction, ethics & project-focused * capstone experience (9 credits)
+
+These are not the tools of the trade, but hopefully, they introduce you to key tools of the trade.  What exactly are tools of the trade? [You will have an opportunity to write a response below.]
+
+#### Dimensional Reduction, an Axiomatic View
+
+This video was recently shared with me that highlights some distinctions among persons practicing various forms of data analysis <https://www.youtube.com/watch?v=uHGlCi9jOWY>.  As an orthogonal projection, I would create two axes.  On the horizontal axis (x-axis), I would place "theory of data" to the left and "application of data" toward the right.  On the vertical axis (y-axis), I would place "care for data integrity" at the top and "less care for data integrity" at the bottom.
+
+#### Skills of the Trade
+
+As someone that is coming from industry, having hired young people like you out of Computer Science, Electrical-Computer Engineering, I have opinions related to skills of the trade.
+
+* Can you acquire an appreciation for "data intimacy"?
+* Can you track and document how data is curated?
+* Can you track and document the analyses you perform?  Can you recreate them?  Do you have basic version-control protocols in place?
+* Can you view data from multiple perspectives and synthesize those perspectives to identify the central them of the data?  Can you be objective?  Can you try and identify objective metrics to enlighten your understanding about the essence of data?
+* Can you experiment with different visualizations in search of an optimal "one graphic" result?  Do you have practice using various visualization tools?  Can you comprehend which visualization tool is appropriate for messaging (communicating results) to a particular audience?
+* Can you communicate and defend your findings to a particular audience?  Are your communications professional?  Is the final work product both simple and comprehensive:  simple in its summary findings and comprehensive in its ability to be replicated and audited as necessary.
+
+## (20 points) YOUR OPINION OF DATA ANALYTICS 
+
+[This is worth 20 points.
+
+Specifically, address: 
+
+(1) what proportion of "statistics" should be divided among: collection, organization, analysis, interpretation, and presentation of "data" ... providing a `barplot` of your opinion within your response would seem appropriate
+
+
+```{r, chunk-conclusion-student-perspective, cache.rebuild=TRUE}
+
+x = c(22.5,10,20,15,22.5,10);  ## change these values and discuss ...
+x.labels = c("collection", "organization", "EDA analysis", "CDA analysis", "interpretation", "presentation");
+x.colors = c("blue", "lightgreen", "green", "darkgreen", "orange", "red");
+
+barplot(x, 
+        col = x.colors,
+        ylim = c(0, max(x)),
+        ylab = "Proportion: (Sums to 100)",
+        main="Statistics as the Study of 'Data'");
+
+
+text(1.14* (1:6), par("usr")[3], col = x.colors, labels = x.labels, srt = 45, adj = c(1.1,1.1), xpd = TRUE, cex=.75);
+```
+
+(2) what tools of the trade should you be acquiring from the core courses?  how are you doing in that acquisition process (e.g., tool X is ... and right now I feel like my understanding/proficiency of tool X ... ) ... 
+
+(3) utilize the provided `plot` script to place the coure-course categories on the proposed x-y graph related to analytics practice (Applied vs Theoretical) and care of data integrity (Great Care vs Little Care) ... Also place your personal assessment on the plot script provided
+
+(4) evaluate your skill-level on the six "skills of the trade":  Emerging (Nascent), Developing (Adolescent), Mastering (Mature).  explain your evaluation and include other important skills you believe are relevant that are not included
+
+(5) Any other comments you would like to share.
+
+]
+
+<pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
+
+1- Collection - This is undeniably an important step. And, to speak for my background, I think it is also what people think of when they think "science." The instrumentation parameters of mass-spec data collection, the cleanliness of the workspace during DNA extraction, the training of the sensory panelists; an inability to control for the processes of data collection are an existential threat to the notion of reproducibility in science, and experiment design dictates the rest of the entire process, thus it is tied for the greatest percentage with interpretation.
+
+Organization - Is important, but can be somewhat streamlined because the tidy data format is consistent between many datasets. That said, the farther the data is from tidy format, the more decisions will need to be made about how to translate that data, and all of those steps must be documented. In my metabolite data, I remove observations that don't show up across all instrument replicates - it is also possible to filter for peaks by abundance, but it is important to understand and document that because any time you remove data, you are influencing the results.
+
+EDA Analysis- I'm unsure exactly where to put this because it depends on the study. I do think it is at least as important as CDA, but I represented it as higher because I think it will play a larger role in my own work, which includes the collection of a lot of "untargeted" data. EDA is central to the metagenomic sequencing analysis pipeline. I've also thought a lot lately how EDA may help me evaluate an instrumentation method for untargeted metabolite analysis.  The thing these studies have in common are that data collection begins before the researcher fully understands what they are looking for. This inherently means that more questions need to be asked as information is collected in order to hone in on potential analyses of interest. So in summary, the more exploratory the study, the more time needs to go into EDA.
+
+CDA Analysis - A practice that irks me is that of researcher's reporting results from CDA without mentioning consideration of the underlying assumptions they made about the data. I don't find CDA particularly valuable without a meta-analysis of how reliable the results are, so at the very least, time needs to be spent at this step to consider the appropriateness of a test for the data. Furthermorer, if CDA results make sense in the context of EDA, I think they can communicate general trends more efficiently, which is useful for writing and presentation particularly to lay audiences.
+
+Interpretation - This can be a challenging step because it requires the skill to think beyond the data on the screen and to really evaluate the implications for the experimental questions. I notice that some researchers gloss over this step...which does make one question what the purpose of the study is, if not to maximize the results interpretations. This is why I have rated it with equal importance to the collection step - it is important to actually address the experimental questions.
+
+Presentation - This is challenging - I think that in our time of unparalled access to information where "The truth is paywalled, but lies are free," to steal the title from the Current Affairs article, the process of reporting methodical research findings in an accessible way is unspeakably important...but not all information is created equally for all people. I rated this less because I think, to some degree, the analysis and interpretation steps do a lot of the work required for presentation and also because the communication of itself can be of a full-time job, and the degree to which the onus of that falls on the researcher varies on the field and experiment.
+
+2 - It is interesting for me to look at these core courses and reflect on the proficiency I had after my undergraduate degree. For a member of the chemistry program, I took a much greater sampling of most of these categories than was required- calculus, linear algebra, computer science, and statistics. I was nascent at best in most of these, not by fault of UW, but my own maturity...it took seeing the relevance of the application of these skills, and experiencing the way that they made the scientific process much more rigorous and interesting to acknowledge this lack of proficiency (hence gradschoo). Because my graduate program requires more data science than is required for the degree, I've felt to pressure to acquire all of these skills listed from very few classes, which is why, in our discussions, I've voiced my need to develop a methodical approach to the research process that naturally incorporates these considerations (and I definitely feel we are making good progress with that). The more particular aspects of coding, version control, and data management will have to be skills that I practice now, and really refine later. 
+
+3 - I care a lot about data integrity, but sometimes I don't totally understand how to advocate for it, and I get a little lost in experimental details and lose sight of that is important. I've realized that existing infrastructure in my places of work have mattersed a lot for this...so until I can really initiate this in any research context and practice what I preach, I can't put this point any higher. The distinction between data scientists and statisticians was foreign to me before this semester...I'm a little stuck with this one. I really detest the feeling that in statistics, my ability to make good insights seems to be limited by my ability to understand math and theory. The applied aspect of data science really aligns with the way I like to think about data, but the theoretical aspect of statistics feels safer, somehow, but that's probably just because it's what I know and I should evaluate that more.
+
+4  - I think about these 6 skills as representing two essential realms: the hard skills, and the research and data ethic. Averaged between those, I consider myself an Adolescent. 
+
+I think I've made good progress in the "ethics" realm. In many ways, the concepts around the handling of data discussed in this class have formalized the values that I've developed for my own scientific process during these early moments in my career. I really challenge myself to face the parts of science that used to make me uncomfortable (because they are challenging, and frankly, not really emphasized in a lot of job/educational contexts): striving to understand the "why" behind all experimental procedures and data analysis, and deeply engaging in the process of results interpretation by making inferences and asking questions. For me, the transformation from chasing rather than running from these challenges is what has changed work in science from a mere career interest to a passion. I believe I am a reasonably good communicator of ideas because I enjoy teaching, and benefit from the perspective of currently being a student myself. 
+
+I need to improve my hard skills. Data curation, analysis tracking and version control have been a big challenge for me with my thesis work (although this class material has helped me organize a lot of that). I also still struggle with writing efficient code, but I can recognize a lot of improvement from where I started a year ago because many of the tasks for which I used to rely heavily on stack exchange now come more intuitively.
+
+
+5 - On the first day of my intro to Java class at UW, the professor started lecture by stating that only 2% of the human population was "engineered" to be naturally good at computer science. Maybe there was more to that conversation, but I don't remember it because I immediately felt alienated. At the time, I wanted to double major in chemistry and creative writing and was already struggling with the fact that I didn't seem to fit the scientist mold. Now of course, I'm a much fiercer advocate for my intelligence and creativity, but I still witness all of the ways that the scientific field, and often the people working within it, excessively dwell on the presumed importance of natural intelligence and skill. 
+I've been working in labs for about a decade now, and have worked for many scientists, and find that superior to simply knowing a lot of things or having "natural skill," I admire and have learned most from the people who can admit when they don't know something, and who have the skills to ask insightful and unexpected questions about what they don't know. I'm not trying to diminish the importance of knowledge and expertise because I do value those, too, but I just think that success in my field is more associated with hard work, curiosity, and creativity than is usually expressed, which is a bit backwards because I think knowledge and expertise come most easily in conjunction with those other things. 
+I'm reflecting on that first coding experience because it is strikingly different from my experience here. This class has brought about my first experiences with coding and data analysis where I've truly felt empowered to apply these skills to my research. I really like the ways that the assignments in this class have encouraged creativity because a lot of improvements I have made with the aforementioned 'tools' have often happened without my realizing. It has been the opposite of alienating, and that has been just...really awesome.
+
+
+</pre>
+
+
+```{r, chunk-conclusion-analysis-data, cache.rebuild=TRUE}
+
+# x is -1 for perfectly theoretical
+# x is 1 for perfectly applied
+
+# y is -1 for no care whatsoever for data integrity
+# y is 1 is perfect care for data integrity
+
+########################### basic plot setup #####
+plot(0,0, col="white", 
+  ylim=c(-1.5,1.5), xlim=c(-1.5,1.5),
+  xlab = "",
+  ylab = "",
+  xaxt = 'n', bty = 'n', yaxt = 'n',
+  main = "Axiomatic Perspective on Practice/Care",
+  );
+segments(-1,0,1,0, col="#999999");
+segments(0,-1,0,1, col="#999999");
+text(-1.1,0, "Theoretical Data Practice", cex=0.5, srt = 90);
+text(1.1,0, "Applied Data Practice", cex=0.5, srt = -90);
+text(0,1.1, "Great Care for Data Integrity", cex=0.5, srt = 0);
+text(0,-1.1, "Little Care for Data Integrity", cex=0.5, srt = 0);
+########################### basic plot setup #####
+
+
+########################### you can add elements here #####
+## this point represents the professor's self-perception
+points(0.75, 0.95, pch=20, col="blue");
+text(0.75, 0.95, "Shaffer", col="blue", cex=0.75, srt = 45, pos=3);
+
+#############  TODO ###### ... maybe change color for each data point
+
+# https://brand.wsu.edu/visual/colors/
+# crimson = #981e32
+# you need to change the x,y from 0,0 ...
+# you can change col ... cex (font size), srt (angle), and pos = 1,2,3,4
+# 
+points(0.1, 0.85, pch=20, col="#981e32");
+text(0, 0, "Lindsey (self)", col="#981e32", cex=0.75, srt = 45, pos=3);
+# 
+# ## evaluate the Course Categories of Tools of the Trade
+# ## give them a score
+# 
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Math(s)", col="#981e32", cex=0.5, srt = 45, pos=3);
+# 
+# 
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Computer Science", col="#981e32", cex=0.5, srt = 45, pos=3);
+# 
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Machine learning", col="#981e32", cex=0.5, srt = 45, pos=3);
+# 
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Statistics", col="#981e32", cex=0.5, srt = 45, pos=3);
+# 
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Data analytics", col="#981e32", cex=0.5, srt = 45, pos=3);
+# 
+# # You have a track (e.g., Business)
+# points(0, 0, pch=20, col="#981e32");
+# text(0, 0, "Core discipline", col="#981e32", cex=0.5, srt = 45, pos=3);
+
+```
+
