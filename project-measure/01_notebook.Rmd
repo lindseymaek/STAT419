@@ -1,0 +1,54 @@
+---
+title: "Notebook for Project 01"
+author: "Lindsey Kornowske"
+date: "`r format(Sys.time(), '%d %B %Y')`"
+output:
+  pdf_document:
+    latex_engine: pdflatex
+    citation_package: natbib
+    template: ./../latex-templates/homework.tex
+instructor: "Monte J. Shaffer"
+course: "STATS 419 Survey of Multivariate Analysis"
+course-short: "STATS 419"
+email: "lindsey.kornowske@wsu.edu"
+fig_caption: yes
+number_sections: yes
+---
+Possible investigations of the data that I find intriguing:
+
+Climbing comparison:
+As a sport climber, I'm often told about the advantages a positive ape index (wingspan-height) lends to climbing ability. If the data exists, it would be interesting to know how the measurement data for athletes on the would-be first-ever climbing Olympics teams compares to our sample set. Is this positive ape index strongly represented among the top climbers, or is this a myth?
+
+Size relationship to dominance:
+I'm also curious about qualitative covariates. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size?   
+
+```{r, chunk-rgl-example}
+
+
+#library(devtools);
+#local.path = "/Users/lindseykornowske/.git/STAT419/";
+
+library(reshape2)
+
+quant <- read.csv("../datasets/measure/measure_quantitative.csv", sep = ",", header = T)
+quant <- quant[, c(1:5)]
+
+qual <- read.csv("../datasets/measure/measure_qualitative.csv", sep = ",", header = T)
+qual <- qual[c(1:10),]
+
+quant$mkey <- paste(quant$mkey, "-", quant$side)
+quant <- quant[,-3]
+quant <- cast(data = quant, data_collector+person_id~mkey)
+
+quant <- quant[with(quant, order(person_id, decreasing = T)), ]
+qual <- qual[with(qual, order(person_id, decreasing = T)), ]
+
+measure <- data.frame(quant, qual[,-c(1,2)])
+
+write.table(measure, "measure.txt", sep = "|")
+```
+
+
+
+
+

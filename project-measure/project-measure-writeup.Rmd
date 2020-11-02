@@ -1,0 +1,367 @@
+---
+output:
+  pdf_document:
+    keep_tex: true
+    fig_caption: true
+    toc: true
+    toc_depth: 3 
+    number_sections: true
+    citation_package: natbib
+    latex_engine: pdflatex
+    template: ./../latex-templates/report.tex
+  html_document:
+    df_print: paged
+    
+title: "A boring (academic) title or a clever title?"
+subtitle: "A secondary title"
+author: 
+- name: "Lindsey Kornowske"
+  affiliation: "Washington State University"
+keywords: |
+    multiple comparisons to control; multivariate chi-square distribution; nonlinear growth curves; Richard's curve; simulated critical points
+abstract: |
+  In this article we compare the \emph{empirical characteristic function} \citep{Tukey:1977, Becker:1988} to a \emph{moment-generating-functional form} to compute the proportion of hypotheses $m$ that are rejected under the null hypothesis. \vspace{0.25in}
+
+  \noindent Here is a second paragraph of the abstract (if necessary), and with the pipe notation it doesn't break. Notice it still needs to be indented. \vspace{0.25in}
+
+  \noindent Generally, we write this abstract last.  Often it is called the executive summary. It should succinctly summarize the entire document.  You can include references such as this one to the Appendices section \ref{sec:appendix} if necessary.
+sectionnumberdepth: 3
+titleEndnotes: "NOTES"
+titleReferences: "REFERENCES"
+columnsReferences: 2
+titleTOC:  "CONTENTS"
+bibliography: ./../biblio/master.bib
+bibliostyle: ./../biblio/ormsv080.bst
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+\section{Introduction}
+\label{sec:intro}
+
+Write something here.
+
+[ONE GRAPHIC]
+
+
+
+[TWO GRAPHICS AS ONE]
+
+
+Write something here.
+
+
+\section{Research Question:  Which biometrics are best predicted by height?}
+\label{sec:rq}
+
+
+\subsection{Do famous climbers represent the population for ape index?}
+\label{sec:rq2}
+
+As a sport climber, I'm often told about the advantages a positive ape index (wingspan-height) lends to climbing ability. If the data exists, it would be interesting to know how the measurement data for athletes on the would-be first-ever climbing Olympics teams compares to our sample set. Is this positive ape index strongly represented among the top climbers, or is this a myth?
+
+\subsection{Are dominant limbs of greater size?}
+\label{sec:rq3}
+
+I'm also curious about qualitative covariates. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size? 
+
+\section{Data Description}
+\label{sec:data}
+
+Very brief introduction to the data, how it was collected, and so on.  Remember that everything is covered (who, what, when, where, why, how, so what, and so on).  Reference the section in the Appendix with greater detail about the data provenance.  This section should be about two paragraphs, and the Appendix should have more information.
+
+\subsection{Summary of Sample}
+\label{sec:data-sample}
+
+
+\subsection{Summary Statistics of Data}
+\label{sec:data-summary}
+
+
+\section{Key Findings}
+\label{sec:findings}
+
+
+\section{Conclusion}
+\label{sec:conclusion}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+This was a new page
+
+This is a newline. \newline  Here is some more text.
+
+
+
+Below are some example code that may benefit you in preparing your document. \newline
+
+
+\vspace{0.25in}
+\noindent Please state your name: \hrulefill \newline
+I was born on \hrulefill in \hrulefill
+\vspace{0.25in}
+
+
+
+
+\begin{equation}
+\label{eq:my-model}
+	Y_{jt} = \alpha + \bm{\beta}X_{jt} + \upsilon_{j}  + \varepsilon_{jt} ,
+\end{equation}
+
+\noindent where $\alpha$ is the grand mean, $\upsilon_{j}$ is the fixed-time country mean, $X_{jt}$ (country $j$ at time $t$) is the matrix of country-level observations for the vector of aforementioned parameters $\bm{\beta}$, and $\varepsilon_{jt}$ represents the residual idiosyncratic disturbance.  Our panel data set consists of repeated observations of countries over time.  Therefore, we employ cross-section time-series models.  This approach redefines Equation~\ref{eq:my-model} by subtracting time-demeaned values.  This \emph{within} transformation subtracts constant country effects for the dependent variable $\bar{Y_{j}}$, the predictor variables $\bar{X_{j}}$, and the intercept $\bar{\upsilon_{j}}$:
+
+\begin{equation}
+\label{eq:my-random}
+	(Y_{jt} - \theta \bar{Y_{j}}) = (1-\theta)\alpha + \bm{\beta}(X_{jt} - \bar{X_{j}}) +  (\upsilon_{jt} - \theta \bar{\upsilon_{j}})  ,
+\end{equation}
+
+\noindent If $\theta = 0$, the model reduces to a basic pooled ordinary-least-squares (OLS) model; if $\theta = 1$, the model reduces to a fixed-effects model; otherwise the model represents a random-effects model.  The pooled OLS estimation is biased if country effects exist  \citep{Hsiao:2003}.  The random-effects model may be susceptible to omitted-variable bias \citep{Wooldridge:2006}:  bias because a predictor was excluded from the model specification.   Conversely, the fixed-effects model is not susceptible to this bias as it captures unobserved intracountry variation around its average country-level ``fixed effect."  Panel-data analysis commonly has issues with heteroskedasticity, serial autocorrelation, and cross-sectional autocorrelation.   
+
+
+
+
+
+\vspace{0.5in}
+
+$i=1$ and $$i = 1$$
+
+\vspace{0.5in}
+
+
+
+
+\begin{tabular}{ c c c c c}
+  1 & 2 & 3 & 4 & 5 \\
+  \hline
+  6 & 7 & 8 & 9 & 10
+\end{tabular}
+
+\vspace{0.5in}
+
+
+
+
+\begin{figure}[!ht]
+%% figures have hrule, tables have hline
+	\hrule
+	\caption{ \textbf{Conceptual Model} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=\textwidth]{figures/conceptual-model-v4.pdf} }
+	\end{center}
+	\label{fig:conceptual-model}
+	\hrule
+\end{figure}
+
+
+See Figure \ref{fig:conceptual-model}.
+
+\newpage
+
+This is a footnote\footnote{This is a footnote that can be really long.  \newline You can have multiple paragraphs in the footnote.  You can have \underline{underline} or \textbf{bold} or \emph{italics}.  You can even have a math equation inline. \newline In this section, we review the regression results to summarize our findings.  First, we examine each model for significance, and conclude the hypothesized models fit well with the data.  Second, we conclude that the fixed country effects represent consistent and unbiased parameter estimates.  Third, with the use of the \citet{Driscoll:1998} robust standard errors, we adjust any variance bias to ascertain the significance of these consistent estimates.  Therefore, we are able to make inferences about the hypotheses using our model estimates.  For ease of interpretation across these 12 models, we introduce $\betaSH{{ \ \ }M1}{Total}{1}$ as notation to refer to parameter estimate $\hat{\beta}_{1}$ (HDI) for the Total Sample and (M1) Model 1:  Main Effects.  We proceed by reporting findings for the total sample. \newline The footnotes are automatically converted to "endnotes" and will be included at the end of the document.  It will finish when you have that outer brace like this.} that can be placed within a document.
+
+\vspace{1.5in}
+
+
+Refer to the Appendices in section~\ref{sec:appendix} where I am going to cite John \citep[pp. 2-3]{Tukey:1962}. 
+
+
+Here is a quote by \citet[pp. 2-3]{Tukey:1962}:
+
+\begin{quote}
+For a long time I have thought I was a statistician, interested in inferences from the particular to the general.  But as I have watched mathematical statistics evolve, I have had to cause to wonder and to doubt. [...] All in all, I have come to feel that my central interest is in \emph{data analysis}, which I take to include among other things: procedures for analyzing data, techniques for interpreting the results of such procedures, ways of planning the gathering of data to make its analysis easier, more precise or more accurate, and all the machinery and results of (mathematical) statistics which apply to analyzing the data.
+
+Large parts of data analysis are inferential in the sample-to-population sense, but these are only parts, not the whole.  Large parts of data analysis are incisive, laying bare indications which we could not perceive by simple and direct examination of the raw data, but these too are only parts, not the whole.  Some parts of data analysis, as the term is her stretch beyond its philology, are allocation, in the sense that they guide us in the distribution of effort and other valuable considerations in observation, experimentation, or analysis.  Data analysis is a larger and more varied field than inference, or incisive procedures, or allocation.
+
+Statistics has contributed much to data analysis.  In the future it can, and in my view should, contribute more.  For such contributions to exist, and be valuable, it is not necessary that they be direct.  They need not provide new techniques, or better tables for old techniques, in order to influence the practice of data analysis.
+\end{quote}
+
+
+
+
+
+\newpage
+
+\input{tables/example-correlation-table} 
+
+\newpage
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\newpage
+\section{APPENDICES}
+\label{sec:appendix}
+
+
+\subsection{Data Provenance}
+\label{sec:appendix-data-provenance}
+
+\newpage
+\subsubsection{Data Collection Handout}
+\label{sec:appendix-data-handout}
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Handout Page 1} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout1.pdf} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
+
+
+\newpage
+
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{Handout Page 2} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout2.pdf} }
+	\end{center}
+	\label{fig:handout-2}
+	\hrule
+\end{figure}
+
+\newpage
+
+
+\begin{figure}[!ht]
+    \begin{subfigure}[h]{0.5\textwidth}
+    \centering
+    %  trim={<left> <lower> <right> <upper>}
+    % https://shantoroy.com/latex/add-subfig-in-latex/
+            \includegraphics[trim = 0 0 11.25cm 0,clip,scale=1]{figures/Vitruvian.pdf}
+        \caption{ \citet{Thomas:2020} discuss this. }
+        \label{fig:sub-first}
+    \end{subfigure}
+    \begin{subfigure}[h]{0.5\textwidth}
+    \centering
+        \includegraphics[trim = 11.25cm 0 0 0,clip,scale=1]{figures/Vitruvian.pdf}
+            \caption{Schnitt realer Sensor \citep{Thomas:2020}}
+        \label{fig:sub-second}
+    \end{subfigure}
+    \vspace{2.5mm}
+    \hrule
+    \vspace{2.5mm}
+        \caption{\textbf{ Der Sensor in Theorie und Verwirklichung... caption at bottom instead? }  I can write a really long caption if I want. \newline This is using "crop" to include one image and trim it to appear as two.  Likely you will have two separate images if you use this option, so you would set the trim parameters all equal to 0.  \newline   This figure has subfigures which each also have a possible caption.   }
+        \label{fig:combined}
+    \vspace{-2.5mm}
+    \hrule
+\end{figure}
+
+
+\newpage
+
+\subsection{Preparing the Report Workspace as a subsection}
+\label{sec:appendix-setup}
+
+\subsubsection{Preparing the Report Workspace as a subsubsection}
+\label{sec:appendix-setup2}
+
+\paragraph{Preparing the Report Workspace as a paragraph}
+\label{sec:appendix-setup3}
+
+\subparagraph{Preparing the Report Workspace as a subparagrah}
+\label{sec:appendix-setup4}
+
+Below is the necessary functions and libraries required to run the code referenced in this document.
+
+```{r,appendix-setup,message=FALSE}
+library(devtools);       # required for source_url
+
+path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
+source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
+
+```
+
+Below is the code to load the data and prepare it for analysis.
+
+```{r,appendix-secret,message=FALSE}
+
+path.project = "/Users/lindseykornowske/.git/STAT419/project-measure/";
+
+path.to.secret = path.to.secret = "/Users/lindseykornowske/Documents/FS Classes HW & Resources/STAT 419 Multivariate/_SECRET_/";
+
+measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
+
+#path.github = "https://raw.githubusercontent.com/this-IS-YOUR-PATH-TO-GITHUB/";
+#source_url( paste0(path.github,"master/functions/functions-project-measure.R") );
+
+# this is your function
+# put in the same "units"
+# merge left/right
+# build proportion data
+# and so on ... 
+# measure.df = prepareMeasureData(measure);
+
+```
+
+
+Below is the code to generate the summary statistics and save them as a table that you see in Section \ref{}.
+
+```{r,appendix-summary,message=FALSE}
+
+
+```
+
+
+
+
+
+

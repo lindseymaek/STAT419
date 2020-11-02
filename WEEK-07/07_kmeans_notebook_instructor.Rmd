@@ -1,0 +1,488 @@
+---
+title: 'R Notebook sandbox: Playing with K-means'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true
+my-var: "monte"  # https://bookdown.org/yihui/rmarkdown/html-document.html
+---
+# Top of the world
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE);
+knitr::opts_chunk$set(warning = FALSE);
+knitr::opts_chunk$set(message = FALSE);
+
+## this should knit, but I am running some IMDB stuff
+## so I wasn't able to verify a final Knit.
+## please let me know in the Discussion Board if you
+## find any errors, and I will fix
+```
+
+# Good Resources as we move forward into Multivariate Analysis
+
+This resource (channel) <https://www.youtube.com/channel/UCtYLUTtgS3k1Fg4y5tAhLbw> seems to be informative and instructive for those that need additional explanations on these topics, or key statistical methods/terminologies.
+
+* **HCLUST** <https://www.youtube.com/watch?v=7xHsRkOdVwo>
+
+* **K-means** <https://www.youtube.com/watch?v=4b5d3muPQmA>
+
+* **PCA** <https://www.youtube.com/watch?v=_UVHneBUBW0>
+
+* **Flipping Coins / Measuring Person's Heights** <https://www.youtube.com/watch?v=5Z9OIYA8He8>
+
+* **eigenvectors** <https://www.youtube.com/watch?v=PFDu9oVAE-g>
+
+
+
+# K-means
+
+We are now going to apply distance to aggregate multivariate data.  Recall that typically we refer to a data frame based on its rows and columns.  Generally, the rows represent observations and the columns represent features.
+
+As we try to aggregate data, we need to ask:  are we aggregating the rows or the columns?  Why?  So let's look at an example.
+
+
+```{r, chunck-load-protein}
+packageVersion("humanVerseWSU");  # ‘0.1.4’  [SHOULD BE THIS]
+packageVersion("imdb");
+
+library(humanVerseWSU); 
+# You need R tools for this to work:  https://cran.r-project.org/bin/windows/Rtools/
+# You may want to see if you have the latest version...
+#library(devtools);
+# detach(package:humanVerseWSU);
+#install_github("MonteShaffer/imdb/imdb"); 
+# Choose (3) None to minimize headaches ....
+# library(humanVerseWSU);
+
+path.to.week7 = "/Users/lindseykornowske/.git/STAT419/WEEK-07/";
+
+path.graphics = paste0(path.to.week7,"graphics/");
+
+createDirRecursive(path.graphics);
+
+
+
+local.path = "/Users/lindseykornowske/.git/STAT419/datasets/";
+protein = read.csv(paste0(local.path,"protein.csv"), sep = ",", header = T)
+protein;
+
+rows = protein$Country;
+
+df = removeColumnsFromDataFrame(protein,"Country");
+df.t = transposeMatrix(df);
+colnames(df.t) = rows;
+
+protein.t = as.data.frame(df.t);
+protein.t;
+
+
+```
+
+Previously, I asked if you should scale the data: `Xs = scale(X);` ... the general rule is YES.  But in context of this data, it will not matter too much as the data is all measured in "grams of protein intake" ... If however, the units of the data were very different (consider:  height, weight, and temperature in degrees Fahrenheit), it will very much matter.
+
+I think I was previously thinking about scaling incorrectly - where I would scale datasets individually, then combine them in multifactor analysis.  I understand how this is problematic, because scaling and centering relies on the relation of the data to itself, which will change based on that data.
+
+## Play with K-means
+
+K-means uses the distances between the data to group the data into "k" centroid-based clusters.
+
+Type `?kmeans` and notice centers is the number for `k`.  We could pass in a vector of cluster centers, it length would still tell us the `k`.  
+
+We normally think about distance in 2-D (x,y) or 3-D (x,y,z).  The latitude/longitude is a simple 2-D flattening approach.  In mathematics, we can go beyond 3-D (read the book "Flatland" if you want to think more about n-D).
+
+So when we talk about distance, we can compute a Euclidean distance or any other form based on more than 3-D; that is; n-D.  And that is what happens behind the scenes in Multivariate Analysis.
+
+
+### K-means (junior varsity)
+
+```{r, chunck-kmeans-basic}
+X = removeColumnsFromDataFrame(protein,"Country");
+rownames(X) = protein$Country;
+
+# first a descriptive plot by country
+stars(X, len = 0.5, key.loc=c(12,2), draw.segments = TRUE);
+# stars need a better palette
+palette(rainbow(12, s = 0.6, v = 0.75));
+# redraw 
+stars(X, len = 0.5, key.loc=c(12,2), draw.segments = TRUE);
+
+
+
+# for the faint of heart ...
+X.kmeans = kmeans(X, 4);  # default algorithm
+stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+        main = "Algorithm: DEFAULT [Hartigan-Wong] \n Stars of KMEANS=3", draw.segments = TRUE);
+
+print(X.kmeans);
+
+    membership = as.data.frame( matrix( X.kmeans$cluster, ncol=1)) ;
+    
+    rownames(membership) = protein$Country;
+
+    membership;
+
+    print( table(membership) ) ; 
+```
+3-4 is a reasonable amount to cluster - others can be identified, but then require justification as to the variability that is being explained. 
+
+Question - I understand that these stars plots are characterizing the clusters we created by kmeans - but how is this variability being defined? How is cluster 2 being associated with cereals and nuts...is this simply a mattter of count?
+
+Monte's answer - the mathematics of this have been left out because they aren't immediately necessary to the concept, but should be explored to address fundamental questions like this.  
+
+The PCA is the engine behind any factors analysis
+
+```{r, chunck-kmeans-basic-plots}
+
+########################################
+
+# we can't easily plot all of the dimensions, since it is more than 2-D or 3-D ... so we can "cheat" and apply some PCA techniques to data-reduce to two dimensions ...
+
+library(factoextra);   # install.packages("factoextra", dependencies=TRUE);
+
+# this approach uses ggplot2 (not plot)
+library(ggplot2);   # install.packages("ggplot2", dependencies=TRUE);
+fviz_cluster(X.kmeans,data=X);
+fviz_cluster(X.kmeans, data=X, geom="point");
+# assumes the cluster is normal?
+fviz_cluster(X.kmeans, data=X, geom="point", ellipse.type = "norm");
+
+# try ?fviz_cluster
+
+```
+Hmmm, based on the au pvalues, I assumed that these clustered really well - that is an apples-to-oranges comparison.  With hierarchical clustering and kmeans vs pca we are talking about the difference between looking at pairwise comparisons and considering all of the data in total.  
+
+### K-means (varsity)
+
+
+```{r, chunck-kmeans-steroids}
+# now for a "FOR LOOP ON STEROIDS"
+# a variadic approach ...
+
+path.loop.graphics = paste0(path.graphics,"forloops/");
+
+createDirRecursive(path.loop.graphics);
+
+print(path.loop.graphics);
+# maybe open this folder before you run this code ... 
+
+wss.png.list = c();
+
+n.Countries = dim(X)[1];
+n.Features = dim(X)[2];
+
+K = 2:4;  # let's try these choices for our "k"
+n.K = length(K);
+
+algorithms = c("Hartigan-Wong", "Lloyd", "Forgy", "MacQueen");
+
+n.A = length(algorithms);
+
+# a nested for loop, order matters, I want to study each algorithm as I loop over the special K's
+
+membership = as.data.frame( 
+                matrix(0, nrow=n.Countries, ncol=n.K*n.A) );
+  rownames(membership) = protein$Country;
+
+m.col.names = c(); # don't know these yet ...
+
+j=0;
+for(algorithm in algorithms)
+  {
+  wss = numeric(n.K); # total within-sum-of-squares
+  times = numeric(n.K);
+  i = 0;
+  for(k in K)
+    {
+    print( paste0("algorithm: ", algorithm, " ",
+           paste0(rep("=",times=k),collapse=""), "> ",k));
+    j = 1 + j;
+    i = 1 + i;
+    time.start = Sys.time(); 
+    # I am appending to kmeans some previous results, so:
+      #X.kmeans = kmeans(X[,n.Features], k, algorithm=algorithm);
+    X.kmeans = kmeans(X, k, algorithm=algorithm);
+      # str(X.kmeans);
+      
+      # key.loc probably needs to be adjusted per kmeans instance ... once you have a final answer, for your final writeup, you would really take the time to make the graph look perfect ... we are in a sandbox ... the "legend or key" may cover up one of your results.
+
+
+stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+            main = paste0("Algorithm: ", algorithm, 
+              " \n Stars of KMEANS=",k), draw.segments = TRUE);
+   
+    star.file = paste0(path.loop.graphics,"algo-", paste0(tolower(algorithm),collapse=""),"_k-",k,"_stars_.png");  # could also do PDF
+    
+################### writes image as png to file    
+png(star.file);        
+    stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+            main = paste0("Algorithm: ", algorithm, 
+              " \n Stars of KMEANS=",k), draw.segments = TRUE);
+dev.off();
+###################  
+    
+################### writes image as pdf to file    
+pdf( gsub(".png",".pdf",star.file, fixed=TRUE) );        
+    stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+            main = paste0("Algorithm: ", algorithm, 
+              " \n Stars of KMEANS=",k), draw.segments = TRUE);
+dev.off();
+###################     
+# obviously, subfolders may help ... this is a demo ...    
+    
+        stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+            main = paste0("Algorithm: ", algorithm, 
+              " \n Stars of KMEANS=",k), draw.segments = TRUE);
+    
+    
+    # map of clusters back to countries
+    my.key = paste0(algorithm,".",k);
+    m.col.names = c(m.col.names, my.key);
+    
+    membership[,j] = X.kmeans$cluster;
+    
+    print( table(X.kmeans$cluster) ) ;  
+    #plot(X, col=X.kmeans$cluster);
+    #points(X.kmeans$centers, col = 1:2, pch = 8, cex = 2);
+  
+    time.end = Sys.time();
+    elapse = sprintf("%.3f", 
+                as.numeric(time.end) - as.numeric(time.start));
+    
+# don't include this step in "timings" ... slows things down...
+# rendering?
+    
+pca.clust.file = gsub("_stars_","_clusters_",star.file, fixed=TRUE);
+
+
+
+################### writes image as png to file    
+png(pca.clust.file);        
+    fviz_cluster(X.kmeans, data=X, 
+                geom="point", ellipse.type = "norm");
+dev.off();
+###################  
+    
+################### writes image as pdf to file    
+pdf( gsub(".png",".pdf",pca.clust.file, fixed=TRUE) );        
+    fviz_cluster(X.kmeans, data=X, 
+                geom="point", ellipse.type = "norm");
+dev.off();
+###################   
+
+print("fviz_cluster is not rendering inside of for loop");
+fviz_cluster(X.kmeans, data=X, 
+                geom="point", ellipse.type = "norm");
+    
+    wss[i] = X.kmeans$tot.withinss;
+    times[i] = elapse;
+    }
+  #print(times);
+  #print(wss);
+  base::plot(K,times, main=paste0("[Deceptive] Time in seconds: ",algorithm), type="b"); # deceptive ... you need to run the code once, look at the ranges then rerun with valid ranges ...
+  # if you want to compare graphs visually, they should have the same axes.
+  # A good graph has a title, a xlab, a ylab
+  # Final writeup should have a nice caption for each image ...
+  
+  base::plot(K,times, ylim=c(0, 0.1), main=paste0("Time in seconds: ",algorithm), type="b");
+  
+  wss.file = paste0(path.graphics,"algo-", paste0(tolower(algorithm),collapse=""),"_k-",k,"_wss_.png"); # this is one folder up ...
+  
+  wss.png.list = c(wss.png.list,wss.file);
+################### writes image as png to file    
+png(wss.file);        
+    base::plot(K,wss, ylim=c(0,3000), main=paste0("Total WSS: ",algorithm), type="b");
+dev.off();
+###################  
+    
+################### writes image as pdf to file    
+pdf( gsub(".png",".pdf",wss.file, fixed=TRUE) );        
+    base::plot(K,wss, ylim=c(0,3000), main=paste0("Total WSS: ",algorithm), type="b");
+dev.off();
+################### 
+
+  # knitr will probably automate this process for us, more to follow: <https://www.r-bloggers.com/2014/01/fast-track-publishing-using-knitr-exporting-images-for-sharing-and-press-part-iii/>  
+  
+  # want to learn more about plot:  <https://statisticsglobe.com/plot-in-r-example>
+  
+  
+  }
+
+
+colnames(membership) = m.col.names;
+membership;
+
+
+# rendering?  ... BUGGY ...
+print("fviz_cluster renders outside of for loop");
+k = 3; # my final answer?
+X.kmeans = kmeans(X, k);
+fviz_cluster(X.kmeans, data=X);
+
+k = 4; # my final answer?
+X.kmeans = kmeans(X, k);
+fviz_cluster(X.kmeans, data=X);
+
+# you may notice that it is changing cluster groups and boundaries at times ...
+
+
+```
+I get an error in this code,that says plot not found - I'm not certain what is happen, but in general the point is communicated. Membership to clusters is definitely method dependent - I would imagine you can either try and justify this with multiple methods, or by selecting one that is preferrred for the field.
+## Computational efficiency:  `kmeans` is better than `hclust`
+
+K-means is a nice approach because it is computationally efficient.  It is fast!  We don't notice the speed compared to `hclust` yet because the data sets are very small.
+
+<https://youtu.be/esmzYhuFnds?t=985> I would suggest watching from 16:25 to 23:30 ... especially if you are CS-minded!
+
+The problem with kmeans is the results may change based on the initial seeds.  Here are two iterations I ran with the default algorithm.  Do they look the same as yours?
+
+## K-means 3a and 3b
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/kmeans-3.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means: 3a** &#8663; </div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/kmeans-3b.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means: 3b** &#8663; </div>
+
+## K-means 4a and 4b
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/kmeans-4.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means: 4a** &#8663; </div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/kmeans-4b.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means: 4b** &#8663; </div>
+
+
+## Stopping rule: what is an ideal "k"?
+
+The `wss` keeps going down as you can see in the appropriate plots.  A general "rule of thumb" is called the elbow-rule of the Scree plot.
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/algo-hartigan-wong_k-6_wss_.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means (wss): Hartigan-Wong** &#8663; </div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/algo-lloyd_k-6_wss_.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means (wss): Lloyd** &#8663; </div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/algo-forgy_k-6_wss_.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means (wss): Forgy** &#8663; </div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/_images_/algo-macqueen_k-6_wss_.png" style="border: 2px black solid;" />
+<div> &#8662; **K-means (wss): MacQueen** &#8663; </div>
+
+
+Also think about what we did previously with `hclust` on this same data.
+
+The library(factoextra) has `hkmeans` and `hcuts` that may work.  I would always be cautious of a black-box solution, look at the graphics, and think about what you want to accomplish.
+
+The `for loop` approach gives me the raw content, now I may want to review the image types side-by-side.
+
+<https://www.zevross.com/blog/2017/06/19/tips-and-tricks-for-working-with-images-and-figures-in-r-markdown-documents/>
+
+To aggregate by country, I am reviewing what is available to me, and am concluding that:
+
+* Use the default algorithm
+
+* For this data set, 3-4 appears to be is a nice choice for `k`
+
+* I should define my centers to create `replicable` final results.
+
+* I may try Poland, West Germany, Romania as my 3 centers (See Figure `K-means: 3b`).
+
+---
+
+## K-means (final answer)
+
+It is reasonable to pick 3 or 4 as your final answer.  Review the information, and pick one that you can defend.  A `4` gives you more variability but may not add much.  You decide.  Maybe you think `wss` clearly concludes `3`.  Decision making and arriving at a definitive conclusion is an important part of data analytics.  Just be able to defend your choice.
+
+```{r, chunck-kmeans-conclusion}
+protein$Country;
+# I could try and pass in the centers
+# myCenters = matrix( c(X[16,], X[24,], X[18,]), nrow=3);  # This is not 2-D, or 3-D, but 9-D!
+# Since we have 9-D, passing in nearest center Poland is not working ...
+# X.kmeans = kmeans(X, myCenters);
+# East Germany in 2-D (PCA transform) looks closer in distance to the "WEST"; however, in all 9-D it is closest in distance to its assigned cluster.
+
+
+# this line needs to be changed ... 3 or 4 ?
+myFinalAnswer = 3;  # 3 or 4, unless you want to defend 8 ...
+
+# My justificatiton 2 is too small - a lot of variability is hidden within the second starplot and I think that 3 separates this out nicely. When you add a 4th star plot, you get some over lap with 2 and 3 that, while perhaps expalining some nuanced variability, no longer nicely clusters participation by protein
+
+
+X.kmeans = kmeans(X, myFinalAnswer, nstart=100);
+# default algorithm, notice increase starts will do more "initial sampling" and find the best one (based on wss).  # I only have 25 countries, and I need to choise 3 ... 2300 would give me all options ? <https://www.calculatorsoup.com/calculators/discretemathematics/combinations.php>
+
+# maybe move key.loc value to make graph look nice ...
+stars(X.kmeans$centers, len = 0.5, key.loc = c(4, 3),
+        main = paste0("Algorithm: DEFAULT [Hartigan-Wong] \n Stars of KMEANS=",myFinalAnswer), draw.segments = TRUE);
+
+print(X.kmeans);
+
+    membership = as.data.frame( matrix( X.kmeans$cluster, ncol=1)) ;
+    
+    rownames(membership) = protein$Country;
+
+    membership;
+
+    print( table(membership) ) ; 
+
+fviz_cluster(X.kmeans,data=X);
+
+# will this be replicable? ...
+
+```
+# Synthesis (**S.T.A.R.S**)
+
+## SITUATION: Data Overview
+
+My data came from ... 
+
+--WRITE SOMETHING HERE--
+Hand et al. 1994 pp 297. A study that quantified the protein consumption by food group in 25 different countries in the 1970s. I am not actually totally clear on how these numbers were calculated - average grams per person per day?  If I were to do an actual research assessment of this, that would be important to know, but what matters for this is that the data are in comparable units.
+
+## TASK: Research Question
+
+Ex; I would like to identify which countries have similar protein-consumption habits. ...
+
+--WRITE SOMETHING HERE--
+I would like to identify whether country participation in a protein cluster is related to the proximity of that country to other countries in the cluster.
+
+## ACTION: Review of my Efforts
+
+I considered `2:6` for my options for number of clusters.  Using Kmeans, I tried various algorithms and examined `wss` to ascertain the best algorithm and best number of factors.  [This is a base skeleton, you should write a few paragraphs, maybe include an important image, etc.]
+
+--WRITE SOMETHING HERE--
+
+## RESULT: Three clusters seems to work
+
+I concluded that `k=3` is best because ...
+
+Using this, I report my final findings [images of results: star/cluster]
+
+In cluster 1, we have `N.1` countries which include:  ... Based on the star plot, it appears their diet mostly consists of ... I would label this dietary habit as `some creative term` based on the information from the star plot.
+
+--WRITE SOMETHING HERE--
+
+## SO WHAT: Review implications
+
+These results are limited because the data was collected in Year `put.Year.here` before the fall of the USSR (Soviet Union).  Eating habits may have changed.
+
+The size of the USSR is enormous.  As a result, it may represent many varieties of eating habits that are unnecessarily getting averaged. (15 modern countries making crossing 11 time zones; 8,649,500 square miles of area compared to say France at 247,368 square miles = 35 times larger than France!)
+
+Does that mean you should remove USSR and run analysis?
+
+<https://en.wikipedia.org/wiki/Soviet_Union>
+<https://en.wikipedia.org/wiki/Post-Soviet_states>
+<https://en.wikipedia.org/wiki/Post-Soviet_states#/media/File:USSR_Republics_Numbered_Alphabetically.png>
+
+
+I find it interesting that ...
+
+I also find it interesting that ... (e.g., although East Germany was part of Soviet block, they ate like typical "Westerners")
+
+Based on what I learned, an interesting follow-up research question would be: 
+
+--WRITE SOMETHING HERE--
+
