@@ -1,9 +1,9 @@
-cm.to.in = function(x){
+cm.to.in = function(x) {
   y=x/2.54;
   y;
 }
 
-convertMeasures = function(nums){
+convertMeasures = function(nums) {
   for(i in 1:nscan){
     if(nums$units[i] == "cm"){
       nums[i,c(2:num.cols)] = cm.to.in(nums[i, c(2:num.cols)]);
@@ -12,7 +12,7 @@ convertMeasures = function(nums){
   nums;
 }
 
-prepareMeasureData = function(measure){
+prepareMeasureData = function(measure) {
   
   filter = Filter(is.factor, measure);
   ## functions that apply to all factors, case fix, rm quotes, correct NA, change equal to both
