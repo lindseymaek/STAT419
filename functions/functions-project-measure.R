@@ -18,7 +18,7 @@ prepareMeasureData <- function(measure) {
   ## functions that apply to all factors, case fix, rm quotes, correct NA, change equal to both
   lowerCaseFactors = as.data.frame(lapply(filter, tolower));
   lowerCaseFactors = as.data.frame (sapply (lowerCaseFactors, function (x) gsub ("\"", "", x)))
-  lowercaseFactors$notes = as.factor(lowerCaseFactors$notes);
+  lowerCaseFactors$notes = as.factor(lowerCaseFactors$notes);
   
   lowerCaseFactors = as.data.frame (sapply (lowerCaseFactors, function (x) gsub ("equal", "both", x)))
   ## stepwise through the variables list
@@ -81,15 +81,17 @@ prepareMeasureData <- function(measure) {
   measure = measure[complete.cases(measure$height.NA),];
   
   
-  
-  collapseCols = c("hand.length.left", "measure$hand.length.right", "hand.width.left", "hand.width.right", "floor.armpit.left",
+  #Did this to collapse the data, but then realized I was interested in differences between left and right
+  #collapseCols = c("hand.length.left", "measure$hand.length.right", "hand.width.left", "hand.width.right", "floor.armpit.left",
                    "floor.armpit.right", "hand.elbow.left", "hand.elbow.right", "elbow.armpit.left", "elbow.armpit.right",
                    "floor.kneepit.left", "floor.kneepit.right", "floor.hip.left", "floor.hip.right", "arm.reach.left", "arm.reach.right", "foot.length.left", "foot.length.right", 
                    "units")
   
-  measure = measure[,-which(names(measure) %in% collapseCols)];
+  #measure = measure[,-which(names(measure) %in% collapseCols)];
   
   measure$ape.index = measure$arm.span.NA - measure$height.NA;
+  
+  
   
   measure;
 }
