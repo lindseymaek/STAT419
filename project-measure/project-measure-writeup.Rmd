@@ -54,18 +54,19 @@ Write something here.
 Write something here.
 
 
-\section{Research Question:  What is my primary question}
+\section{Research Question:  Which biometrics are best predicted by height?}
 \label{sec:rq}
 
 
-\subsection{What is my secondary question}
+\subsection{Do famous climbers represent the population for ape index?}
 \label{sec:rq2}
 
+As a sport climber, I'm often told about the advantages a positive ape index (wingspan-height) lends to climbing ability. If the data exists, it would be interesting to know how the measurement data for athletes on the would-be first-ever climbing Olympics teams compares to our sample set. Is this positive ape index strongly represented among the top climbers, or is this a myth?
 
-\subsection{What is my other secondary question}
+\subsection{Are dominant limbs of greater size?}
 \label{sec:rq3}
 
-
+I'm also curious about qualitative covariates. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size? 
 
 \section{Data Description}
 \label{sec:data}
@@ -333,9 +334,9 @@ Below is the code to load the data and prepare it for analysis.
 
 ```{r,appendix-secret,message=FALSE}
 
-path.project = "C:/_git_/WSU_STATS419_FALL2020/project-measure/";
+path.project = "/Users/lindseykornowske/.git/STAT419/project-measure/";
 
-path.to.secret = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/_SECRET_/";
+path.to.secret = path.to.secret = "/Users/lindseykornowske/Documents/FS Classes HW & Resources/STAT 419 Multivariate/_SECRET_/";
 
 measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
 
