@@ -3,16 +3,7 @@ cm.to.in <- function(x) {
   y;
 }
 
-convertMeasures <- function(nums) {
-  nscan = length(nums$units);
-  num.cols = ncol(nums);
-  for(i in 1:nscan){
-    if(nums$units[i] == "cm"){
-      nums[i,c(2:num.cols)] = cm.to.in(nums[i, c(2:num.cols)]);
-    }
-  }
-  nums;
-}
+
 
 prepareMeasureData <- function(measure) {
   
@@ -58,6 +49,17 @@ prepareMeasureData <- function(measure) {
   
   nums = as.data.frame(measure[,c(4,12:34)]);
   nums$units = as.character(nums$units)
+ 
+   convertMeasures <- function(nums) {
+    nscan = length(nums$units);
+    num.cols = ncol(nums);
+    for(i in 1:nscan){
+      if(nums$units[i] == "cm"){
+        nums[i,c(2:num.cols)] = cm.to.in(nums[i, c(2:num.cols)]);
+      }
+    }
+    nums;
+  }
   
   nums.new = convertMeasures(nums);
   
