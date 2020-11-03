@@ -66,7 +66,7 @@ As a sport climber, I'm often told about the advantages a positive ape index (wi
 \subsection{Are dominant limbs of greater size?}
 \label{sec:rq3}
 
-I'm also curious about qualitative covariates. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size? 
+This question attempts to understand if qualitative variables may be associated with trends observed in the biometric data. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size? 
 
 \section{Data Description}
 \label{sec:data}
@@ -340,16 +340,11 @@ path.to.secret = path.to.secret = "/Users/lindseykornowske/Documents/FS Classes 
 
 measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
 
-#path.github = "https://raw.githubusercontent.com/this-IS-YOUR-PATH-TO-GITHUB/";
-#source_url( paste0(path.github,"master/functions/functions-project-measure.R") );
+source(file = "https://raw.githubusercontent.com/lindseymaek/STAT419/master/functions/functions-project-measure.R",local = F);
 
-# this is your function
-# put in the same "units"
-# merge left/right
-# build proportion data
-# and so on ... 
-# measure.df = prepareMeasureData(measure);
+measure.df = prepareMeasureData(measure);
 
+measure.scale = scale(measure[,c(4:26)], scale = measure$height.NA)
 ```
 
 

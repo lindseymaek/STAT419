@@ -53,8 +53,9 @@ prepareMeasureData <- function(measure) {
   measure = as.data.frame(cbind(lowerCaseFactors, measure));
   
   ##convert cm to in
-  nscan = length(nums$units);
+  
   nums = as.data.frame(measure[,c(4,12:34)]);
+  nscan = length(nums$units);
   nums$units = as.character(nums$units)
   num.cols = ncol(nums);
   
