@@ -63,9 +63,11 @@ prepareMeasureData <- function(measure) {
   
   nums.new = convertMeasures(nums);
   
+
   measure = measure[, -which(names(measure) %in% names(nums.new))]
   measure = as.data.frame(cbind(measure, nums.new));
   
+  measure$units = as.factor(gsub("cm", "in", measure$units))
   measure = unique(measure);
   measure = measure[unique(measure$person_id),];
   
