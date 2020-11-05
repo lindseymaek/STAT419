@@ -67,7 +67,8 @@ prepareMeasureData <- function(measure) {
   measure = measure[, -which(names(measure) %in% names(nums.new))]
   measure = as.data.frame(cbind(measure, nums.new));
   
-  measure$units = as.factor(gsub("cm", "in", measure$units))
+  measure$units = as.factor(gsub("cm", "in", measure$units));
+  
   measure = unique(measure);
   measure = measure[unique(measure$person_id),];
   
@@ -91,4 +92,17 @@ prepareMeasureData <- function(measure) {
   
   
   measure;
+}
+
+summarizeMeanSD = function(measure.collapsed) {
+  names = colnames(measure.collapsed);
+  n = length(measure.collapsed);
+  summary = data.frame();
+  for(i in 1:n) {
+    summary[1,i] = round( mean(measure.collapsed[,i], na.rm = T), 1);
+    summary[2,i] = round( sd(measure.collapsed[,i], na.rm = T), 2);
+  }
+  colnames(summary)= names;
+  rownames(summary) = c("mean", "standard deviation");
+  summary;
 }
