@@ -1,0 +1,38 @@
+---
+title: 'R Notebook: signal processing and punch detection'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+
+```
+
+# Signal Processing and Punch Detection  
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/punching-parkinsons/PP.png" style="border: 2px black solid;" />
+<div>**Source: Internal Creation**</div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/punching-parkinsons/PP-ATS.png" style="border: 2px black solid;" />
+<div>**Source: Internal Creation**</div>
+
+<IMG src="http://md5.mshaffer.com/WSU_STATS419/punching-parkinsons/PP-prototype.jpg" style="border: 2px black solid;" />
+<div>**Source: Internal Creation**</div>
+
+In this optional mastery lesson "signal processing", I will walk through how we used MAD to determine "punch-detection" on a microcontroller by measuring voltage fluctuations from a piezo-electric.  The simulation code was written in javascript (a C-based language like R) and the embedded-systems code was written in embedded C.
+
+- <https://www.youtube.com/watch?v=Uxwe5jmYFX4>
+
+- <https://www.youtube.com/watch?v=DBRJ0KbI1Hk>
+
+ 
+# End

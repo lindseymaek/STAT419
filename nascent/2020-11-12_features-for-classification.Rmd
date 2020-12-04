@@ -1,0 +1,588 @@
+---
+title: 'R Notebook: features for classification'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-mnist.R");
+source_url( include.me );
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source_url( include.me );
+
+
+
+path.to.nascent = "/Users/lindseykornowske/.git/STAT419/nascent/";
+
+folder.mnist = "mnist-png/";
+path.to.mnist = paste0(path.to.nascent, folder.mnist);
+
+training.files = mnist.grabFiles("training",
+                        path.to.mnist, folder.mnist);
+
+```
+
+# MNIST classification (cont'd)
+
+We see an image <IMG src='mnist-png/training/7/518.png' />, what can we do with it?  That is, what features can we extract from the data provided?  Last time, we introduced the "eigenvalue" as a potential domain of features.  Now, we will introduce additional features to make the classification structure more robust.
+
+**NOTE:** Recall, eigen requires square matrices.
+
+## Decision-making outline
+
+Data analytics is about making decisions, and lots of them.  When we build a classification structure, we need to try and organize the decisions as independent and cascading.
+
+### Training Data  
+```{=html}
+<! WTF: cellpadding or style=padding NO WORKEE! //-->  
+<TABLE cellpadding=5 cellspacing=5>
+	<TR>
+		<TD> variant </TD>
+		<TH> 1 </TH>
+		<TH> 2 </TH>
+		<TH> 3 </TH>
+		<TH> 4 </TH>
+		<TH> 5 </TH>
+		<TH> 6 </TH>
+		<TH> 7 </TH>
+		<TH> 8 </TH>
+		<TH> 9 </TH>
+		<TH> 0 </TH>
+	</TR>
+	<TR>
+		<TH> a </TH>
+		<TD><IMG src='mnist-png/training/1/231.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/117.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/30.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/166.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/1847.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/106.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/263.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/1026.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/170.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/10128.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> b </TH>
+		<TD><IMG src='mnist-png/training/1/24.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/120.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/44.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/2.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/219.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/20087.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/518.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/41.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/383.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/10938.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> c </TH>
+		<TD><IMG src='mnist-png/training/1/2872.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/16.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/49.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/53.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/514.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/218.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/96.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/734.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/48.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/11187.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> d </TH>
+		<TD><IMG src='mnist-png/training/1/5516.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/5.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/7.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/9.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/679.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/73.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/995.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/740.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/54.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/11335.png' /> </TD>
+	</TR>
+</TABLE>
+
+
+
+
+```
+
+Sometimes the number "6" and "9" have a line under it.  I didn't find samples with this case.
+
+From those, we will try to "test" some eigenvector approaches using the first "12" images found in the data set.
+
+
+
+
+### Data inputs
+
+- Original data is in PNG format, 28x28
+- We could store the scaled form on an interval [0,1] or we could just assign a value of 0 or 1 to each entry in the matrix.
+- We could possibly divide the matrix into sub-matrices for more resolution in feature extraction. We could add rows/colums of zeroes to get to 30x30 and then we could do "trecile" divisions, 9 sub-grids each at 10x10.
+- We could try and center the image within the available space (center both horizontally and vertically)
+
+### Feature extraction
+
+- Eigen of the entire matrix, Eigen.half where we truncate the dimensions of the data-reduced vector.
+- rowSums/colSums of the entire matrix as a representation of its xy-profiling.
+- Similar features (eigen, eigen.half, rowsums, colsums) for a sub-divided matrix.  28 x 28 can already be divided in halves (4 subgrids) or fourths (16 subgrids).  If we augmented the matrix to 30 x 30, we can divide by 3.  There is a reason 12 is called a "perfect number" - if we had a multiple of twelve, we could divide by half, third, fourth, and sixth.  Could we trim the images down to 24x24?  The number "seven: from before suggests that may be possible, so let's review our data of the "training set".
+
+### Can we truncate to 24x24?
+```{r}
+
+n = length(training.files);
+m = length(training.files[[1]]); # we assume balanced panel
+total = n * m;
+
+info.cols = c("number.letter","n","m", "rows.with.data", "cols.with.data");
+
+result = as.data.frame( matrix(0, 
+              nrow=total, ncol= length(info.cols) ) );
+  colnames(result) = info.cols;
+
+result$number.letter = "";
+
+i = 1;
+for(d in 1:n) # true digit
+    {
+    num = d; if(num == 10) { num = 0; }
+    for(r in 1:m) # replicate
+      {
+      img.file = training.files[[d]][r];
+      img.matrix = mnist.grabMatrixFromImage(img.file, 
+                                    path.to.nascent);
+      img.matrix.rs = rowSums(img.matrix);
+      img.matrix.cs = colSums(img.matrix);
+      
+      result[i,]$number.letter = paste0(num,"-",letters[r]);
+      result[i,]$n = d;
+      result[i,]$m = r;
+      result[i,]$rows.with.data = sum(img.matrix.rs > 0);
+      result[i,]$cols.with.data = sum(img.matrix.cs > 0);
+      i = 1 + i;
+      }
+    }
+
+result;
+
+max(result$rows.with.data);
+max(result$cols.with.data);
+```
+
+It looks like the answer is yes (the max dimensions of our "training data" is 20 x 20).  We will try and center the data with a default "top-left" bias (if odd/even prevent perfect centering).
+
+We could justify in a form other than "center" but it would not matter much with the exception of the number "one".
+
+```{r}
+
+img.file = training.files[[7]][3];  ### maybe rotate "8"s?
+img.matrix = mnist.grabMatrixFromImage(img.file, 
+                              path.to.nascent);
+#im.printImageMatrix(img.matrix);
+dim(img.matrix);
+
+img.matrix.t = mnist.trimMatrix(img.matrix);
+im.printImageMatrix(img.matrix.t);
+dim(img.matrix.t);
+
+img.matrix.c = mnist.centerMatrix(img.matrix, c(24,24)); # this may truncate "as-is"
+im.printImageMatrix(img.matrix.c, 2); # split into sub-grids
+im.printImageMatrix(img.matrix.c,4); 
+im.printImageMatrix(img.matrix.c, 3, raw=TRUE); 
+im.printImageMatrix(img.matrix.c, 3, raw=TRUE, raw.r="I"); 
+  # numbers are 0.1 = 1; 0.2 = 2; ... 1.0 = "X"
+dim(img.matrix.c);
+
+
+## odd tests ... [[1]][3] is 20 x 9 
+# img.matrix.t = img.matrix.t[1:19,1:9] # ... now 19 x 9
+# mnist.zeroFillMatrix(img.matrix.t, c(24,24));
+```
+
+## Decision-making conclusions
+
+We now want to take our exploration and build logical cascades.  Ideally, these are independent, so we could possibly examine the performance of all possible feature-structure permutations.
+
+- Size of matrix:  if we don't resize to 24x24 we cannot easily do both a 2- and 3- split partition.  **matrix.size:** "raw", "24x24" ...
+- Data in matrix: binary (either zero or one) or scaled on continuum of [0,1].  **data.form:** "b", "c" for binary, continuous
+- Divisions in matrix: 1 (no division), 2 (cut into 4 sub-grids), 3, (cut into 9 sub-grids).  A 2-row, 3-col cut may be very informative, but the result would be a non-square matrix.  **matrix.division:** 1, 2, 3 (4, 6 are possible as well with 24x24 ... this depends on the size of the matrix, if not conformable, we will skip the option).  Let's say we develop a naming terminology that the top-left is the first sub-grid, and we read them from left-to-right, top-to-bottom similar to how we read text.  We can then stack the sub-grids into one long vector.  Recall an eigen was of length 28 originally, a rowsum would be of that same length.  If we cut it into 4 sub-grids, we would have 4 sub-eigens of length 12 or a total of 48 in length.  If we cut it into 9 sub-grids, we would have 9 sub-eigens of length 8 or a total of 72 in length.
+- Features from matrix:  eigenvalue, eigenvalue.half, rowsums, colsums, and others (??? can you think of others).   This choice is non-exculsive, we can do them all. **matrix.features:**
+- Comparison of features: we are using cosine similarity (and considered euclidean distance).  Again we could do others. **comparison.methods:**
+- Statistic of comparison: we can do top-N, or some pooling across variants with mean and median. **decision.stats:** For now, we will do a statistical comparison independently.  Later, we can figure out a way to sum various methods and what weightings to provide to the sums.  This is the idea of an ensemble. <https://en.wikipedia.org/wiki/Ensemble_learning>
+
+We have an updated game plan.  So we need to have functions that keep these tasks as independent as possible.  We will apply the same functions to the "training" data and "testing" data and then will apply the comparison functions between each testing data record.
+
+### Options for Functions
+```{r}
+# we could have the options in nested keys or a paste0 flat key.  Either way, we will have some for loops
+
+option = list();
+option$matrix.size        = c("raw", "24x24");
+  #option$matrix.size = c("24x24");
+option$data.form          = c("b", "c");   # c("binary", "continuous");
+  #option$data.form = c("c");
+option$matrix.division    = c(1,2,3,4,6); 
+  #option$matrix.division = c(3);
+# this option is currently hardcoded ...
+option$matrix.features    = c("eigen", "eigen.half", "eigen.fourth", "eigen.third", "eigen.sixth",  "gridcount", "rowsums", "colsums");
+  #option$matrix.features = c("gridcount");
+option$comparison.methods = c("sim.cosine","dist.euclidean");
+option$decision.stats     = c("mean", "median", "sd", "median+sd", "top^1", "top^2", "top^3", "top^4", "top^5", "top^1+mean+median+sd", "top^1+mean+median", "top^1+mean", "top^1+median", "top^2+mean+median+sd", "top^2+mean+median", "top^2+mean", "top^2+median", "top^3+mean+median+sd", "top^3+mean+median", "top^3+mean", "top^3+median");  # ideal if this is odd for a final-decision  
+# option$decision.stats = c("top^1");
+
+training.data = mnist.prepareTrainingData(training.files,
+                      path.to.mnist, folder.mnist, option);
+
+```
+
+### Testing Data
+```{=html}
+<! WTF: cellpadding or style=padding NO WORKEE! //-->  
+<TABLE cellpadding=5 cellspacing=5>
+	<TR>
+		<TD> variant </TD>
+		<TH> 1 </TH>
+		<TH> 2 </TH>
+		<TH> 3 </TH>
+		<TH> 4 </TH>
+		<TH> 5 </TH>
+		<TH> 6 </TH>
+		<TH> 7 </TH>
+		<TH> 8 </TH>
+		<TH> 9 </TH>
+		<TH> 0 </TH>
+	</TR>
+	<TR>
+		<TH> a </TH>
+		<TD><IMG src='mnist-png/testing/1/14.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/1.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/112.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/19.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/102.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/100.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/0.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/110.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/104.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/10.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> b </TH>
+		<TD><IMG src='mnist-png/testing/1/2.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/106.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/18.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/24.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/120.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/11.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/17.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/128.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/12.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/101.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> c </TH>
+		<TD><IMG src='mnist-png/testing/1/29.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/119.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/30.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/27.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/127.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/123.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/26.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/134.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/16.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/126.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> d </TH>
+		<TD><IMG src='mnist-png/testing/1/31.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/147.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/32.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/33.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/129.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/21.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/34.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/146.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/20.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/13.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> e </TH>
+		<TD><IMG src='mnist-png/testing/1/37.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/149.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/44.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/4.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/132.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/22.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/36.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/177.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/58.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/136.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> f </TH>
+		<TD><IMG src='mnist-png/testing/1/39.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/35.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/51.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/42.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/15.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/50.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/41.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/179.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/62.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/148.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> g </TH>
+		<TD><IMG src='mnist-png/testing/1/40.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/38.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/63.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/48.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/23.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/54.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/60.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/181.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/7.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/25.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> h </TH>
+		<TD><IMG src='mnist-png/testing/1/46.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/43.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/68.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/49.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/45.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/66.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/64.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/184.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/73.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/28.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> i </TH>
+		<TD><IMG src='mnist-png/testing/1/5.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/47.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/76.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/56.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/52.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/81.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/70.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/226.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/78.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/3.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> j </TH>
+		<TD><IMG src='mnist-png/testing/1/57.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/72.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/87.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/6.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/53.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/88.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/75.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/232.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/9.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/55.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> k </TH>
+		<TD><IMG src='mnist-png/testing/1/74.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/77.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/90.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/65.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/59.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/91.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/79.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/61.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/92.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/69.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> l </TH>
+		<TD><IMG src='mnist-png/testing/1/89.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/82.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/93.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/67.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/8.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/98.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/80.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/84.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/99.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/71.png' /> </TD>
+	</TR>
+</TABLE>
+
+
+
+
+
+
+```
+
+#### Some Logical Hypotheses
+
+It is important as you delve into your data to try and understand the data and how the various options may influence the results.  Here are a few of my hypotheses:
+
+- A division of the matrix into 3 cuts will be superior to an even number of cuts.  If you manually look at the data, it will create differences in 9 grids that are distinct.  This creates variance.
+- A `top^1` will outperform a `top^2` which will outperform a `top^3`, and so on.
+
+[What are some conjectures you have about the data?]
+
+I think that 6 cuts is potentially too many, because there will not be enough distinguishable features in each of the numbers. I do like the idea in the video that suggests using proportions of data present in a given sector as a potential criteria, although I think this would require some fine tuning of the tolerance, or particular centeing of each number. 
+
+#### (One) Calculate & Summarize
+
+```{r}
+# Cntrl + Alt + I ... # Thanks, Nathan
+testing.files = mnist.grabFiles("testing",
+                        path.to.mnist, folder.mnist);
+
+# example of same preparation for a single "comparison" element
+test.one = mnist.prepareOneTest(testing.files, 
+                  d=1, r=1, 
+                  path.to.mnist, folder.mnist, option);
+
+
+
+result.one = mnist.performOneTest(testing.files, training.data, 
+                  d=2, r=2, 
+                  path.to.mnist, folder.mnist, option);
+
+best.of.best =  whichMaxFreq(result.one$best);
+best.of.best;
+
+outcome.details = as.numeric(unlist(result.one[,6:length(result.one)]));
+
+table(outcome.details);
+whichMaxFreq(outcome.details);
+
+
+```
+
+At the moment, the testing approaches are remaining "independent".  From above, you can see that the goal would be to minimize "bad answers" by either changing the options or developing a "dependent" algorithm:  use this information from this option, and this information from this other option, to create an ideal outcome.
+
+With `d=2; r=2;` I have the correct answer coming in second place behind the number "0" ... so how can I distinguish between a "2" and a "0" better?
+
+-- The zero has several features that the two doesn't have - curvature on the bottom left side, and data that is present on the left side of the character, where the 2 is blank. A criteria could be put in place such that the data in the left middle section must be continuous. --
+
+**Note:** With the above, we can peak inside the approach.  Just change `d` and `r` from the testing group.
+
+#### (ALL) Calculate
+```{r}
+
+# this will take awhile... we could divide the tests up into children processes and use multi-threads ...
+## took about 300 seconds on my computer with "all options"
+## so we cache it ...
+final = mnist.performAllTest(testing.files, training.data,
+                  path.to.mnist, folder.mnist, option);
+
+# str(final); # we have the raw dataframe panel, true, and best.of.best
+```
+
+#### (ALL) Summarize
+```{r}
+  
+final.summary = mnist.resultSummary(final, option);
+
+final.summary;
+```
+
+##### (Instructor) Dependent Example 
+```{r}
+
+## matrix.size
+sub = wildcardSearch( paste0("24x24",".*"), "data.id", df=final$data);
+## data.form
+sub = wildcardSearch( paste0("*.","c",".*"), "data.id", df=sub);
+## matrix.division 
+sub = wildcardSearch( paste0("*.",6,"_*"), "data.id", df=sub);
+## matrix.features            
+sub = wildcardSearch( paste0("*_","eigen.third"), "data.id", df=sub);
+## comparison.methods
+sub = subsetDataFrame( sub, "comparison.method", "==" , "sim.cosine");
+## decision.stats
+result = list();
+pick.one = NULL;
+for(decision.stats in option$decision.stats)
+    {
+    key.name = paste0("stats.",decision.stats);
+    name.idx = which(names(final$data) == key.name );
+    stats1 = sub[,c(1:2,name.idx)];
+    #test1 = sum(sub$true == sub$best) / nrow(sub); 
+    test1 = sum(stats1[,1] == stats1[,3]) / nrow(stats1); # compare to individual test...
+    if(key.name == "stats.top^2+mean") { pick.one=stats1; }
+    result[[key.name]] = test1;
+    }
+result;
+pick.one;
+```
+
+For a given `key.name` you can print the `stats1` and see the result.  Recall that "pure-chance" is 1/10, so we are now doing much better than the first notebook.  Whether there is a bug in the code, or we need to think more carefully about a given feature, we can still improve on this framework.
+
+The number "0" is causing some issues.  How could we adjust our setup to not let the "0" bully the results.  In the `stats1` I printed, we see that "2", "4", "7" are losing to "0" big time.  If you dig into a single comparison-decision, the correct answer is often the "next-highest" result behind the "0". If we understand xy-profiling ("colsums" and "rowsums"), it does make sense, the "0" has a similar profile.  I also observe that "3" is getting mapped to "5" and again is the "next-highest" result.  And the "9" is getting mapped to a "1".  That one I cannot fully comprehend as to why.
+
+In summary, we can be optimistic, the "3", "5", "6", "8" should be the only noisy ones and an "ensemble" can likely take care of them.  We have to improve a few things, but we can get there. 
+
+##### (Student) Dependent Example
+Can you beat `0.50` by selecting different subsets of the data?  If so, what do you get?  Why would you choose those options?
+
+if I replace 3 with 6, that does improves
+```{r}
+# clues are available in function mnist.resultSummary
+
+```
+-- WRITE SOMETHING HERE --
+
+
+# Final Comments
+
+Keeping track of permutations is very challenging.  That is why data and logic organization are imperative.  This is naturally an iterative process; however, the cookbook is basically the same for most classification problems:
+
+- How we select the data (matrix.size and data.form)
+- How we divide the data (matrix.division)
+- What data features we can extract (matrix.features)
+- How to compare the given features (comparison.methods)
+- What statistics will determine the prediction (decision.stats)
+
+Under the hood, you could examine the function `mnist.doComparisons` that would give you the raw data for each comparison.   With this raw data, a library like "SuperLearner" would enable you to define custom learning functions and it would ascertain the best "ensemble" of features to use to get a better score.  This is where computation benefits.  There are too many permutations for a human mind to consider at once.  These "ensemble" tools just do a bunch of for-loops and analyze a best set of linear combinations.
+
+## Netflix
+
+- <https://en.wikipedia.org/wiki/Netflix_Prize>
+- <https://web.archive.org/web/20131206030554/http://www.netflixprize.com/leaderboard>
+
+
+There was a contest several years ago on improving the Netflix "suggestions" algorithm with very little data input.  The winning team devised a way to "correlate" movies based on merely the words in the title.  The also created an "ensemble" as you can see from their quote below:
+
+"..., we list all 107 results that were blended to deliver RMSE=0.8712, with their weights within the ensemble. The results are grouped based on the type of method that produced them."
+
+- <https://www.netflixprize.com/assets/ProgressPrize2007_KorBell.pdf>
+
+## SuperLearner
+At the end of the semester, I may make an (optional) notebook on "SuperLearner" that shows how and "ensemble" can identify the best combinations for this data. We likely have enough options.
+
+## Tune with small subset
+We could certain include more training/testing data.  However, it is best to "tune" your logic on a small dataset so you can understand what is going on.  The full dataset has about 60,000 training data and over 10,000 testing data.  The "law of large numbers" will help us, but at the appropriate time.
+
+## Custom Classifier
+
+I intentionally chose to build a custom classifier based on "eigen".  I also did so to demonstrate good processes in iterating through data setup, organization, and preparation.  This process will enable you to build your own classifier, or merely plug in one of the many classifiers that are available:  <http://yann.lecun.com/exdb/mnist/>
+
+
+```{r}
+# a for-loop of this would tabulate the results over all test.data ...
+# https://cran.r-project.org/web/packages/SuperLearner/vignettes/Guide-to-SuperLearner.html
+# randomForest
+```
+

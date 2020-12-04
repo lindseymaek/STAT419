@@ -1,0 +1,660 @@
+---
+title: 'R Notebook: natural language processing (features and svd)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-nlp.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-str.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-stack.R");
+source_url( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-pos.R");
+source_url( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source_url( include.me );
+
+
+
+path.to.nascent = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/unit_02_confirmatory_data_analysis/nascent/";
+
+folder.nlp = "nlp/";
+path.to.nlp = paste0(path.to.nascent, folder.nlp);
+
+
+```
+
+# (NLP) Feature Extraction
+
+By implementing (POS) parts of speech, we are introducing a pre-built classifier.  This `openNLP` solution uses a specific classifier protocol (Penn) and its variant of a classifier solution, see `? NLP::Penn_Treebank_POS_tags` <https://catalog.ldc.upenn.edu/docs/LDC95T7/cl93.html> and <https://opennlp.apache.org/>
+
+It is not perfect.  At times, it misses a "." that ends a sentence.  My code "hacked" around these anomalies, but in the long-term is not a best solution, as the `openNLP` engine may update, so in the future, my code would then break.
+
+## Stemming
+
+The library `tm` has a `stemDocument` function that does what it needs to, and nothing more.
+
+
+```{r}
+
+str = "The quick brown fox jumps over the lazy dog";
+# Notice the single space
+words.vec  = strsplit(str," ",fixed=TRUE)[[1]];
+
+words.stem = tm::stemDocument(words.vec);
+
+cbind(words.vec, words.stem);
+
+```
+
+```{r}
+
+str = "O Beautiful for spacious skies,
+For amber waves of grain,
+For purple mountain majesties
+Above the fruited plain!";
+
+str = prepStringGram(str, TRUE, extra=c(",",".","!"));
+
+# Notice the single space
+words.vec  = strsplit(str," ",fixed=TRUE)[[1]];
+
+words.stem = tm::stemDocument(words.vec);
+
+cbind(words.vec, words.stem);
+
+```
+
+## Syllabilization and Readability
+This is a nontrivial problem.  I have a basic function written, that performs horribly.  I will need to spend some significant time to make this a reliable function.  It is useful to compute "readability".
+
+<https://contentwriters.com/blog/flesch-reading-ease-what-it-is-and-why-it-matters/>
+
+### Legal language
+```{r}
+
+legal = "We, the witnesses, each do hereby declare in the presence of the Principal that the principal signed and executed this instrument in the presence of each of us, that the principal signed it willingly, that each of us hereby signs this Power of Attorney as witness at the request of the principal and in the principal’s presence, and that, to the best of our knowledge, the principal is eighteen years of age or over, of sound mind, and under no constraint or undue influence.";
+
+legal = prepStringGram(legal, TRUE, extra=c(",",".","!"));
+
+# Notice the single space
+legal.vec  = strsplit(legal," ",fixed=TRUE)[[1]];
+
+
+legal.s = countSyllablesInWord(legal.vec);
+legal.r = computeReadability(1,legal.s);  # one sentence
+
+unlist(legal.r);
+
+```
+[What is difference between FRE and FKGL?]
+
+-- WRITE SOMETHING HERE --
+
+As you try to write, you should improve readability.  Sounding like a lawyer is not the correct way to communicate <https://readable.com/blog/what-is-readability/>.  
+
+As you write, I believe this would be a good online resource: <https://datayze.com/readability-analyzer>.
+
+
+### Anna Karenina
+
+<https://www.gutenberg.org/ebooks/1399>
+
+```{r}
+
+anna = "Happy families are all alike; every unhappy family is unhappy in its own way.
+
+Everything was in confusion in the Oblonskys’ house. The wife had discovered that the husband was carrying on an intrigue with a French girl, who had been a governess in their family, and she had announced to her husband that she could not go on living in the same house with him. This position of affairs had now lasted three days, and not only the husband and wife themselves, but all the members of their family and household, were painfully conscious of it. Every person in the house felt that there was no sense in their living together, and that the stray people brought together by chance in any inn had more in common with one another than they, the members of the family and household of the Oblonskys. The wife did not leave her own room, the husband had not been at home for three days. The children ran wild all over the house; the English governess quarreled with the housekeeper, and wrote to a friend asking her to look out for a new situation for her; the man-cook had walked off the day before just at dinner time; the kitchen-maid, and the coachman had given warning.";
+
+anna.ng = buildNgrams(anna, 1, verbose=FALSE);  # this feature is embedded in the main function
+
+# names(anna.ng);
+anna.ng$sentiment;
+anna.ng$readability;
+
+```
+
+The sixth sentence seems to be the easiest to read: "The wife did not leave her own room, the husband had not been at home for three days."
+
+If we want an overall summary, not by sentence:
+
+```{r}
+
+anna.r = cleanupAndPerformReadability(anna);
+unlist(anna.r);
+
+anna.s = doSentimentAnalysis(anna);
+unlist(anna.s);
+
+```
+
+This function depends on the accuracy of counting syllables.  It is currently upward biased; that is, it reports a higher score than the true score.
+
+
+### Huck Finn
+
+<https://www.gutenberg.org/ebooks/76>
+
+```{r}
+
+huck = "I see I had spoke too sudden and said too much, and was in a close place. I asked her to let me think a minute; and she set there, very impatient and excited and handsome, but looking kind of happy and eased-up, like a person that’s had a tooth pulled out.  So I went to studying it out.  I says to myself, I reckon a body that ups and tells the truth when he is in a tight place is taking considerable many resks, though I ain’t had no experience, and can’t say for certain; but it looks so to me, anyway; and yet here’s a case where I’m blest if it don’t look to me like the truth is better and actuly safer than a lie.  I must lay it by in my mind, and think it over some time or other, it’s so kind of strange and unregular. I never see nothing like it.  ";
+
+huck.ng = buildNgrams(huck, 1, verbose=FALSE);  # this feature is embedded in the main function
+
+# names(huck);
+huck.ng$sentiment;
+huck.ng$readability;
+
+
+```
+
+The third sentence appears to be the easiest to read: "So I went to studying it out."  It **DOES NOT** seem to be "negative" so I would question the quality of the current classifier.
+
+```{r}
+
+huck.r = cleanupAndPerformReadability(huck);
+unlist(huck.r);
+
+huck.s = doSentimentAnalysis(huck);
+unlist(huck.s);
+
+```
+
+
+## Sentimentality
+
+The negation (e.g., "no") is not immediately captured in the current POS setup.  However, there is a pre-built classifier called "sentimentality".  Reviewing this feature informs me that the library `qdap` is not very good.
+
+The function is ``SentimentAnalysis::SentimentAnalysis`` wrapped in my function `doSentimentAnalysis`
+
+```{r}
+sent1 = "This course gives you an opportunity to apply your abilities in computer science, statistics, and data analysis.";
+
+doSentimentAnalysis(sent1);
+
+```
+
+```{r}
+sent1 = "I hate everything about this course.  It sucks.  I am so angry whenever I have to do anything in this course.";
+
+doSentimentAnalysis(sent1);
+
+```
+
+
+## 1-grams as "bag of words"
+
+In this example, we identify that the word "snake" can be a noun or a verb.  We can separate the words by using the POS identifiers.
+
+```{r}
+# https://www.mamalisa.com/?t=es&p=6433
+
+snake1 = "I saw a slippery, slithery snake
+Slide through the grasses,
+Making them shake.";
+
+ninfo.s1 = buildNgrams(snake1, 1, verbose=TRUE);
+```
+
+```{r}
+# http://www.public-domain-poetry.com/d-h-lawrence/on-the-march-22846
+
+snake2 = " Like a snake we thresh on the long, forlorn
+    Land, as onward the long road goes."
+
+ninfo.s3 = buildNgrams(snake2, 1, verbose=TRUE);
+```
+
+```{r}
+# https://www.outdoorphotographer.com/gallery/submission/1990051-road-in-the-clouds/
+# windy is redundant with "snake" as a verb
+
+snake3 = " The windy road snakes around the mountainside, with only the driver's wits to guide them.";
+
+ninfo.s3 = buildNgrams(snake3, 1, verbose=TRUE);
+```
+
+
+## 5-grams
+
+In the following examples, we capture 5-grams and its contiguous sub-grams (4,3,2,1).  See function `gramCombinations` in `functions-nlp-stack.R`
+
+```{r}
+basic = "Cat and dog";  # Cat gets falsely labeled as a "proper" noun ... 
+
+ninfo.b = buildNgrams(basic, 5, verbose=TRUE);  # 5 grams
+
+print("2-grams 'words'"); # bi-grams
+ninfo.b$grams$words[[2]];  # 2-grams
+
+print("2-grams 'stem'"); # bi-grams
+ninfo.b$grams$`word+`[[2]];  # 2-grams
+
+```
+
+```{r}
+descriptive = "Great big brown dog and the little yellow kitty cat.";
+
+ninfo.d = buildNgrams(descriptive, 5, verbose=TRUE);  # 5 grams
+
+print("5-grams 'words'"); # quint-grams (or pent?)
+ninfo.d$grams$words[[5]];  # 5-grams
+
+
+print("5-grams 'words.tags'"); # quint-grams (or pent?)
+ninfo.d$grams$words.tags[[5]];  # 5-grams
+
+
+print("5-grams '.tags'"); # quint-grams (or pent?)
+ninfo.d$grams$`.tags`[[5]];  # 5-grams
+
+```
+
+## 5-grams with stopwords "snowball"
+
+```{r}
+stop.file.snowball = paste0(path.to.nlp, "stop-templates/snowball.txt");
+
+stop.snowball = trimMe(strsplit( grabHTML(stop.file.snowball), "\r\n")[[1]]);
+
+
+
+descriptive = "Great big brown dog and the little yellow kitty cat.";
+
+ninfo.ds = buildNgrams(descriptive, 5, 
+                      my.stopwords = stop.snowball);  # 5 grams
+
+print("5-grams 'words'"); # quint-grams (or pent?)
+ninfo.ds$grams$words[[5]];  # 5-grams
+
+
+print("5-grams 'words.tags'"); # quint-grams (or pent?)
+ninfo.ds$grams$words.tags[[5]];  # 5-grams
+
+
+print("5-grams '.tags'"); # quint-grams (or pent?)
+ninfo.ds$grams$`.tags`[[5]];  # 5-grams
+
+```
+
+
+# THE BROTHERS GRIMM FAIRY TALES
+
+```{r}
+gutenberg.id = 2591;
+
+path.to.gutenberg = paste0(path.to.nlp,"_data_/gutenberg/");
+  createDirRecursive(path.to.gutenberg);
+path.to.grimm = paste0(path.to.gutenberg,gutenberg.id,"/");
+  createDirRecursive(path.to.grimm);
+
+
+local.data.path = path.to.gutenberg; # currently required by grabHTML ... TODO: fix
+
+
+txt.file.remote = "https://www.gutenberg.org/files/2591/2591-0.txt";
+txt.file.local = paste0(path.to.grimm,"fairytales.txt");
+
+  my.txt = grabHTML(txt.file.local, txt.file.remote);
+
+# library(readtext);
+# data.grimm.txt = texts(readtext( file.local ));
+
+
+
+
+html.file.remote = "https://www.gutenberg.org/files/2591/2591-h/2591-h.htm";
+html.file.local = paste0(path.to.grimm,"fairytales.html");
+
+  my.html = grabHTML(html.file.local, html.file.remote);
+
+
+#####################
+
+cache.file.local = gsub(".html", ".rds", html.file.local, fixed=TRUE);
+
+timer.start = as.numeric(Sys.time());
+
+
+if(!file.exists(cache.file.local))
+{
+  df.grimm = NULL;
+chap.n = 0;
+para.n = 1;
+title = "THE BROTHERS GRIMM FAIRY TALES";
+what  = "-INTRO-";
+
+### let's trim around gutenberg stuff
+start = "*** START OF THIS PROJECT GUTENBERG EBOOK GRIMMS' FAIRY TALES ***";
+end = "End of Project Gutenberg";
+
+tmp = strsplit(my.html, end, fixed=TRUE)[[1]];     # str(tmp);
+tmp1 = strsplit(tmp[1],  start, fixed=TRUE)[[1]];  # str(tmp1);
+
+n.html = tmp1[2];
+
+# there is one note ...  <div class="mynote">
+start = '<div class="mynote">';
+end = '</div>';
+
+tmp = strsplit(n.html, start, fixed=TRUE)[[1]];     # str(tmp);
+f.html = tmp[2];
+tmp1 = strsplit(tmp[3],  end, fixed=TRUE)[[1]];     # str(tmp1);
+
+
+strip_tags <- function(htmlString) {
+  return(gsub("<.*?>", "", htmlString))
+}
+
+
+note = cleanupHTMLentities(tmp1[1],replace="cs");
+note = strip_tags(note);
+# note = removeWhiteSpace(note);
+note = trimMe(note);
+type = "note";
+
+row = c(chap.n, what, title, para.n, type, note);
+df.grimm = rbind(df.grimm, row);
+  chap.n = 1+chap.n;
+  para.n = 1;
+
+
+### h2
+tmp = strsplit(f.html,"<h2>", fixed=TRUE)[[1]];
+idx.stories = 2:63
+
+for(i in idx.stories)
+  {
+  story = tmp[i];
+  what = paste0("STORY-",chap.n);
+    story = cleanupHTMLentities(story,replace="cs");
+    #story = removeWhiteSpace(story);
+    story = trimMe(story);
+  # story title
+  stmp = strsplit(story, "</h2>", fixed=TRUE)[[1]]; 
+  story.title = trimMe(stmp[1]);
+  
+  story = trimMe(stmp[2]);
+  # let's keep paragraphs for a minute ...  <p> and <pre>
+  # because of location of <pre>, I will explode on ending </p>
+  # we will count <pre> as a paragraph with a poem flag ... # NOT PERFECT: it doesn't allow for multiple poems within a paragraph, see JORINDA.
+  ptmp = strsplit(story, "</p>", fixed=TRUE)[[1]]; 
+  
+  # paragraphs = list();
+  n.p = length(ptmp);
+  k = 1;
+  for(j in 1:n.p)  # i = 3; j = 12
+    {
+    para = ptmp[j];
+    qtmp = strsplit(para, "<p>", fixed=TRUE)[[1]]; 
+      poem = trimMe(strip_tags(qtmp[1]));
+      if(is.na(poem)) { poem = ""; }
+      if(poem != "")
+        {
+        # pinfo = list("type" = "poem", "text" = poem);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "poem", poem);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+      prose = trimMe(strip_tags(qtmp[2]));
+      if(is.na(prose)) { prose = ""; }
+      if(prose != "")
+        {
+        prose = removeWhiteSpace(prose); # poems will keep line breaks
+        # pinfo = list("type" = "prose", "text" = prose);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "prose", prose);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+    ###
+    }
+  ### end of single story ... 
+  chap.n = 1+chap.n;
+  }
+
+
+df = as.data.frame(df.grimm);
+  colnames(df) = c("chap.n", "chap.type", "title", "para.n", "para.type", "para.text");
+  rownames(df) = paste0(df$chap.n,"-",df$para.n);
+df$chap.n = as.numeric(df$chap.n);
+df$para.n = as.numeric(df$para.n);
+
+df.grimm = df;
+saveRDS(df.grimm, cache.file.local);
+    } else { df.grimm = readRDS(cache.file.local); }
+
+timer.end = as.numeric(Sys.time());
+timer.elapse = timer.end-timer.start;
+print(paste0("Time elapsed: ", round(timer.elapse,2) ));
+  
+df.grimm;
+```
+
+
+## Features for One Story
+
+```{r}
+# HANSEL AND GRETEL
+df.story = subsetDataFrame(df.grimm, "title", "==", "HANSEL AND GRETEL");
+outfile = paste0(path.to.grimm, "HANSEL.GRETEL.txt");
+
+
+
+df.story;  # this is the original form (paragraphs)...
+
+my.story = paste0(df.story$para.text, collapse=" \r\n ");
+my.story;
+
+
+
+writeLine(my.story, outfile, append=FALSE);  # so I can visually inspect the text.
+```
+
+### Summary
+Like the previous notebook, summary captures story-level results.
+
+
+#### Punctuation
+```{r}
+count.P = countPunctuation(my.story);
+count.P;
+```
+
+#### Words and Case (Capitalization)
+```{r}
+count.W = countWordsInString(my.story);
+unlist(count.W);
+```
+
+#### Personal Pronouns
+
+```{r}
+## need a vector of words
+my.words = getRawWords(my.story);
+
+PP = countPersonalPronouns(my.words);
+head(PP);
+```
+
+#### Gender-specific
+
+```{r}
+
+GENDER = countGenderLanguage(my.words);
+
+GENDER;
+
+```
+
+#### Grimm-specific
+
+```{r}
+
+
+GRIMM = countCustomWordList(my.words);
+
+GRIMM;
+
+```
+
+We have lots of features to distinguish a document, but there is more coming.  A lot more!
+
+
+### N-grams
+Now, using POS, we will summarize information at the sentence-level that could then be aggregated back up to the story-level.
+
+I spent a significant amount of time troubleshooting this function. It is written variadically, allowing for n-grams (1,2,3,4,5,...) and k-gram.types.
+
+```{r}
+gram.types = c("words", ".tags", "|simple",
+                        "words.tags", "words|simple",
+                "word+",
+                        "word+.tags", "word+|simple"
+                                    );
+
+```
+
+It captures lots of data and different units of analysis.
+
+
+#### N-gram combinations 
+If you ask for 5-grams, it will compute those, with all of its relevant children (4-grams, 3-grams, 2-grams, 1-gram) using the function below:
+
+```{r}
+gvec = c("monte","says","hi","to","his","son","alex");
+gout = gramCombinations(gvec);  # no limit to vector stack
+
+gout[[2]];  # all two grams
+```
+
+
+```{r}
+gout = gramCombinations(gvec, nv=5);
+gout[[5]];  # all five grams
+```
+
+```{r}
+gout = gramCombinations(gvec, nv=4, sep="-");
+gout[[4]];  # all four grams
+```
+
+#### Sentence-level "summary" data
+
+The function for N-grams is "slow", it captures a lot of stuff.  So we will cache the result if possible.
+
+For each sentence:
+
+  - grams
+  - sentiment
+  - readability
+  - mytags
+  - mytags.s
+  - case
+  - punctuation
+  - PP 
+  - GENDER
+  - GRIMM
+  
+Certainly we can summarize as we define our features.  But we are not lacking features.
+
+#### ngrams function "one story"
+
+Each story takes about 5 minutes to build all of the features.
+The result is being cached.
+
+```{r}
+
+titles = unique(df.grimm$title);
+titles.f = cleanupTitles(titles);
+# HANSEL AND GRETEL
+  title = titles[20];
+  title.f = titles.f[20];
+
+HG = prepareOneStory(df.grimm,path.to.grimm,title,title.f);
+names(HG$general);
+names(HG$sentences);
+
+```
+
+#### ngrams function "ALL stories"
+
+Now do the math, 5 minutes per story, 60 stories.  5 hours.
+You can have it run, or just get your data folder to match up and use the ones I have cached.  This is a limitation of NLP.  Slow in R.  It would also be slow in Python.
+
+But I am very happy with the Ngram function.  It has the nesting just as I want.  The core with pop/push is minimal code, and I am analyzing a lot of stuff at the sentence level.
+
+I could build the minimal code/libraries needed to run this, and call the function `sample ( unique(df.grimm$title) )` ... this is the easy-parallelization method.  Literally, have 12 "Rguis" open.  I do this when my sampling frame is large, and the probabiliy of a collision is small.  With 60 stories, collision would occur sooner.
+
+So we could try and implement a `parallel` solution as well.  Have a single-core working on a single story.  I could have 6-8 run at one time, so the total time would reduce to about an hour.
+
+As I am watching it run, many of the stories are shorter with only 20 sentences or so.  In 10 minutes it has finished 6 stories.
+
+Broke on Story 9, skipping ... that means I did a pretty good job debugging my code, but edge-cases always appear.  "THE.DOG.AND.THE.SPARROW.txt"
+
+
+```{r}
+
+titles = unique(df.grimm$title);
+titles.f = cleanupTitles(titles);
+
+nt = length(titles);
+
+timer.start = as.numeric(Sys.time());
+
+for(i in 10:nt)
+  {
+  title = titles[i];
+  title.f = titles.f[i];
+  print(paste0("[",i," of ",nt,"] --> ", title));
+    one = prepareOneStory(df.grimm,path.to.grimm,title,title.f);
+  }
+
+timer.end = as.numeric(Sys.time());
+elapsed = round( (timer.end - timer.start), 2);
+  print(paste0("[-- EVERYTHING --] in ",elapsed," secs"));
+  
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

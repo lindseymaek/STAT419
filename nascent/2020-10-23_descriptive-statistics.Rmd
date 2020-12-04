@@ -1,0 +1,233 @@
+---
+title: 'R Notebook: descriptive statistics'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+
+```
+# Descriptive Statistics (Mostly) 
+
+## Reading
+
+* Read (or at least refer to parts of) <http://www.mshaffer.com/arizona/pdf/Joireman(2012).pdf>
+
+- Study 1 is EFA (pg 6).  First, notice how the sample size is reported with total N, percentage Caucasian, breakdown of gender, and **median** of age.  Notice how the KMO test is reported on the last paragraph of that page.  Also note the Bartlett's test and how it is reported: $\chi^2(91) = 614.86, p < .001$ (this is not a formal hypothesis test, it is a description of a formal hypothesis test; I would still label this "descriptive" because it is a diagnostic and not the primary research question).  We generally report p-values, and use other notation to report "significance levels".  A "varimax" rotation is a true orthogonal projection; the social sciences often use "oblimin" which means the dimensions may not be orthogonal (see $\Phi = .27$ notation on left side, near bottom of pg 7).  Figure 1 shows a scree-plot.
+
+- Study 2 is CFA (bottom, right pg 7).   If you forget the "Alpha" column (which is specific to this research question, scale validity), Table 3 is a class "summary statistics" table of the variables examined.  M is mean.  SD is standard-deviation.  And adjacent is the correlation features.  Sometimes if correlation gets too large, we build as a separate table.  The notation for significance is generally: one-cross p < .10; one-star p < .05; two-stars p < .01; and sometimes three-stars p < .001
+
+- Figures 2,3,4 show some of the mechanics of CFA.  We will briefly cover that soon.  Of note, is that those values can be read as "correlations".  Correlations are reported usually with a lower-case r = -.33 with a corresponding p-value cut point: $r = -.33, p < .05$
+
+- Sometimes the sample is also described in a table, reporting just the mean M and SD or similar values.
+
+- Appendix and footnotes (endnotes).
+
+- Bibliography (References).
+
+## War stories
+
+One of my undergrad students later became a research assistant for me.  She was local, and a twin.  We discussed the data collection and the research, and she shared her perspective, documented below that did *NOT* make it into the manuscript:
+
+"Haley is a tall and slender senior in a PAC-10 business college.  She believes she is living a typical lifestyle for a college student.  During this spotlight of independence known as college, she considers herself a yo-yo healthy eater and a yo-yo exerciser.  She feels that healthy eating is about immediate consequences related to her body image.  If she is 3 pounds under her ideal, she feels she can splurge (enjoy a burger and fries), eat more often or eat less healthy.  Conversely, if she is 3 pounds over her ideal, she begins to watch her diet (replacing a burger with a chicken sandwich) and initiates a two-week exercise episode with her friend.  Since she does not like to weigh herself often (she doesn’t want to know), her ideal weight is measured every morning when she puts on her jeans (a few pounds can be the difference between fitting into her size 4 designer jeans or not).  If she has to wriggle into her jeans, she puts on a sweatshirt to hide her hips hanging out.  This signals her to adjust her yo-yo health behaviors.  She doesn’t think too much about her long-term health.  Her mom is very skinny (genetics) so she doesn’t really care about health propaganda."
+  
+## A review of descriptive statistics
+
+We generally report the mean (M) and standard deviation (SD).  We will discuss general forms of "central tendencies" (mean, median, mode) and dispersion in a future notebook.
+
+In the summary statistics table, it is okay to report M / SD for all the variables.  In the text, it should be stated according to a variable type.
+
+**REMINDER**  The data is considered SECRET and lives in the Dropbox folder:  `\__student_access__\_SECRET_\measure-students.txt`
+
+- Age:  can I be 23.75 years old?  Of course!  We create standard integer ages, but age is continuous; e.g., "I report that for adult female respondants (age > 18), the average age was about 21 (M = 21.134, SD = 3.14)."  [I am making up the values, your analysis will report the real thing.  Alternatively, you could report the median age, if you feel that is more appropriate:  "The median age is 21 (median=21, IQR=8)."  Either way, you could discuss outliers as well.
+
+- Eye color: this is generally designated a factor, and we report those as proportions or percentages (that add up to 100).  "The sample consisted of (N = 123) persons of all ages and ethnicities.  Of these, 63% reported having brown eyes; 20% reported having blue eyes; 10% reported having green eyes, ..."
+
+- Handedness: which hand is dominant?  which eye is dominant?  These are factors that may not be mutually exclusive.  That is, someone may put "both" or "equally".
+
+- Quality: this was on a scale of one through ten (1-10).  Some people may have answered 9.5; however, the scale if fixed (e.g., an online survey) would not allow a score of 9.5 so you could report the M / SD but in the text should refer to actual values the respondent could choose.  "Multiple persons were data collectors.  Together, we ascertained the quality of the particular measurement case on a scale of 1-10.  Overall, the average score was between 6 and 7 (M = 6.134, SD = 1.2)."
+
+- Household:  an average household does not have 3.14 persons.  Persons are unique count data.  As such, "We report the average household size to be between 3 to 4 persons (M = 3.14, SD = 1.01)."
+
+## Building a correlation and summary table
+
+I will demonstrate on a small group of the data, how to build correlation and summary results.  You should use the **entire sample** when you do this.  You will also need to make certain the "units" are all the same and possibly convert units.
+
+```{r}
+
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+source_url ( paste0( path.github, "humanVerseWSU/R/functions-file.R" ) );
+
+# C:\Users\Alexander Nevsky\Dropbox\WSU-419\Fall 2020\__student_access__\_SECRET_\
+# paste your file-path above (on Windows)
+# highlight, and copy, then run the next line of code in a console.
+# path.to.secret = convertDirectoryWin.toR();
+
+# https://stackoverflow.com/questions/64476043/
+# https://stackoverflow.com/questions/1189759/
+
+path.to.secret = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/_SECRET_/";
+
+measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
+
+measure;
+
+set.seed(12222015);
+measure.example = measure[ sample(1:nrow(measure), 22), ];
+
+measure.example;
+
+```
+
+### Default summary
+
+```{r}
+
+
+measure.example$data_collector = factor(measure.example$data_collector);
+measure.example$person_id = factor(measure.example$person_id);
+measure.example$writing = factor(tolower(measure.example$writing));
+measure.example$eye = factor(tolower(measure.example$eye));
+measure.example$`eye_color` = factor(tolower(measure.example$`eye_color`));
+measure.example$ethnicity = factor(tolower(measure.example$ethnicity));
+measure.example$gender = factor(tolower(measure.example$gender));
+measure.example$gender[measure.example$gender=="f"] = "female";
+measure.example$gender[measure.example$gender=="m"] = "male";
+
+
+measure.example$swinging = factor(tolower(measure.example$swinging));
+measure.example$side = factor(tolower(measure.example$side));
+
+measure.example$units = factor(tolower(measure.example$units));
+measure.example$units[measure.example$units=="inches"] = "in";
+# remember conv_units ...
+
+
+summary(measure.example);
+
+```
+
+
+### Correlation Example
+
+Again, this is an example of just some of the data.  The dataframe has "right" and "left" which at times may have missing data.  I provided code for you to build variables that merge those by taking an average if both exist.  That is the data you should be using.
+
+```{r}
+
+another.example = measure.example[, 4:8];
+
+colnames(another.example) = c("height", "headH", "headC", "handL.l", "handL.r");
+
+my.M = colMeans(another.example);
+# my.SD =  ??? how are you going to get this data?
+
+my.SD = abs( rnorm(ncol(another.example), mean=13, sd = 1) );  # this is intentionally not correct ... you have to cumpute the correct SD ...
+
+
+library(Hmisc);
+
+my.corr = rcorr( as.matrix(another.example), type="pearson");
+
+str(my.corr);
+
+my.corr.r = my.corr$r;
+my.corr.pval = my.corr$P;
+
+# we have long variable names, we may want to create a dictionary that shortens them, and build an appendix table that is a glossary or a lookup.
+
+# the appendix should have the handout, the data collection process outlined, the data provenance protocol especially as it relates to SECRET, and an identification of the sample type and its potential weaknesses.
+
+my.corr.r.2 = round(my.corr.r,2);
+my.corr.p.3 = as.numeric( round(my.corr.pval,3) ); # flatten
+
+cuts = c(0.10, 0.05, 0.01, 0.001);
+symb = c("+", "*", "**", "***");
+
+my.corr.p.3.symb = "";
+my.corr.p.3.symb[is.na(my.corr.p.3)] = "";
+my.corr.p.3.symb[my.corr.p.3 <= 0.10] = "+";
+my.corr.p.3.symb[my.corr.p.3 <= 0.05] = "*";
+my.corr.p.3.symb[my.corr.p.3 <= 0.01] = "**";
+my.corr.p.3.symb[my.corr.p.3 <= 0.001] = "***";
+
+my.corr.p.3.symb;
+
+
+include.diag = FALSE;  # the 1's on the diagonal are not included
+# this is a lower triangular form ...
+
+char.matrix = as.character(my.corr.r.2);  
+
+
+my.matrix = matrix( 
+                paste0(char.matrix, my.corr.p.3.symb),
+                nrow=ncol(another.example));
+my.matrix;
+
+
+# TODO:  I (instructor) will write a function that takes this string and builds and stores as a Latex file ... for the final report ... 
+
+```
+
+## Build a "One graphic"
+
+Generally, the one-graphic is descriptive in nature.  In context of the "measure" data, the correlations between the different features of the human body is interesting, but is not the primary descriptive.  The descriptive is more simple and can be represented using "relative distances" or ratios.
+
+### Vitruvial Man 
+If you recall in the reading Vitruvian Man (See `week_06`), the data was a scaled to a proportion of a person's height.  For example, if I am 100 cm tall, and my arm span is 90 cm, the arm span can be reported as a proportion `0.90` and you can consider how that research-specific data may update how you build correlation and summary tables.  
+
+**Note** Table in Vitruvian has a proportion for the female gender that is a typo:  1.46 should be 0.46 ...
+
+Should you scale the data to these proportions?  If so, `height` needs to be reported in raw terms:  "We found that males on average are about 176 cm tall (M = 175.5, SD = 6.75) and females on average are 164 cm tall (M = 163.7, SD = 6.54)."
+
+### Note on `round(x, digits=?)` 
+**Note** I commonly round M (mean values) to one decimal and SD (standard deviation) to two decimals, and I intentionally try to include leading zeroes on this data if possible.  This makes it easier to process when reading, especially if they are consistent.  Similarly, I generally report two decimal-places for correlations and three decimal-places for p-values (unless I do the p < .10 cut-approach).  When reporting the $r$ correlation and $p$ p-value, it is often a common practice to drop any leading zeroes.  As a mathematician, I cringe, but this is the general protocol.
+
+### Reporting scaled data 
+After reporting on the scaling factor, you could report all of the other data as proportions.  In this case, I would report two-digits for the mean and three digits for the standard deviation (M = 0.14, SD = 0.290).  Other times, we may scale to a common prefix (e.g, millions of dollars on the IMDB data).  Just be certain to report the scale used:  "We compare the box-office receipts of movies using millions of dollars adjusted for inflation and standarized to the year 2000.  The average film 'raked in' about $50 million dollars (M = 48.3, SD = 7.43)."
+
+## Description
+
+A description should be concise, yet thorough.  I consider the description to be "pedantic" :: exhibiting overly concern with details and accuracy, quibbling over precise language.  Some have considered "pedantic" to be associated with a judgment of "hubris"; however, the judgment is just that, a judgment.  Good writing and storytelling in a technical situation requires an art of making certain all of the relevant minutia is shared in a way that demonstrates "a deep understanding" of the data.
+
+To achieve this, the `5 W's` should be invoked <https://en.wikipedia.org/wiki/Five_Ws>, a fundamental approach to writing.  Have you covered the description in an exhaustive form?
+
+### Mastery of Description Writing
+
+We will apply this to an earlier assignment where you were asked to described the `iris` dataset.  
+
+**[Write] 2-3 sentences concisely defining the IRIS Data Set.  Maybe search KAGGLE for a nice template.  Be certain the final write up are your own sentences (make certain you modify what you find, make it your own, but also cite where you got your ideas from).**
+
+- A novice (`nascent`) would literally go to Kaggle, copy/paste the description, change a few words and submit.
+
+- An apprentice (`developing`) would consider the key aspects of what a full description should contain: the `5 W's`
+
+- A master apprentice (`mastery`) would consider the `5 W's` and also engage in higher-ordered thinking (analysis/synthesis/evaluation) <http://md5.mshaffer.com/WSU_STATS419/_images_/blooms-taxonomy.jpg> to possibly include some other `creative insights` that will inform the reader.
+
+### Six elements of `5 W's`
+
+The **W**ho, the **W**hat, the **W**hen, the **W**here, the **W**hy, and the Ho**w**.
+
+- **W**ho:  The iris dataset is often tied to R.A. Fisher, but I provided a reading (see `week_02`) with the originator of the data.  Both could be mentioned in the who.  And if both are mentioned, both should be referenced or cited.
+
+- **W**hat:  The iris dataset consists of a flower with three species.  Did you mention that?  Did you mention the Latin names for the species?  See `?iris` for some detail just within the R environment.  I provided the original reading so you could explain some very basic information about each species, such as geographic prevalence.  Does the latitude (how far north it is) not influence the flowering size?
+
+- **W**hen:  this may often go with **W**here and Ho**w** as it represents key factors of data provenance.
+
+- **W**hy: this is a nice transition question to higher-order thinking.  Why did Anderson collect the `iris` data?  This can also lead to "so-what" or "why" for us today, why do we care about this dataset?  As the instructor, I believe it is a common multivariate dataset that every student should be aware of.
+
+### Mastery Description 
+
+Once you examine the description thoroughly, it is time to put on your thinking hat.  Why am I describing this?  Who is the audience? [e.g., we practice that the audience is a boss or possibly represents a "portfolio" element that you could use during the job search.]  What "creative" insights do I have beyond the basics of the `5 W's`?
+
+Next, you need to consider how to concisely describe all of the details discovered.  It should be concise, yet thorough.

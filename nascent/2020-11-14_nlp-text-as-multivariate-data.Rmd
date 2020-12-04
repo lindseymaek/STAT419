@@ -1,0 +1,1015 @@
+---
+title: 'R Notebook: natural language processing (text as multivariate data)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-nlp.R");
+# source_url( include.me );
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source_url( include.me );
+
+
+
+path.to.nascent = "C:/Users/Alexander Nevsky/Dropbox/WSU-419/Fall 2020/__student_access__/unit_02_confirmatory_data_analysis/nascent/";
+
+folder.nlp = "nlp/";
+path.to.nlp = paste0(path.to.nascent, folder.nlp);
+
+
+```
+
+# (NLP) Natural Language Processing
+
+There was quite a bit of interest on this topic.  How can we perform multivariate analysis on text.  Most think of data as numbers, but text is certainly data and certainly multivariate.
+
+Below is an email I recently sent to a student not in our program which stands as a good summary of the topic.
+
+<pre style="white-space: pre-wrap; white-space: -moz-pre-wrap; white-space: -pre-wrap; white-space: -o-pre-wrap; word-wrap: break-word;">
+Hi M****,
+
+I am in the process of building a few "NLP" notebooks for my class.  I can share those with you in a few weeks.
+
+I have used python in the past for a large project, but it seems like R has more than caught up.
+
+I am leaning towards the package quanteda, but there are several libraries out there:
+
+https://quanteda.io/articles/pkgdown/comparison.html
+
+I like this library because it looks like it is "most hackable" - I have developed a custom NLP-LSA approach and believe I can plug it into this library.
+
+This link compares two books "Sense and Sensibility" and "Moby Dick" ....   A good walk through on some basics of NLP.
+
+https://quanteda.io/articles/pkgdown/replication/digital-humanities.html
+
+I think those two links should help you get started.
+</pre>
+
+## Choosing "quanteda"
+
+I have reviewed and tested 3 packages available in R.  I will want to do my own thing often, and so the package needs to be "hackable".  For example, I may want to add my own collection of stop words.  Or I may want to write my own "n-gram" text processing algorithm.  Such elements are things I performed on a "concept-search engine" using patent data to answer the question:  "is your idea patentable?"  This topic will be an (optional) mastery notebook coming soon.
+
+
+
+```{r}
+## Remember that RStudio links to some files and makes "installation" a bit more difficult than it needs to be.  I would recommend closing RStudio and installing the packages in RGui, then come back to RStudio to use them.
+
+
+library(devtools);
+
+library(quanteda);  # install.packages("quanteda", dependencies=TRUE); 
+library(quanteda.corpora); # devtools::install_github("quanteda/quanteda.corpora");
+library(quanteda.textmodels); # install.packages("quanteda.textmodels", dependencies=TRUE); 
+library(LIWCalike); # devtools::install_github("kbenoit/LIWCalike");
+
+
+```
+Choosing "quanteda" is one of several good choices.  We will see how it does.  You will likely see me write a lot of custom functions to show you the "inner mechanics" of some aspects of NLP.
+
+
+## The Brothers Grimm
+
+We will use short stories to introduce the topic:  <https://www.gutenberg.org/ebooks/2591>.  I believe there are 60+ short stories.
+
+- Plain text: <https://www.gutenberg.org/files/2591/2591-0.txt>
+- HTML: <https://www.gutenberg.org/files/2591/2591-h/2591-h.htm>
+- Special HTML: <https://www.gutenberg.org/files/52521/52521-h/52521-h.htm>
+
+HTML has anchors to make processing easier.
+
+### Getting the Data
+
+Good data provenance requires a library and storage container.  So we will manually download a copy and reference that copy.
+
+```{r}
+gutenberg.id = 2591;
+
+path.to.gutenberg = paste0(path.to.nlp,"_data_/gutenberg/");
+  createDirRecursive(path.to.gutenberg);
+path.to.grimm = paste0(path.to.gutenberg,gutenberg.id,"/");
+  createDirRecursive(path.to.grimm);
+
+
+local.data.path = path.to.gutenberg; # currently required by grabHTML ... TODO: fix
+
+
+txt.file.remote = "https://www.gutenberg.org/files/2591/2591-0.txt";
+txt.file.local = paste0(path.to.grimm,"fairytales.txt");
+
+  my.txt = grabHTML(txt.file.local, txt.file.remote);
+
+# library(readtext);
+# data.grimm.txt = texts(readtext( file.local ));
+
+
+
+
+html.file.remote = "https://www.gutenberg.org/files/2591/2591-h/2591-h.htm";
+html.file.local = paste0(path.to.grimm,"fairytales.html");
+
+  my.html = grabHTML(html.file.local, html.file.remote);
+
+```
+
+### Getting Short Stories and Paragraphs From Data
+
+The "HTML" form is easier to parse.  A "view-source" on the raw HTML shows that `<h2>` is an important key.  It appears each paragraph is in a `<p>` tag, and there are some characters that need to be converted from html-entities: `&lsquo;` and poems appear to be in `<pre>` tags.
+
+#### HTML entitites
+```{r}
+str = '<pre xml:space="preserve">
+ &lsquo;No care and no sorrow,
+  A fig for the morrow!
+  We&rsquo;ll laugh and be merry,
+  Sing neigh down derry!&rsquo;
+</pre>';
+
+cleanupHTMLentities = function(str, find="fs", replace="rs") 
+  {
+  fs = c("&lsquo;", "&rsquo;", "&mdash;");  # mdash is not a hyphen.
+  rs = c("'"      , "'"      , " -- ");       # ASCII replaces
+  cs = c("^[^"    , "^]^"    , " ^-^ ");      # custom replaces   
+  nfs = length(fs);
+  for(i in 1:nfs)
+    {
+    myf = eval(parse(text = find));
+    myr = eval(parse(text = replace));
+    
+    str = gsub(myf[i],myr[i], str, fixed=TRUE);
+    }
+  str;
+  }
+
+str;
+cleanupHTMLentities(str);
+```
+
+#### Parse into dataframe and cache
+```{r}
+cache.file.local = gsub(".html", ".rds", html.file.local, fixed=TRUE);
+
+timer.start = as.numeric(Sys.time());
+
+
+if(!file.exists(cache.file.local))
+{
+  df.grimm = NULL;
+chap.n = 0;
+para.n = 1;
+title = "THE BROTHERS GRIMM FAIRY TALES";
+what  = "-INTRO-";
+
+### let's trim around gutenberg stuff
+start = "*** START OF THIS PROJECT GUTENBERG EBOOK GRIMMS' FAIRY TALES ***";
+end = "End of Project Gutenberg";
+
+tmp = strsplit(my.html, end, fixed=TRUE)[[1]];     # str(tmp);
+tmp1 = strsplit(tmp[1],  start, fixed=TRUE)[[1]];  # str(tmp1);
+
+n.html = tmp1[2];
+
+# there is one note ...  <div class="mynote">
+start = '<div class="mynote">';
+end = '</div>';
+
+tmp = strsplit(n.html, start, fixed=TRUE)[[1]];     # str(tmp);
+f.html = tmp[2];
+tmp1 = strsplit(tmp[3],  end, fixed=TRUE)[[1]];     # str(tmp1);
+
+
+strip_tags <- function(htmlString) {
+  return(gsub("<.*?>", "", htmlString))
+}
+
+
+note = cleanupHTMLentities(tmp1[1],replace="cs");
+note = strip_tags(note);
+# note = removeWhiteSpace(note);
+note = trimMe(note);
+type = "note";
+
+row = c(chap.n, what, title, para.n, type, note);
+df.grimm = rbind(df.grimm, row);
+  chap.n = 1+chap.n;
+  para.n = 1;
+
+
+### h2
+tmp = strsplit(f.html,"<h2>", fixed=TRUE)[[1]];
+idx.stories = 2:63
+
+for(i in idx.stories)
+  {
+  story = tmp[i];
+  what = paste0("STORY-",chap.n);
+    story = cleanupHTMLentities(story,replace="cs");
+    #story = removeWhiteSpace(story);
+    story = trimMe(story);
+  # story title
+  stmp = strsplit(story, "</h2>", fixed=TRUE)[[1]]; 
+  story.title = trimMe(stmp[1]);
+  
+  story = trimMe(stmp[2]);
+  # let's keep paragraphs for a minute ...  <p> and <pre>
+  # because of location of <pre>, I will explode on ending </p>
+  # we will count <pre> as a paragraph with a poem flag ... # NOT PERFECT: it doesn't allow for multiple poems within a paragraph, see JORINDA.
+  ptmp = strsplit(story, "</p>", fixed=TRUE)[[1]]; 
+  
+  # paragraphs = list();
+  n.p = length(ptmp);
+  k = 1;
+  for(j in 1:n.p)  # i = 3; j = 12
+    {
+    para = ptmp[j];
+    qtmp = strsplit(para, "<p>", fixed=TRUE)[[1]]; 
+      poem = trimMe(strip_tags(qtmp[1]));
+      if(is.na(poem)) { poem = ""; }
+      if(poem != "")
+        {
+        # pinfo = list("type" = "poem", "text" = poem);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "poem", poem);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+      prose = trimMe(strip_tags(qtmp[2]));
+      if(is.na(prose)) { prose = ""; }
+      if(prose != "")
+        {
+        prose = removeWhiteSpace(prose); # poems will keep line breaks
+        # pinfo = list("type" = "prose", "text" = prose);
+        # paragraphs[[k]] = pinfo;
+        row = c(chap.n, what, story.title, k, "prose", prose);
+        df.grimm = rbind(df.grimm, row);
+        k = 1 + k;
+        }
+    ###
+    }
+  ### end of single story ... 
+  chap.n = 1+chap.n;
+  }
+
+
+df = as.data.frame(df.grimm);
+  colnames(df) = c("chap.n", "chap.type", "title", "para.n", "para.type", "para.text");
+  rownames(df) = paste0(df$chap.n,"-",df$para.n);
+df$chap.n = as.numeric(df$chap.n);
+df$para.n = as.numeric(df$para.n);
+
+df.grimm = df;
+saveRDS(df.grimm, cache.file.local);
+    } else { df.grimm = readRDS(cache.file.local); }
+
+timer.end = as.numeric(Sys.time());
+timer.elapse = timer.end-timer.start;
+print(paste0("Time elapsed: ", round(timer.elapse,2) ));
+  
+df.grimm;
+
+```
+
+#### Data exploration
+
+I "assume" that the GRIMM stories paint the wolf in a negative light.  So let's start and just see how often the wolf appears versus a more pleasant word such as "garden".
+```{r}
+
+search.garden = wildcardSearch("*garden*", "para.text", df=df.grimm);
+
+search.garden;  # 43 paragraphs
+
+search.wolf = wildcardSearch("*wolf*", "para.text", df=df.grimm);
+
+search.wolf;   # 33 paragraphs
+
+```
+
+This initial "search lookup" informs us that "wolf" appears in 33 distinct paragraphs and "garden" appears in 43 distinct paragraphs.  A manual search of the HTML reveals "wolf" appears a total of 72 times in those 33 distinct paragraphs whereas "garden" appears a total of 66 times in those 43 distinct paragraphs.
+
+**Note:** I may want to do some analysis on the "conversation" of characters in a story, so I replaced the single-quote HTML entities with a custom character.
+
+### Collapse a single story to its text
+
+```{r}
+
+# THE KING OF THE GOLDEN MOUNTAIN
+# df.story = subsetDataFrame(df.grimm, "title", "==", "THE KING OF THE GOLDEN MOUNTAIN");
+# outfile = paste0(path.to.grimm, "KING.GOLDEN.MOUNTAIN.txt");
+
+
+# HANSEL AND GRETEL
+df.story = subsetDataFrame(df.grimm, "title", "==", "HANSEL AND GRETEL");
+outfile = paste0(path.to.grimm, "HANSEL.GRETEL.txt");
+
+
+
+df.story;
+
+my.story = paste0(df.story$para.text, collapse=" \r\n ");
+my.story;
+
+
+
+writeLine(my.story, outfile, append=FALSE);  # so I can visually inspect the text.
+```
+#### Wordcloud
+
+```{r}
+
+quanteda::textplot_wordcloud( dfm(my.story) );
+
+
+
+```
+
+Not a very interesting word cloud yet.  And it appears that the nature of this word cloud is "okay" but not great.  See <http://www.wordle.net/create>.  The best version I have seen.  You can review HighCharts <https://www.highcharts.com/demo/wordcloud> and google for other solutions in R.
+
+<IMG src='nlp/_data_/gutenberg/2591/wordle.png' />
+
+#### Stop words
+Many times there are "throw-away" words in a language.  Used a lot but with very little meaning added to a story.  These words can be thrown away, and can be used as a marker for decomposing word strings.
+
+The folder 'stop-info' has some information about the process of using stop words.  The folder 'stop-templates' have common lists I use in my research.  Let's see what quanteda has.
+
+<https://quanteda.io/reference/stopwords.html>
+
+```{r}
+head( quanteda::stopwords(), 25);
+```
+
+When I do my "patent research", I create patent-specific stop words.  "This present invention relates to" is a common "stop-phrase" not a "stop word".
+
+#### Some cleanup
+
+When we cleanup text, we often then treat it as a "bag of words"; that is we really do not worry about the relationships of words together; it is **as-if** we through the words in a blender.
+
+When we still care about words, we can create "n-grams"; for example a bi-gram (or 2-gram) would maintain pairs of contiguous words [not interrupted by a stop word or punctuation].
+
+Let's keep it simple for now.
+
+##### Remove Punctuation
+```{r}
+
+my.story.q = quanteda::tokens(my.story,
+                    remove_punct = TRUE,
+                    remove_symbols = TRUE,
+                    remove_numbers = TRUE,
+                    remove_url = TRUE);
+
+# notice the format is no longer a single char vector
+quanteda::textplot_wordcloud( dfm(my.story.q) );
+
+
+```
+
+##### Apply default stopwords
+The `dfm` function is converting a long character string, or a vector of strings into a special class that `quanteda` has developed.
+
+```{r}
+
+my.story.dfm = quanteda::dfm( my.story.q,
+                      remove = quanteda::stopwords()
+);
+
+quanteda::textplot_wordcloud(my.story.dfm);
+
+```
+
+##### Apply stopwords `tennessee` 
+
+```{r}
+
+stop.file.tennessee = paste0(path.to.nlp, "stop-templates/tennessee.txt");
+
+stop.tennessee = strsplit( grabHTML(stop.file.tennessee), "\r\n")[[1]];
+
+# stop.tennessee;
+
+
+my.story.dfm = quanteda::dfm( my.story.q,
+                      remove = stop.tennessee
+);
+
+quanteda::textplot_wordcloud(my.story.dfm);
+
+```
+
+#### (POS) Summary
+
+Parts of Speech (POS) includes: nouns, verbs, pronouns, adverbs, and so on.  We can implement by tying it into a python wrapper (optional developing notebook), or by using (YET another) R package.
+
+
+<https://cran.r-project.org/web/packages/openNLP/openNLP.pdf>
+
+```{r}
+#install.packages ("openNLP", dependencies=TRUE);
+library(openNLP);
+library(NLP);
+
+s = my.story;
+
+## Need sentence and word token annotations.
+sentence.a = Maxent_Sent_Token_Annotator();
+word.a     = Maxent_Word_Token_Annotator();
+sw.a       = annotate(s, list(sentence.a, word.a));
+
+pos.a      = Maxent_POS_Tag_Annotator(probs=TRUE);
+swpos.a    = annotate(s, list(pos.a), sw.a);
+
+swpos.a.words = subset(swpos.a, type=="word");
+
+head(swpos.a.words);
+
+tags = sapply(swpos.a.words$features, `[[`, "POS");
+sort(table(tags),decreasing = TRUE);
+
+```
+<https://www.sketchengine.eu/penn-treebank-tagset/>
+<https://cs.nyu.edu/grishman/jet/guide/PennPOS.html>
+
+Some notables:
+
+- NN is "noun, singular or mass"
+- VBD is "verb be, past tense"
+- PRP is "personal pronoun"
+- IN is "preposition or subordinating conjunction"
+
+**Note:** This is from the raw text.  Part of the art of NLP is to figure out when to do what based on your question of interest.
+
+#### Other summary data
+
+So what features can we extract?  The word cloud did give us frequencies of words, so let's review what we can capture.
+
+##### Punctuation
+```{r}
+
+# count .
+myCounts = c();
+
+countMe = c(".",";",":",",","?","!","^[^","^]^");
+labelMe = c("P.per","P.semi","P.colon","P.comma","P.quest","P.exclam","P.left","P.right");
+
+cn = length(countMe);
+countR = c();
+for(i in 1:cn)
+  {
+  tmp = strsplit(my.story,countMe[i],fixed=TRUE)[[1]];
+  countR[i] = length(tmp);
+  }
+
+
+names(countR) = labelMe;
+countR = as.data.frame(t(countR));
+
+countR$P.apost = countR$P.right - countR$P.left; # apostrophes ... some poetry elemenents may have LSQ RSQ and technically be an apostrophe, see... ‘O’er hill and o’er dale
+# ‘I’ll tell you what, husband,’ ... grabbing "conversation" may be a bit tricky ...
+
+countR;
+```
+If you compare to the (POS) Summary, we are getting slightly different results.
+
+##### Capitalization
+
+```{r}
+
+# my.story.n = cleanupHTMLentities(my.story, find="cs", replace="rs");
+
+my.story.n = my.story;
+# remove punctuation altogether
+
+for(i in 1:cn)
+  {
+  my.story.n = gsub(countMe[i],"",my.story.n,fixed=TRUE);
+  }
+
+my.story.n = removeWhiteSpace(my.story.n);
+
+words = strsplit(my.story.n," ",fixed=TRUE)[[1]];
+
+count.words = wc = length(words); # word count
+
+count.lower = count.upper = count.ucfirst = 0;
+
+details = list( "lower" = c(), 
+                "upper" = c(), 
+                "ucfirst" = c());
+
+for(i in 1:wc)
+  {
+  word = words[i];
+  
+  word.lower = tolower(word);
+  word.upper = toupper(word);
+  
+  if(word == word.lower) 
+    { 
+    count.lower = 1 + count.lower; 
+    details$lower = c(details$lower,word);
+    } else if(word == word.upper) 
+    { 
+    count.upper = 1 + count.upper; 
+    details$upper = c(details$upper,word);
+    } else { 
+            count.ucfirst = 1 + count.ucfirst; 
+            details$ucfirst = c(details$ucfirst,word);
+            }
+  
+  }
+
+
+countR$count.words = count.words;
+countR$count.lower = count.lower;
+countR$count.upper = count.upper;
+# we assume if not "ALL" or "all" that it is ucfirst "All" ... # see PERL/PHP
+countR$count.ucfirst = count.ucfirst;
+
+
+# str(details);
+
+head( sort(table(details$lower),  decreasing = TRUE) );
+head( sort(table(details$upper),  decreasing = TRUE) );
+head( sort(table(details$ucfirst),decreasing = TRUE) );
+
+
+countR;
+```
+
+Notice we could count Hansel and Gretel and there seems to be a bit of a gender bias.  Hansel = 44, Gretel = 35.  We can however, count gender-specific words that would allow us to compare the short stories.  Many of the short stories speak of kingdoms, forests, trees, wolves, and so on.  So we could grab features that may be similar across them...  
+
+My last name "SHAFFER" is of German origin; and it was said that until about the year 1500, a family's name was a function of the house they lived in.  (Johannes Gutenberg invented printing press about that time).  So if you moved "houses" your name changed.  You are the family living in house "SHAFFER".  
+
+"SHAFFER" is derived as a variant of the German word "Schäfer" which means shepherd; the "SHAFFER-hound" is the relatively modern German Shepherd dog (sheep-herd: Schäferhund) <https://en.wikipedia.org/wiki/German_Shepherd>; maybe "hound" originates from herding not hunting (hund) <https://www.etymonline.com/word/hound> as is commonly believed. Or maybe it meant "the family dog:" herder of sheep, or a hunter, or a protector of the family (watchdog alarm) <https://en.wiktionary.org/wiki/Hund#Etymology_2>.
+
+
+##### Personal Pronouns
+
+<https://en.wikipedia.org/wiki/Pronoun#English_pronouns>
+
+```{r}
+# we have words, so let's make them lower case
+
+# let's ignore hyphens, separate as words.
+my.story.m = gsub("-"," ",my.story.n,fixed=TRUE);
+my.story.m = removeWhiteSpace(my.story.m);
+
+words.m = strsplit(my.story.m," ",fixed=TRUE)[[1]];
+
+
+words.lower = tolower(words.m);
+
+# bag of words, order doesn't matter
+words.table = as.data.frame( sort(table(words.lower),decreasing = TRUE));
+  colnames(words.table) = c("word","count");
+  
+my.pronouns = NULL;
+
+pr.person = "first";
+pr.number = "singular";
+pronouns = c("i", "me", "my", "mine", "myself");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+pr.person = "first";
+pr.number = "plural";
+pronouns = c("we", "us", "our", "ours", "ourselves");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+
+pr.person = "second";
+pr.number = "singular";
+pronouns = c("you", "you", "your", "yours", "yourself");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+pr.person = "second";
+pr.number = "plural";
+pronouns = c("you", "you", "your", "yours", "yourselves");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+pr.person = "third";
+pr.number = "singular";
+pronouns = c("he", "him", "his", "his", "himself");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+pr.person = "third";
+pr.number = "singular";
+pronouns = c("she", "her", "her", "hers", "herself");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+pr.person = "third";
+pr.number = "singular";
+pronouns = c("it", "it", "its", NA, "itself");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+pr.person = "third";
+pr.number = "plural";
+pronouns = c("they", "them", "their", "theirs", "themself", "themselves");
+for(p in 1:length(pronouns))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", pronouns[p]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(pr.person,pr.number,pronouns[p],lookup.count);
+  my.pronouns = rbind(my.pronouns,row);
+  }
+
+
+  pn = dim(my.pronouns)[1];
+rnames = c("subject","object","determiner","independent","reflexive");
+  rn = length(rnames);
+  gn = (floor(pn/rn));
+rnames.all = c();  
+for(g in 1:gn)
+  {
+  rnames.all = c(rnames.all, paste0(rnames,"-",g));
+  }
+  rnames.all = c(rnames.all, paste0("reflexive.b-",g));
+  
+  length(rnames.all);
+cnames = c("person","number","word","count");
+
+my.pronouns = as.data.frame(my.pronouns);
+  rownames(my.pronouns) = rnames.all;
+  colnames(my.pronouns) = cnames;
+
+my.pronouns$count = as.numeric(my.pronouns$count);
+
+my.pronouns;
+
+```
+
+
+##### Gender-specific
+
+```{r}
+my.gender = NULL;
+
+g.person = "male";
+g.number = "singular";
+genders = c("he", "him", "his", "himself", "man", "boy", "king", "prince", "son", "father", "dad", "daddy", "fatherhood", "brother", "godfather", "gentleman", "huntsman", "fisherman", "groom", "husband");
+
+for(g in 1:length(genders))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", genders[g]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(g.person,g.number,genders[g],lookup.count);
+  my.gender = rbind(my.gender,row);
+  }
+
+g.person = "male";
+g.number = "plural";  # plural may be capturing possessive "father's"?
+genders = c("men", "boys", "kings", "princes", "sons", "fathers", "dads", "daddies", "brothers", "brethren", "brotherhood", "godfathers", "gentlemen", "huntsmen", "fishermen", "husbands");
+
+for(g in 1:length(genders))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", genders[g]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(g.person,g.number,genders[g],lookup.count);
+  my.gender = rbind(my.gender,row);
+  }
+
+g.person = "female";
+g.number = "singular";
+genders = c("she", "her", "herself", "woman", "girl", "queen", "princess", "daughter", "mother", "mom", "mommy", "motherhood", "sister", "godmother", "lady", "maid", "maiden", "bride");
+
+for(g in 1:length(genders))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", genders[g]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(g.person,g.number,genders[g],lookup.count);
+  my.gender = rbind(my.gender,row);
+  }
+
+g.person = "female";
+g.number = "plural";
+genders = c("women", "girls", "queens", "princesses", "daughters", "mothers", "moms", "mommies", "sisters", "sisterhood", "godmothers", "ladies", "maids", "maidens");
+
+for(g in 1:length(genders))
+  {
+  lookup = subsetDataFrame(words.table, "word", "==", genders[g]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(g.person,g.number,genders[g],lookup.count);
+  my.gender = rbind(my.gender,row);
+  }
+
+
+
+
+
+  
+cnames = c("gender","number","word","count");
+
+my.gender = as.data.frame(my.gender);
+  rownames(my.gender) = NULL;
+  colnames(my.gender) = cnames;
+
+my.gender$count = as.numeric(my.gender$count);
+
+my.gender;
+
+
+```
+
+##### Grimm-specific
+
+We could also capture proper names like "HANSEL" and "GRETEL", but this demonstrates this idea.
+
+I would try and capture the language in "German" and translate using a classifier.  We are capturing general themes of the original stories, but the "translators" have added their cultural/linguistic bias to what we have.  "Miles and yards" are clues to a potential bias.
+
+In an optional notebook, I will show the basic mechanics of a "translation" classifier by examining the book of Genesis in English and Chinese.
+
+I also want to emphasize the importance of "getting intimate with your data."  You can run this analysis through `quanteda` and could possibly miss some feature-insights.
+
+```{r}
+
+grimms = c("wolf/wolves", "bear/s", "fox/es", "bird/s", "forest/s", "iron/s", "fish/ed/es/fishing/fisherman/fishermen/fishpond/s",  "tree/s", "house/s", "garden/s", "bread/s", "water/s", "hand/s", "pure", "lock/s", "finger/s", "toe/s", "leg/s", "arm/s", "head/s", "foot/feet/footed", "bar/s", "stomach/e/belly", "walk/s/ed", "run/runs/ran", "loaf/loaves", "search/searching/searches/searched", "sea/s", "prophet/s/prophecy/prophecies", "small/large", "emperor/s", "pope/s", "fly/flies/flew", "child/children", "dwarf/dwarves", "witch/es", "moon/s", "raven/s", "cake/s", "sweet/s", "apple/s", "lake/s", "axe/s", "wood/s", "hill/s", "hat/s", "goose/geese", "box/es", "wheel/s", "tower/s", "boil/boiled/boils", "lamb/s", "tail/s", "grove/s", "field/s", "voice/s", "cheese", "coat/s", "rose/s/y", "bushe/s", "feast/s", "wake/s/awaken/rise/n/arose", "enemy/enemies", "better/best", "worse/worst", "pocket/s", "coffin/s", "hungry/hunger/weary/weariness", "cage/s", "chicken/s", "light/s", "dark/darken/darkness", "board/s", "candle/s", "eye/s", "girdle/s", "sleep/asleep/sleeps/rest/rests/rested/restful", "round/s", "circle/s/ed", "square/s/ed", "eat/ate/eaten/eats/", "fire/s", "yard/s", "breast/s", "pigeon/s", "cook/cooked/cooking/cooks", "wild", "beast/s", "devour/s", "god/less", "winter/s", "yes", "no", "soldier/s", "prison/s", "prisoner/s", "grass/es", "rope/roped/ropes", "shoulder/s", "art/s", "cunning/think/thought", "friend/ly/s", "leaf/leaves", "whistle/whistling/whistled/whistles", "year/s", "month/s", "week/s", "dream/s", "gay/happy/sad/unhappy", "sword/s", "air/s", "sing/s/singing/sung", "bone/s", "silk", "well/s",  "day/s",  "evening/s", "morning/s",  "night/s",  "castle/s",  "door/s", "marble/s", "gold/golden/silver/pearls/jewels",  "good/peace", "wicked/evil", "cow/s", "goat/s", "bee/s", "milk/honey", "window/s", "marry/marries/married", "kid/s", "bed/s", "key/s", "giant/s", "today/tomorrow/yesterday", "wish/wished/wishes", "priest/s/priesthood", "sun/s", "frog/s", "fog/s", "summer/s", "spring/s", "fall/s", "autumn/s", "young/younger/youngest", "old/older/oldest/eldest", "leather", "peasant/s", "shepherd", "mayor/s", "hole/s", "barrel/s", "straw", "devil", "servant/s", "sheep", "flock", "cottage/s", "bedchamber/s", "room/s", "kitchen", "courtyard/s", "cabbage/s", "chain/s", "hot/cold/warm", "spirit/s", "red/blue/white/green/s/black/yellow/purple", "blood/bleeding/bleeds", "pig/s", "horse/s", "dog/s", "die/death/dying/died/dies/dead", "kill/killed/kills", "birth/born", "fallen", "handsome/handsomest /beautiful/lovely", "glass", "ball/s", "mouse/mice/mouses/", "cat/s", "mountain/s", "pot/s", "fat/s", "on/off",  "live/lives/life/lived/alive", "early/late", "shoe/s", "stone/s", "pebble/s", "drawer/s", "table/s", "plate/s", "bowl/s", "piece/s", "body/bodies", "salt/pepper", "left/right", "top/bottom", "cut/s", "wine/s", "home/s", "knife/knives", "fork/forks", "spoon/s/spoonful", "cloth/es/clothing", "treasure/s", "guest/s",  "war/wars/battle/battles/battlefield", "animal/s", "pillow/s", "food/feed/breakfast/s/lunch/es/dinner/s/supper/s", "beam/s", "robber/s", "monster/s", "tooth/teeth", "music/musician", "donkey/s", "bit/bite/bites/bitten", "club/s", "stick/s", "storm/s/y", "shelter/s/ed", "drink/drunk/drinks/drunken", "meadow/s", "branch/es", "ring/s",  "cry/cries/cried/weep/wept/", "snow/s/snowflake/s", "rain/s", "heart/s", "love/lover/loved/loves", "country/countryside", "land/s", "little/big", "duck/s", "or/and/but", "also/too", "thirsty/drink", "wren/s", "nest/s", "egg/s",  "one/two/three/four/five/six/seven/eight/nine/ten/eleven/twelve/thirteen", "ones/twos/threes/fours/fives/sixes/sevens/eights/nines/tens/elevens/twelves/thirteens", "church/es", "lip/s", "half/whole", "first/second/third/fourth/fifth/sixth/seventh/eighth/ninth/tenth/eleventh/twelfth/thirteenth",  "hundred/s", "thousand/s", "heaven/s", "heavy", "wind/y", "poor/rich", "mile/s" );
+
+all.words = c();
+for(g in 1:length(grimms))
+  {
+  sub.g = strsplit(grimms[g],"/",fixed=TRUE)[[1]];
+  n.g = length(sub.g);
+  sub.previous = NULL;
+  for(i in 1:n.g)
+    {
+    s = sub.g[i];
+    if(i > 1)
+      {
+      s.n = nchar(s);
+      if(s.n < 3) # we have a token-stem
+        {
+        all.words = c(all.words, paste0(sub.previous,s)); # append
+        } else {
+                all.words = c(all.words, s); # next one
+                sub.previous = s;
+                }
+      } else {
+              all.words = c(all.words, s); # first one
+              sub.previous = s;
+              }
+    }
+  #
+  }
+## above would be "nice" to somehow keep them grouped based on the single entry...  
+
+
+my.grimm = NULL;
+for(a in 1:length(all.words))
+  {
+  # could do wildcard ...
+  lookup = subsetDataFrame(words.table, "word", "==", all.words[a]);
+  lookup.count = 0;
+  if(dim(lookup)[1] == 1) { lookup.count = lookup$count; }
+  row = c(all.words[a],lookup.count);
+  my.grimm = rbind(my.grimm,row);
+  }
+
+
+
+  
+cnames = c("word","count");  # "group" would be nice
+
+my.grimm = as.data.frame(my.grimm);
+  rownames(my.grimm) = NULL;
+  colnames(my.grimm) = cnames;
+
+my.grimm$count = as.numeric(my.grimm$count);
+
+my.grimm;
+
+
+```
+
+I spent about two hours "randomly" scanning word-elements of the stories to build this conceptual word-group list.  This project is a bit of "supervised learning" since human intervention was required to specifically consider some words.  In a future notebook, we will show a "unsupervised learning" technique.
+
+#### Bigrams and stop words?
+
+I could return to the idea of bigrams (2-grams) and stop words.  Instead of stop words, or in addition to stop words, I could use my "grimm-specific" list to include "go words".
+
+```{r}
+
+## maybe create [stop] tag for comma, semicolon, and so on ... it becomes a "word" == "[stop]" as in a punctuation break ...
+
+stop.file.snowball = paste0(path.to.nlp, "stop-templates/snowball.txt");
+
+stop.snowball = trimMe(strsplit( grabHTML(stop.file.snowball), "\r\n")[[1]]);
+
+# stop.tennessee
+# grimms
+# words.lower = tolower(words.m);
+uni.grams = c();
+bi.grams = c();
+#my.stop = stop.tennessee;
+#my.stop = NULL;
+my.stop = stop.snowball;
+verbose = FALSE;
+
+bigram = NULL;
+for(i in 1:length(words.lower))
+  {
+  # for simplicity, we will just do stopwords
+  word = words.lower[i];
+  if(verbose) { print(paste0("word: ",word)); }
+  if(is.element(word, my.stop))
+    {
+    if(length(bigram) == 2)
+      {
+      # could be just one ... 
+      # since we store uni.grams, let's dump it
+      bi.grams = c(bi.grams, paste0(bigram,collapse=" ")); 
+      }
+    bigram = NULL;
+    } else {
+            uni.grams = c(uni.grams,word);
+            bigram = c(bigram,word);
+            if(verbose) { print(paste0("bigram: ", paste0(bigram,collapse=":"))); }
+            if(length(bigram) == 2)
+              {
+              bi.grams = c(bi.grams, paste0(bigram,collapse=" "));
+              # keep the 2nd for next possible contiguous bigram
+              bigram = bigram[2]; 
+              }
+            }
+  
+  }
+  if(length(bigram) > 0)
+      {
+      # could be just one ... 
+      bi.grams = c(bi.grams, paste0(bigram,collapse=" ")); 
+      bigram = NULL;
+      }
+
+# watch this scroll in buffer with print turned on is interesting... can you read the story?
+
+
+head( sort(table(uni.grams),decreasing = TRUE), 25);
+head( sort(table(bi.grams),decreasing = TRUE), 25);
+
+```
+- The above could include a "[stop]" key for punctuation.  
+- This logic could be extended to include: 3-grams, 4-grams, etc.
+- You could build n-grams with overinflation.  If a 5-gram exists, build all of its possible 4-grams, 3-grams, 2-grams, and 1-grams.  I call the creation of features without inflation the "disjoint" method.
+- You could also use POS to alter the order of a modifiers.  "urostomy plastic bag" and "plastic urostomy bag" have the exact same meaning.
+
+#### Sparse reduction
+
+We could easily create a "cut-off" rule based on frequencies (especially for 1-grams) to present fewer elements into the next round of analysis.
+
+#### (STEMMING) Variant reduction
+
+Above, you will notice that I addressed the singular/plural of a word one-at-a-time.  It is important to understand how this could work manually.  A "stemmer" or "lemmatizer" is the process of doing this.  I like to store a dictionary of the subcounts of the reduced values and each variant.  
+
+<https://programmerbackpack.com/lemmatization-and-stemming-in-nlp-the-complete-practical-guide/>
+
+I call this process "stemming".
+
+##### Snippet of 3-gram 
+
+Below is an example of a snippet of a JSON object that has the count for 3-grams from patent data.  At the time, python did not have a sorting mechanism (ARGH!).  This text was about "sms messaging" - `scikit-learn ntlk` did the transformations.
+
+
+<PRE>
+{
+ "servic+lb+queri": 4,
+ "sm+multimedia+messag": 5,
+ "proxi+messag+includ": 2,
+ "gateway+mobil+locat": 2,
+ "proxi+messag+extract": 1,
+ "sm+messag+accord": 30,
+ "locat+base+servic": 38,
+ "base+servic+lb": 4,
+ "allow+locat+base": 21,
+ "proxi+messag+mean": 2,
+ "messag+compris+receiv": 1,
+ ...
+}
+
+
+##### Snippet of 2-gram variant file
+
+<PRE>
+"program+repres": {
+  "programs+represented": 1
+ },
+ "typic+includ": {
+  "typically+include": 1,
+  "typically+includes": 3
+ },
+ "larger+commun": {
+  "larger+community": 1
+ },
+ "teloc+numer": {
+  "telocator+numeric": 1
+ },
+ "airlin+schedul": {
+  "airline+schedule": 1
+ },
+</PRE>
+
+#### Conclusion
+
+It is very important to understand your data, so before comparing multiple stories (next notebook), let's have you do some basic descriptive analysis of the this single story (or you can pick a different single story if you want).  Pie charts of gendered words?  Personal Pronounces? Capitalization? Punctuation?
+
+```{r}
+# do some basic analysis (likely descriptive) on this single story.  (pie chart maybe)?
+```
+
+-- WRITE SOMETHING HERE --
+
+##### Quanteda
+
+I am not completely sold on Quanteda.  It appears to be linking to other packages, like "wordStem" which I could do.  I tried to install "spaCy" in Python on Win10 using pip for POS analysis (as recommended by quanteda).  It failed miserably, as this package is not `scikit-learn` ... I will make an optional short "developing" notebook (and video) on the python workspace.
+
+##### corpus
+
+- <https://cran.r-project.org/web/packages/corpus/vignettes/corpus.html>
+- <http://corpustext.com/>
+- <https://github.com/leslie-huang/r-corpus>
+
+This was developed by a student while working on a Ph.D. in NLP at NYU and has been handed over to a new maintainer.
+
+##### tm
+
+- <http://tm.r-forge.r-project.org/>
+- <https://www.jstatsoft.org/article/view/v025i05>
+- <https://cran.r-project.org/web/packages/tm/vignettes/tm.pdf>
+
+This is an older package.  It uses parallel and Rcpp to speed up the slowness of R in processing text.
+
+##### Final answer
+
+Each of the above have "walk-throughs" for black-box operations.  Since I have developed a proprietary methodology (which I will discuss in an optional mastery notebook), I struggle with limitations of each.  You want to be able to scan the text in multiple ways to extract certain features.  It is likely I will just build my own functions and tie-into their "wordclouds" or something.
+
+The 5-stages for classification from last notebook:
+
+- How we select the data 
+- How we divide the data 
+- What data features we can extract
+- How to compare the given features
+- What statistics will determine the prediction
+
+I would not suggest R or Python for data pre-processing.  I allowed one worker to convince me to use Python (because he was very comfortable programming that way).  We bought a new server with faster hard-drives to read data faster (10 million documents).  Ultimately, if you want to scale past hobby-hour, I would suggest:  C/C++, Perl, PHP, Java for building out the necessary objects.  However, that is a challenge.  If you can do a raw prep of the data in one of these languages, then you could use `scikit-learn ntlk` to do the other special stuff (like maybe gender classification: <https://stackoverflow.com/questions/16323078/gender-identification-in-natural-language-processing#16328613>).  End of the day, once you have features and want to do clustering, classification, or other multivariate statistics, I would recommend returning to R.  Ultimately, you choose the best tools for the job, so may develop an ensemble of tools based on the task required at the time.
+

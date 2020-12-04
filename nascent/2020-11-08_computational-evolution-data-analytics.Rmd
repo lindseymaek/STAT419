@@ -1,0 +1,422 @@
+---
+title: 'R Notebook: computational evolution of data analytics'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+
+```
+
+# Evolution of Data Analytics 
+
+Which came first?  Mathematics?  Statistics?  Data Analytics?
+
+It may be a difficult question to answer.  However, much of what we call "statistics" developed as computational technologies evolved in analyzing data.
+
+## Ancient Number Systems
+Humanity has 10 fingers and 10 toes.  Many believe that is why we have a base-10 number system <https://www.thoughtco.com/definition-of-base-10-2312365>.  Just with your fingers you can do basic counting.  5 fingers on the left, 5 fingers on the right.  At least two ancient civilizations defined a unit of time based on 10 days:  the ancient Chinese and ancient Egyptians.  Chinese historically required that a person bath every 5 days or twice in one "week" <https://en.wikipedia.org/wiki/Chinese_calendar#Week>.  In fact, when the French Revolution occurred, they wanted to reestablish this ancient notation for measuring time and called the 10-day period "decans" <https://calendars.wikia.org/wiki/French_Republican_calendar>.  This notion was mocked by western society as a joke.  The current "Julian calendar" was a result of Roman/Greek influence.  About 100 AD, the 8-day Etruscan calendar <https://en.wikipedia.org/wiki/Eight-day_week>, <https://en.wikipedia.org/wiki/Nundinae> (Etruscans were the dominant economic power in the region <http://www.aai.freeservers.com/etruscan_calendar_interpretation.htm>) was replaced by the Julian calendar with 7-days based on a division of the month into 4 parts, not 3 parts <https://chrispearce52.wordpress.com/tag/etruscan-calendar/>.  The Romans had a few holidays that they did not want to disrupt, that is why February has only 28 days.
+
+Three "weeks" of ten days is 30 days and was anciently defined as a month <https://calendars.wikia.org/wiki/Egyptian_calendar>.  Twelve months consisted of 360 days anciently.  Some cultures (Egyptians and Mayans for example), added an extra week of 5-6 days every year at some point to align with the modern 365-day calendar year.  Egyptians anciently called this extra time "days of celebration" and Mayans called them "days of chaos".
+
+Modern society mocks the naivete of ancient cultures saying they were ignorant to the technologies to accurately compute a calendar year.  Were they?  A good data analyst would not quickly arrive at such a conclusion.  The modern notion of 365.25 days is accurate, but mathematically, why are there 360 degrees in a circle and not 365.25 degrees?
+
+To a degree, this demonstrates how little we know about which came first:  mathematics or data analytics.  
+
+## Counting Aids
+
+Many ancient society developed "counting" aids such as the abacus.  Others developed tables to look up common addition and multiplication problems.  For example, the link below outlines how the Babylonians would build tables to keep track of the multiplication of powers:  $1^2 = 1$, $2^2 = 4$, $3^2 = 9$, $4^2 = 16$, ... <https://www.thoughtco.com/babylonian-table-of-squares-116682>
+
+Much of the mathematics of the enlightenment era of western society was designed to make computation easier.  Pascal built a manual calculator <https://en.wikipedia.org/wiki/Pascal%27s_calculator>; calculus was developed simultaneously by Leibniz ("fluxions") and Newton to attempt to solve the brachistochrone problem <https://en.wikipedia.org/wiki/Brachistochrone_curve>; eigenvalues were derived as characteristics of polynomials <https://en.wikipedia.org/wiki/Characteristic_polynomial> to solve problems that a computer today can instantly compute.
+
+## Foundation of Modern Statistics
+
+Much of the modern statistics we have entrenched within data analytics is a result of the computation capabilities of the technologies.
+
+- Russian "peasant" multiplication <https://www.wikihow.com/Multiply-Using-the-Russian-Peasant-Method> or <https://www.youtube.com/watch?v=xrUCL7tGKaI&feature=youtu.be>
+- Square-root computation <http://www.horizonview.net/~beeryb/ref/squareroot>
+- Manually computing eigenvalues <https://sites.calvin.edu/scofield/courses/m256/materials/eigenstuff.pdf>
+- Manually taking the inverse of a matrix <https://www.purplemath.com/modules/mtrxinvr.htm>
+
+When my father was in college, the first computers used punch cards for data input.  By the time I was born (1973), Texas Instruments (TI) came out with a calculator to compute the square root of a number <http://www.vintagecalculators.com/html/texas_instruments_ti-30.html>.  For the data analysts of the day, this was a game-changer.
+
+When I was in college, we had to manually compute eigenvalues and inverses of a matrix using row-echelon reduction approaches.  When I finished college and began teaching high-school mathematics, the TI-83 <https://en.wikipedia.org/wiki/Comparison_of_Texas_Instruments_graphing_calculators> came out which performed these operations automatically.  I no longer had to teach students how to perform the calculations manually.  Now, they just had to enter the matrix data in correctly, and push the correct buttons.
+
+
+### Manual computation of mean and variance
+
+Early in the semester I had you compute some basic statistics: the mean and the variance.  Specifically, I asked you to compute the "naive" algorithm.  Modern-computer scientists are concerned about this approach if you have really large or really small numbers, but these algorithms demonstrate how the calculations were performed back in the paper-and-pencil computation days, when statistics became its own discipline.
+
+
+#### Mean
+
+I need to add up all of the numbers and divide by how many numbers there are.  This computationally is quite simple.  Even early computing programs (like punch cards) liked this approach.  You only have to keep three numbers in memory:  the count `n` (how many numbers), the `sum` (the cumulative sum), and the current number `x` to be assessed.  At the end, a final number is computed `mean` which takes the `sum` and divides it by the count `n`.  **Note:** this algorithm doesn't need to know how many numbers there are.  Sometimes the data analyst wouldn't know, just have a big pile of numbers to compute.  When finished, the count `n` would be known.
+
+In early computers the "memory" and "number of tasks" were essential. Early programming would count the total number of tasks to be performed.  Setup: 2 tasks; for-loop: 2*number of data; Conclusion: 1 tasks.  In the example below: $ 2 + 2 \times 9 + 1 = 21 $ tasks.  
+
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  }
+
+mean = sum/n;
+
+n;
+sum;
+mean;
+```
+
+#### Sample Variance Theoretical (two-step)
+
+In the traditional "two-step" approach, we first compute the mean as described above.  Then we have to compute a `deviation` and its squared version `deviation2`.  From this we can tally the "sum of squares" `sum2`.  A deviation is a distance from the mean which we square.  We sum up these squared distances.
+
+We have three new variables that need to be stored in memory.  In this approach, we have to do the `for-loop` twice.  Finally, we compute the variance similar to the mean, a simple division.  Then, if we want the standard deviation we have to compute a square root.
+
+Additional technical requirements--  Setup: 3 tasks; for-loop: 2*number of data; Conclusion: 1 simple task, 1 complicated task.  For the given example, we now have 44 tasks, of which only one is a square-root computation.  
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  }
+mean = sum/n;
+
+sum2 = 0;  # sums squared
+
+for(x in xs)
+  {
+  deviation = x - mean;
+  deviation2 = deviation*deviation;
+  sum2 = sum2 + deviation2;
+  }
+
+s.var = sum2/(n - 1);
+s.sd  = sqrt(s.var);
+
+n;
+sum;
+mean;
+sum2;
+s.var;
+s.sd;
+
+```
+
+#### Sample Variance Naive
+
+Because there is a mathematical trick about the squares of sums and sums of squares, we can perform the naive calculation, and we only have to go through a `for-loop` one time.
+
+Setup: 4 tasks; for-loop: 2*number of data; Conclusion: 2 simple tasks, 1 complicated task.  In the example below: $ 4 + 2 \times 9 + 2 + 1 = 25 $ tasks. 
+
+```{r}
+xs = c(2,3,5,7,11,13,17,19,23);
+
+n = 0;
+sum = 0;
+sum2 = 0;
+
+for(x in xs)
+  {
+  n = 1 + n;
+  sum = x + sum;
+  x2 = x*x;
+  sum2 = sum2 + x2;
+  }
+
+mean = sum/n;
+s.var = (sum2 - (sum * sum)/n)/(n - 1);
+s.sd  = sqrt(s.var);
+
+n;
+sum;
+mean;
+sum2;
+s.var;
+s.sd;
+        
+```
+
+#### Performance Summary
+
+In the above example, computing the mean-naive sample variance costs about `120%` of what only the mean computation would take.  Computing the mean-theoretical sample variance costs about `210%` of what only the mean computation would take.
+
+In modern computing, we say "we don't compare" the order of complexity (the big $O(c)$) is about the same.  But if you were to do this with paper-and-pencil or with an early computer, it would matter very much.
+
+
+#### Conclusion
+
+We need to review some key insights from this example:
+
+- Distance as "deviation" is embedded in the variance calculations
+- Sums of squares is an easy task.  You have a table of "squared values" and only have to compute one square root.  
+- When we review many of the foundational formulas of statistics (  variance, correlation, regression [ordinary least squares]), we see this sums of differences squared all of the time.
+
+Mathematical statistics has evolved based on the computational ease of the mean and sums of squares.
+
+As a data analyst, what does this mean for you:
+
+- When you program, efficiency may not immediately matter, so in a first iteration get it done!  In future iterations, you should improve on efficiency if possibly, and as necessary.
+- We live in an era with different computing capabilities, so we should not anchor ourselves to tradition exclusively; innovation comes from recognizing the limitations of the past to try and create a better future.
+- The "mean" is the foundation of most inferential statistics.  Most model-building approaches gravitate towards the "mean" or average response.  With some data analytics problems, that is not what we want to analyze per se.  Maybe the outliers are the data of interest?
+
+### Guessing the weight of a steer
+
+It is reported that one of the early fathers of modern statistics was at a county fair.  Most attending were farmers and raised cattle to sell as beef.  Because this was their livelihood and there were not standards to prevent butchers from cheating them, the farmers had a good intuition about how much a steer (cow) would weigh on the hoof just by examining it.  
+
+Applying the idea of centrality, this statistician collected all of the guesses, and on-site computed the mean.  Reportedly, the final answer was within a few pounds of the average of the audience.  Supposedly, the statistician took the data home, later computed the median which was "exactly correct".  Although anecdotal, it is an interesting story.
+
+
+### Sorting 
+
+John Tukey devised five summary statistics:  min, max, median, Q1, and Q3.  All of these data require sorting the data, which is a nontrivial task (especially with paper-and-pencil).  But John Tukey was living at a time when computing power was making this task more plausible.  
+
+I considered giving an assignment for you to try and do some basic sorting algorithms, but will instead demo those.  The current R function `sort` is the fastest possible algorithm after computer-scientists spent a long time on very slow computers devising the most efficient algorithm.
+
+These functions are to demonstrate the process, and you should just use `sort` for most tasks.
+
+```{r}
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+source( paste0(  path.github, "humanVerseWSU/R/functions-sort.R" ) );
+
+```
+
+We have to store in memory either all of the data, or an index to a location (or pointer) of all of the data.  Memory and computation complexity are much, much higher.  The code written is based on low-level C logic so does not rely on built-in functions like `min()` or `max()` or `setdiff()`.
+
+<https://github.com/MonteShaffer/humanVerseWSU/blob/master/humanVerseWSU/R/functions-sort.R>
+
+
+
+#### Laundry-sorting (sortMe.insertion)
+
+Review the output and the function.  
+
+- Describe "how the algorithm" works.  Why did I call it "laundry-sorting"?
+
+This algorithm sorts just through the vector linearly. Just like each piece of laundry from the dryer gets sorted based on its identity.
+
+- Given the input, what is the number of tasks that need to be performed to sort using this approach?
+
+I think this depends on the order, but at best, 7, and at most
+
+- The stopping rule could be improved.  Any ideas on how?
+
+Not exactly, I find it challenging to know what is totally happening here. I think that foundval is used to determine this, but I can't visualize a better method.
+
+```{r}
+
+# randomize order every time
+
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+
+sortMe.insertion(xs);
+
+```
+
+-- WRITE SOMETHING HERE --
+
+#### Min/Max (sortMe.selection)
+
+Review the output and the function. During every `for-loop` I can compute the minimum.  I choose to also compute the maximum at the same time during the looping process.
+
+```{r}
+
+# randomize order every time
+
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+
+sortMe.selection(xs);
+
+```
+
+
+-- WRITE SOMETHING HERE --
+
+
+
+#### Swap-meet (sortMe.bubble)
+
+Review the output and the function. 
+
+
+```{r}
+
+# randomize order every time
+
+xs = sample( c(2,3,5,7,11,13,17,19,23) ); 
+xs;
+
+sortMe.bubble(xs);
+
+```
+
+#### Benchmarks with default `sort ... radix`
+
+For numeric vectors less than $2^31$ which `?sort` defines as a short vector, the `radix` method is used; otherwise the `shell` method is used.  This are partitioning approaches that get much more complex to understand and code, but are embedded in our default function `sort`
+
+```{r}
+
+result = NULL;
+  
+
+# 10^c(1:3) only takes less than 30 seconds to run
+# 10^4 takes a long time 
+
+
+lengths = 10^c( seq(1,3.1415926535897932384626,by=0.1) );
+
+
+for(len in lengths)
+  {
+  len = round(len, 0);
+  print(len);
+  x = rnorm( len ); # generate data
+    d = sortMe.base(x,verbose=FALSE,timings=TRUE); # built-in default
+    i = sortMe.insertion(x,verbose=FALSE,timings=TRUE);
+    s = sortMe.selection(x,verbose=FALSE,timings=TRUE);
+    b = sortMe.bubble(x,verbose=FALSE,timings=TRUE);
+  row = c(len,d$time,i$time,s$time,b$time);
+  result = rbind(result,row);
+  }
+
+
+result = as.data.frame(result);
+colnames(result) = c("n","sort","insertion","selection","bubble");
+
+result;
+```
+
+```{r}
+
+xlim = range(result$n);
+ylim = range(result[,2:5]);
+
+
+for(j in 2:5)
+  {
+  if(j > 2) 
+    { 
+    par(new=TRUE); 
+    plot(result$n, result[,j], type="l", xlab="", ylab="", col=palette()[j], xlim=xlim, ylim=ylim, lwd=2, bty="n");
+    } else
+          {
+          plot(result$n, result[,j], type="l", xlab="numbers to sort", ylab="time in seconds", col=palette()[j], xlim=xlim, ylim=ylim, lwd=2, bty="n");
+          }
+  
+  }
+  legend("topleft", legend=names(result[,2:5]), col=palette()[2:5], bty="n", lwd=2);
+
+
+```
+
+Comment on the benchmark results.
+
+-- WRITE SOMETHING HERE --
+
+### Manual computation of median and IQR
+
+If the data is sorted, it is easy to compute the Tukey values.
+
+Recall "median" by definition equates to the middle number in a sorted list of numbers.  If the list is even, there are two middle numbers.  
+
+Most resolve this by taking the average of those two numbers and call it the "median".  That is factually incorrect, because that average is not in the data set, it is "between" two numbers in the data set.  
+
+Algorithms to deal with this issue are not embedded in the original `median` function but are a `type` parameter in the `quantile` function.
+
+```{r}
+
+xs = sort( sample( c(2,3,5,7,11,13,17,19,23) ) );
+n = length(xs);
+
+idx.min = 1; # first element is the min
+  print(paste0( "idx.min: ",idx.min," --> min: ",xs[idx.min]));
+idx.max = n; # last element is the max
+  print(paste0( "idx.max: ",idx.max," --> max: ",xs[idx.max]));
+
+idx.median = n * 1/2;
+idx.Q1     = n * 1/4;
+idx.Q3     = n * 3/4;
+
+# if the "idx" doesn't land on an exact number, what should we do?
+
+# we could "average" using the mean, but the result is a number not in our dataset.  There are lot's of ways to choose these values.
+
+# most textbooks say "average" the middle two numbers; such a result is a number not actually in the dataset...
+
+# default in #7
+# I prefer #1
+for(i in 1:9)
+  {
+  print(paste0("type: ",i));
+  print( quantile(xs,probs=c(1/4,1/2,3/4),type=i) );
+  }
+
+
+Qs = as.numeric( quantile(xs, probs=c(1/4,1/2,3/4), type=1) );
+
+Q1=Qs[1];
+Q2=Qs[2];
+Q3=Qs[3];
+
+print(paste0("Q1: ", Q1 ));
+print(paste0("Q2 (median): ", Q2 ));
+print(paste0("Q3: ", Q3 ));
+
+IQR = Q3 = Q1;
+print(paste0("IQR (inter-quartile range): ", IQR ));
+
+
+```
+
+
+#### Median absolute deviation (MAD)
+
+The IQR is a measure of "spread" or dispersion, and represents the middle half of the data.  There is another measure that is similar to variance for the median, called the MAD:  median absolute deviation <https://en.wikipedia.org/wiki/Median_absolute_deviation>.  **Note:** be careful, sometimes in statistics an acronym like MAD can mean other things.
+
+You find the median, take deviations from this median, then find the median of the deviations.
+
+```{r}
+set.seed(12222015);
+xs = sample( c(2,3,5,7,11,13,17,19,23) );
+
+median = median(xs); # sorting happens inside
+deviations = abs(xs - median); # vector notation, no for loop
+MAD = median(deviations);
+
+xs;
+median;
+deviations;
+MAD;
+```
+
+In an optional mastery lesson "signal processing", I will walk through how we used MAD to determine "punch-detection" on a microcontroller by measuring voltage fluctuations from a piezo-electric.  The simulation code was written in javascript (a C-based language like R) and the embedded-systems code was written in embedded C.
+
+
+### Manual computation of mode
+
+I will just remind you that this was a task on one of your homework problems.  The most frequent value.

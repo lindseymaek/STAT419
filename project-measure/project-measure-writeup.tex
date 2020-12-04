@@ -97,23 +97,25 @@
 \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
 \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
 \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{longtable,booktabs}
 
 
 
-\title{\textbf{\textcolor{WSU.crimson}{A boring (academic) title or a
-clever title?}} \newline \textbf{\textcolor{WSU.gray}{A secondary
-title}}  }
+\title{\textbf{\textcolor{WSU.crimson}{A Study of Human Proportions,
+Climbing Advantage, and Limb
+Dominance}} \newline \textbf{\textcolor{WSU.gray}{Insights from the FALL
+2020 STAT 419 Measure Dataset}}  }
  
 
 %  
 
 % \author{ \Large true \hfill \normalsize \emph{} }
-\author{\Large YOUR NAME
-HERE\vspace{0.05in} \newline\normalsize\emph{Washington State
+\author{\Large Lindsey
+Kornowske\vspace{0.05in} \newline\normalsize\emph{Washington State
 University}  }
 
 
-\date{October 28, 2020}
+\date{November 06, 2020}
 \setcounter{secnumdepth}{3}
 
 \usepackage{titlesec}
@@ -234,7 +236,7 @@ University}  }
 %\renewcommand{\theendnote}{\textbf{\arabic{endnote}}}
 
 
-\renewcommand*{\notesname}{ENDNOTES}
+\renewcommand*{\notesname}{NOTES}
 
 \makeatletter
 \def\enoteheading{\section*{\notesname
@@ -243,7 +245,7 @@ University}  }
 \makeatother
 
 
-\renewcommand*{\contentsname}{TABLE OF CONTENTS}
+\renewcommand*{\contentsname}{CONTENTS}
 
 \renewcommand*{\refname}{REFERENCES}
 
@@ -264,6 +266,19 @@ University}  }
 \def\fps@figure{htbp}
 \makeatother
 
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wrapfig}
+\usepackage{float}
+\usepackage{colortbl}
+\usepackage{pdflscape}
+\usepackage{tabu}
+\usepackage{threeparttable}
+\usepackage{threeparttablex}
+\usepackage[normalem]{ulem}
+\usepackage{makecell}
 
 % move the hyperref stuff down here, after header-includes, to allow for - \usepackage{hyperref}
 
@@ -286,12 +301,12 @@ University}  }
 \makeatother
 \hypersetup{breaklinks=true,
             bookmarks=true,
-            pdfauthor={YOUR NAME HERE (Washington State University)},
-             pdfkeywords = {multiple comparisons to control;
-multivariate chi-square distribution; nonlinear growth curves; Richard's
-curve; simulated critical points},  
-            pdftitle={A boring (academic) title or a clever title?: A
-secondary title},
+            pdfauthor={Lindsey Kornowske (Washington State University)},
+             pdfkeywords = {vitruvian man; biometric; ape-index;
+correlation; WSU STATS 419},  
+            pdftitle={A Study of Human Proportions, Climbing Advantage,
+and Limb Dominance: Insights from the FALL 2020 STAT 419 Measure
+Dataset},
             colorlinks=true,
             citecolor=blue,
             urlcolor=blue,
@@ -316,8 +331,8 @@ secondary title},
 
 
 \pagestyle{fancy}   
-\lhead{\textcolor{WSU.crimson}{\textbf{ A boring (academic) title or a
-clever title? }}}
+\lhead{\textcolor{WSU.crimson}{\textbf{ A Study of Human Proportions,
+Climbing Advantage, and Limb Dominance }}}
 \chead{}
 \rhead{\textcolor{WSU.gray}{\textbf{  Page\ \thepage\ of\ \protect\pageref{LastPage} }}}
 \lfoot{}
@@ -343,8 +358,8 @@ clever title? }}}
 {
    \vskip 13.5pt\relax \normalsize\fontsize{11}{12} 
    
-\textbf{\authorfont YOUR NAME HERE} \hskip 15pt \emph{\small Washington
-State University}   
+\textbf{\authorfont Lindsey
+Kornowske} \hskip 15pt \emph{\small Washington State University}   
 
 }
 
@@ -363,25 +378,23 @@ State University}
 
     \vskip 8.5pt % \small 
 
-\noindent In this article we compare the
-\emph{empirical characteristic function} \citep{Tukey:1977, Becker:1988}
-to a \emph{moment-generating-functional form} to compute the proportion
-of hypotheses \(m\) that are rejected under the null hypothesis.
-\vspace{0.25in}
+\noindent This study uses a student-collected dataset containing
+quantitative biometric variables inspired by the Leonardo Da Vinci's
+Vitruvian Man to investigate how these measurements are correlated with
+height, how relative arm span to height size compares to that of famous
+rock climbers, and how limb dominance may relate to size assymetries. A
+combination of correlation analysis, summary statistics, and kmeans were
+used to evaluate these questions. Height was found to be the best
+predictor for hand-elbow length, foot length, floor to hip height, and
+floor to armpit height, and not a good predictor for hand length. The
+average ape-index for the climbers (2.3 inches) was greater than that of
+the class dataset (0 inches), but the standard deviation was much lower.
+More members of the class dataset had dominant limbs that were smaller
+than their nondominant limbs. \vspace{0.25in}
 
-\noindent Here is a second paragraph of the abstract (if necessary), and
-with the pipe notation it doesn't break. Notice it still needs to be
-indented. \vspace{0.25in}
 
-\noindent Generally, we write this abstract last. Often it is called the
-executive summary. It should succinctly summarize the entire document.
-You can include references such as this one to the Appendices section
-\ref{sec:appendix} if necessary.
-
-
-\vskip 8.5pt \noindent \textbf{\underline{Keywords}:} multiple
-comparisons to control; multivariate chi-square distribution; nonlinear
-growth curves; Richard's curve; simulated critical points \par
+\vskip 8.5pt \noindent \textbf{\underline{Keywords}:} vitruvian man;
+biometric; ape-index; correlation; WSU STATS 419 \par
 
     
 
@@ -391,7 +404,7 @@ growth curves; Richard's curve; simulated critical points \par
     
     \hbox{\vrule height .2pt width 39.14pc}
     \vskip 5pt 
-    \hfill \textbf{\textcolor{WSU.gray}{ October 28, 2020 } }
+    \hfill \textbf{\textcolor{WSU.gray}{ November 06, 2020 } }
     \vskip 5pt 
     
 \end{abstract}
@@ -408,146 +421,242 @@ growth curves; Richard's curve; simulated critical points \par
 \section{Introduction}
 \label{sec:intro}
 
-Write something here.
+\indent The Fall 2020 STAT 419 measure dataset presents an interesting
+opportunity to investigate which biometrics are best associated with
+height. According to Leonardo Da Vinci's Vitruvian Man, the
+perfectly-proportioned man is a paragon of mathematics: his body is
+eight times his head, four times his shoulder width, knee height, and
+thigh length, and two times his groin height. And yet, a modern study of
+65 thousand Air Force recruits found that these idealized proportions
+were not represented true to Vitruvian standards \citep{Thomas:2020}. If
+all persons in the dataset assessed herein were ``ideal'' by Vitruvian
+standards, all correlations between height and other biometrics would be
+1, therefore it is far more interesting to understand the relationship
+of these variables as they exist in true populations. I can best
+illustrate this bias with a personal example: I am as tall as my mother,
+but my feet are 2 shoe sizes smaller, possibly because I danced pointe
+as a child before my bones fully developed. Given the variability that
+may be introduced by gender, ethnicity, age, and lifestyle factors, are
+there biometrics that are well-correlated with height? This evaluation
+will use correlation to evaluate where these stronger relationships lie.
 
-{[}ONE GRAPHIC{]}
+\indent A secondary question of interest related to this dataset was
+inspired by my experience in the world of sport climbing, where it is
+fashionable to conflate climbing ability to ape index. The ape-index,
+which may be calculated either as the wingspan minus height, or the
+wingspan divided by height, enumerates an individual's reach relative to
+their height. In a sport where the difference between victory and a
+critical fall may be a game of a few centimeters, it is easy to
+understand why sponsors proudly display photos of their athletes
+immediately aside this ``all-important'' metric. For the record, Da
+Vinci's man, with an arm span 4/5 the length of total body height, would
+have made an exceptionally poor climber by this standard
+\citep{Thomas:2020}. As an ammature rock climber, I have an anecdotal
+understanding that the most elite athletes in my community tend to have
+a positive ape index. Researchers have evaluated this phenomenon in
+assorted climbing groups. \citet{Watts:2003} found that a set of
+competitive child climbers (average age of 13) had a significantly
+greater (p = 0,02) ape index (cm/cm) of 1.01, relative to non-climbers
+of similar age. Within groups of climbers, however, Ape Index was not
+significantly different between advanced and elite athletes
+\citep{Ozimek:2017}. Given this, I wanted to understand how Ape Index
+data for famous climbers (for more information on data collection see
+section \ref{sec:climbdat}) compared with our Fall 2020 STAT 419 measure
+dataset.
 
-{[}TWO GRAPHICS AS ONE{]}
+\indent The STAT 419 measure dataset also contains qualitative
+variables. I was interested in understanding how two variables that
+would pertain to almost everyone in the dataset - writing hand and
+swinging arm dominance - related to the measures of size in both the
+hand length and arm length, respectively. In a study of 196
+participants, \citet{Maleki:2019} found that hand dominance was
+associated with 5.3\% to 7.5\% greater strength relative to the
+non-dominant hand. Furthermore, longer hand and forearm length were
+positively correlated with greater pinch strength \citep{Maleki:2019}.
+Based on this, my hypothesis is that the dominant hand will be larger
+than the non-dominant hand in the dataset, and that this pattern will
+also be observed in the relationship between dominant swinging arm and
+larger arm.
 
-Write something here.
+\begin{figure}[!ht]
+    \hrule
+    \caption{ \textbf{The New Ideal?} }
+    \begin{center}
+        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{figures/newideal.jpg} }
+    \end{center}
+    \label{fig:handout-1}
+    \hrule
+\end{figure}
 
-\section{Research Question:  What is my primary question}
+Image modified from \citet{Thomas:2020}. Da Vinci's Vitruvian Man
+reflected concepts of ideal symmetry and proportion, yet the meaning of
+ideal is fluid depending on an individual's lifestyle. This study
+investigates the Vitruvian proportions as they pertain to the STAT 419
+student measure dataset, how one's status as a professional sport
+climber makes them more or less likely to exceed average wingspan
+proportions, and how dominance is associated with relative side size.
+
+\section{Research Question:  Which biometrics are best correlated with height?}
 \label{sec:rq}
 
-\subsection{What is my secondary question}
+This question will be investigated using correlations of select
+biometrics scaled relative to the height. Then the means will be used to
+determine the STAT 419 student measure dataset values for the
+proportions listed by \citet{Thomas:2020}.
+
+\subsection{How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?} 
 \label{sec:rq2}
 
-\subsection{What is my other secondary question}
+A supplementary dataset containing the Ape-Index of 29 professional
+climbers will be collected for comparison to the STAT 419 measure
+dataset described in section. The average ape-index will be calculated
+for each dataset. Then Kmeans clustering will be applied on the combined
+datasets to determine how the climbers group among the class data.
+
+\subsection{Are dominant limbs of consistent greater or lesser relative size?}
 \label{sec:rq3}
+
+Count information will be collected for each observance of dominant side
+being greater than or lesser than the non-dominant side. Ambidextrous
+individuals and persons missing data on either side will not be counted.
 
 \section{Data Description}
 \label{sec:data}
 
-Very brief introduction to the data, how it was collected, and so on.
-Remember that everything is covered (who, what, when, where, why, how,
-so what, and so on). Reference the section in the Appendix with greater
-detail about the data provenance. This section should be about two
-paragraphs, and the Appendix should have more information.
+The Fall 2020 Stat 419 measure dataset was collected by the enrolled
+students in August and September of 2020. The data contains 23
+quantitative biometric variables and 9 supplementary variables for each
+student, and approximately 9 members of their family and friends. The
+final dataset compiled 428 observations that may have been collected by
+the students themselves, or by participants due to COVID-19
+social-distancing guidelines in place at the time of data collection.
+For this reason, data collection practices were not uniform; some
+observations are missing, duplicated, and in some cases both left and
+right side information is provided.
 
-\subsection{Summary of Sample}
-\label{sec:data-sample}
+\subsubsection{Climbers Measure Data}
+\label{sec:climbdat}
+
+The climbers measure dataset is comprised of name, height, wingspan,
+ape-index, gender, and source data for 29 professional rock climbers
+\citep{99Boulders, youtube, Sportiva, GymClimber2019a}, Ape index was
+calculated as in the STAT 419 measure dataset by subtracting the height
+from wingspan.
 
 \subsection{Summary Statistics of Data}
 \label{sec:data-summary}
 
+Summary statistics and correlation tables of the STAT 419 measure data
+can be found in Section \ref{sec:anrq}.
+
 \section{Key Findings}
 \label{sec:findings}
+
+\subsubsection{Findings: Which biometrics are best correlated with height?}
+\label{sec:findRQ}
+
+All biometric measurements had significant correlations relative to
+total height. Hand-elbow length and foot-length were as strongly
+correlated with height (0.95), as floor to hip and floor to armpit. This
+conflicts somewhat with my hypothesis that lifestyle factors may
+contribute to relative foot size, and suggests that overall, height is a
+good predictor for footlength. Hand-length was the least correlated with
+height (0.38), which was unexpected given that the hand-to-elbow
+measurement also includes the length of the hand.
+
+Another observation of interest was that foot-length was very highly
+correlated with hand-to-elbow (0.97), The play-ground myth that one's
+foot is exactly the size of their forearm may have some merit given this
+finding.
+
+The averages collected as a part of this first research question were
+used to calculate the proportions of interest that were also calculated
+in the paper by \citet{Thomas:2020}.
+
+Proportions to body length: Head Height: 0.13 Arm span: 1.00 Groin
+height: 0.57 Knee height: 0.27 Thigh length: 0.30
+
+Head height and knee height proportions were very close to the Vitruvian
+man proportions of 0.125 and 0.25, respectively. The arm span proportion
+was the most different; much greater at 1, compared with 0.8. Groin
+height was also larger - 0.57 compared to 0.5 - but I used the floor to
+hip measurement, which likely leads to an over-approximation of this
+measurement. This over-approximation may also be responsible for the
+fact that the thigh length proportion was greater - 0.3 compared with
+0.25 - as thigh length was calculated by subtracting the knee height
+from the hip-height value.
+
+\subsubsection{Findings: How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?}
+\label{sec:findRQ2}
+
+The average wingspan of the climbers dataset is 2.2 inches with a
+standard deviation of 1.76 inches. This is much greater than the average
+of the student measure dataset, 0.0 inches; the standard deviation of
+the student measure dataset is 7.95 inches, which suggests that while
+the subset of climbers averaged greater, more extremes are present in
+the student dataset.
+
+\subsubsection{Findings: Are dominant limbs of consistent greater or lesser relative size?}
+\label{sec:findRQ3}
+
+Dominance appears to be associated with the smaller limb of the two
+sides. In 51\% of the observations of the sample subset, the dominant
+swinging arm was smaller than the non-dominant arm. In 52\% of the
+observations of the sample subset, the dominant writing hand was smaller
+than the non-dominant hand.
 
 \section{Conclusion}
 \label{sec:conclusion}
 
-\newpage
+\indent The FALL 2020 STAT 419 Student measure dataset was collected at
+the beginning of the Fall 2020 semester by student participants and
+compiled for this analysis. Upon appropriate cleaning of the data, three
+questions were formulated, informed by the study written by
+\citet{Thomas:2020} examining the proportions behind Da Vinci's
+Vitruvian Man with a modern dataset.
 
-This was a new page
+\indent The class data was comparable to the Vitruvian man for the
+proportions of head height and knee height, but were greater for the
+proportions of armspan, thigh length, and groin height. Height was found
+to be the best predictor for hand-elbow length, foot length, floor to
+hip height, and floor to armpit height, and not a good predictor for
+hand length.
 
-This is a newline. \newline  Here is some more text.
+\indent A dataset of height, wingspan, and ape-index measurements was
+collected for 29 professional climbers. The average of this dataset was
+greater than that of the class dataset, as was somewhat expected based
+on work conducted by \citet{Ozimek:2017}, although it is not clear how
+conclusive this comparison is, given the high standard deviation for
+ape-index that was observed in the class dataset. Kmeans clustering of
+the results did not suggest any particular trends for the climbers among
+the class data. This is likely a product of the fact that some of the
+data collectors in the STAT 419 may have misunderstood armspan
+measurement. At least one data collector regularly produced ape-index
+values of above 15, which if biologically possible, is expected to be
+extremely unlikely. Further analysis of this data should involve removal
+of such outliers, although data removal is a process that can easily
+contribute to skewed results. This criteria should not be taken lightly,
+and was considered to be beyond the scope of this work at this time.
 
-Below are some example code that may benefit you in preparing your
-document. \newline
+\indent A preliminary look into the assocations between dominance and
+size was completed based on count data. These data show that more
+persons in the STAT 419 dataset had dominant limbs that were smaller
+than their nondominant limbs. However, statistics were not applied to
+this assessment and to conclude based on count data is to accept a high
+Type II error risk. However, this finding was interesting in that it
+conflicted with a study that was found assessing the relationship
+between dominance, size, and grip strength, which lead to the hypothesis
+that the dominant limb would more often be of greater size
+\citep{Maleki:2019}. However, the scope of the size difference was not
+evaluated as it was in this study, it is possible that these differences
+are rather nominal and do not have a large impact.
 
-\vspace{0.25in}
-
-\noindent Please state your name: \hrulefill \newline I was born on
-\hrulefill in \hrulefill \vspace{0.25in}
-
-\begin{equation}
-\label{eq:my-model}
-    Y_{jt} = \alpha + \bm{\beta}X_{jt} + \upsilon_{j}  + \varepsilon_{jt} ,
-\end{equation}
-
-\noindent where \(\alpha\) is the grand mean, \(\upsilon_{j}\) is the
-fixed-time country mean, \(X_{jt}\) (country \(j\) at time \(t\)) is the
-matrix of country-level observations for the vector of aforementioned
-parameters \(\bm{\beta}\), and \(\varepsilon_{jt}\) represents the
-residual idiosyncratic disturbance. Our panel data set consists of
-repeated observations of countries over time. Therefore, we employ
-cross-section time-series models. This approach redefines
-Equation\textasciitilde{}\ref{eq:my-model} by subtracting time-demeaned
-values. This \emph{within} transformation subtracts constant country
-effects for the dependent variable \(\bar{Y_{j}}\), the predictor
-variables \(\bar{X_{j}}\), and the intercept \(\bar{\upsilon_{j}}\):
-
-\begin{equation}
-\label{eq:my-random}
-    (Y_{jt} - \theta \bar{Y_{j}}) = (1-\theta)\alpha + \bm{\beta}(X_{jt} - \bar{X_{j}}) +  (\upsilon_{jt} - \theta \bar{\upsilon_{j}})  ,
-\end{equation}
-
-\noindent If \(\theta = 0\), the model reduces to a basic pooled
-ordinary-least-squares (OLS) model; if \(\theta = 1\), the model reduces
-to a fixed-effects model; otherwise the model represents a
-random-effects model. The pooled OLS estimation is biased if country
-effects exist \citep{Hsiao:2003}. The random-effects model may be
-susceptible to omitted-variable bias \citep{Wooldridge:2006}: bias
-because a predictor was excluded from the model specification.
-Conversely, the fixed-effects model is not susceptible to this bias as
-it captures unobserved intracountry variation around its average
-country-level ``fixed effect." Panel-data analysis commonly has issues
-with heteroskedasticity, serial autocorrelation, and cross-sectional
-autocorrelation.
-
-\vspace{0.5in}
-
-\(i=1\) and \[i = 1\]
-
-\vspace{0.5in}
-
-\begin{tabular}{ c c c c c}
-  1 & 2 & 3 & 4 & 5 \\
-  \hline
-  6 & 7 & 8 & 9 & 10
-\end{tabular}
-
-\vspace{0.5in}
-
-\begin{figure}[!ht]
-%% figures have hrule, tables have hline
-    \hrule
-    \caption{ \textbf{Conceptual Model} }
-    \begin{center}
-        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=\textwidth]{figures/conceptual-model-v4.pdf} }
-    \end{center}
-    \label{fig:conceptual-model}
-    \hrule
-\end{figure}
-
-See Figure \ref{fig:conceptual-model}.
-
-\newpage
-
-This is a
-footnote\footnote{This is a footnote that can be really long.  \newline You can have multiple paragraphs in the footnote.  You can have \underline{underline} or \textbf{bold} or \emph{italics}.  You can even have a math equation inline. \newline In this section, we review the regression results to summarize our findings.  First, we examine each model for significance, and conclude the hypothesized models fit well with the data.  Second, we conclude that the fixed country effects represent consistent and unbiased parameter estimates.  Third, with the use of the \citet{Driscoll:1998} robust standard errors, we adjust any variance bias to ascertain the significance of these consistent estimates.  Therefore, we are able to make inferences about the hypotheses using our model estimates.  For ease of interpretation across these 12 models, we introduce $\betaSH{{ \ \ }M1}{Total}{1}$ as notation to refer to parameter estimate $\hat{\beta}_{1}$ (HDI) for the Total Sample and (M1) Model 1:  Main Effects.  We proceed by reporting findings for the total sample. \newline The footnotes are automatically converted to "endnotes" and will be included at the end of the document.  It will finish when you have that outer brace like this.}
-that can be placed within a document.
-
-\vspace{1.5in}
-
-Refer to the Appendices in section\textasciitilde{}\ref{sec:appendix}
-where I am going to cite John \citep[pp. 2-3]{Tukey:1962}.
-
-Here is a quote by \citet[pp. 2-3]{Tukey:1962}:
-
-\begin{quote}
-For a long time I have thought I was a statistician, interested in inferences from the particular to the general.  But as I have watched mathematical statistics evolve, I have had to cause to wonder and to doubt. [...] All in all, I have come to feel that my central interest is in \emph{data analysis}, which I take to include among other things: procedures for analyzing data, techniques for interpreting the results of such procedures, ways of planning the gathering of data to make its analysis easier, more precise or more accurate, and all the machinery and results of (mathematical) statistics which apply to analyzing the data.
-
-Large parts of data analysis are inferential in the sample-to-population sense, but these are only parts, not the whole.  Large parts of data analysis are incisive, laying bare indications which we could not perceive by simple and direct examination of the raw data, but these too are only parts, not the whole.  Some parts of data analysis, as the term is her stretch beyond its philology, are allocation, in the sense that they guide us in the distribution of effort and other valuable considerations in observation, experimentation, or analysis.  Data analysis is a larger and more varied field than inference, or incisive procedures, or allocation.
-
-Statistics has contributed much to data analysis.  In the future it can, and in my view should, contribute more.  For such contributions to exist, and be valuable, it is not necessary that they be direct.  They need not provide new techniques, or better tables for old techniques, in order to influence the practice of data analysis.
-\end{quote}
-
-\newpage
-
-\input{tables/example-correlation-table}
-
-\newpage
+\indent In conclusion, these data were sufficient for a preliminary view
+of the research questions, but the overall reliability of these
+observations is limited by suspected occurrences of poor data provenance
+among some of the data collectors. On the whole, it is interesting that
+the final proportions were so close to those of the ``ideal'' man given
+the non-ideal circumstances of data collection.
 
 \newpage
 \section{APPENDICES}
@@ -555,6 +664,26 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 
 \subsection{Data Provenance}
 \label{sec:appendix-data-provenance}
+
+For my contribution to the dataset, measurements were collected as
+indicated on the handout. My participants were responsible for
+collecting and reporting their own data. A spreadsheet with the
+mandatory measurements as well as the handout were supplied by email to
+the participants. The compiled class dataset was cleaned with the
+function cleanMeasureData. This function corrects for data entry
+mistakes that inappropriately affected the number of levels viewed for
+each variable: quotations, variations on NA, capitalizations,
+mispellings, or abbreviations. In some cases, a quantitative variable
+and qualitative variable were switched, or incorrect units were
+assigned, these mistakes had to be adjusted on a row-by-row basis. All
+units were converted to inches, expressed as ``in.'' Variables for which
+sidedness was a factor were averaged, but the individual sides were
+retained in order to investigate the third research question on limb
+dominance. A variable for ape-index was created by subtracting the
+height by the armspan for each respective column. All individuals that
+were missing data for height for armspan information were removed. All
+duplicate rows were removed to ensure that only unique observations
+informed the data analysis.
 
 \newpage
 \subsubsection{Data Collection Handout}
@@ -564,11 +693,13 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
     \hrule
     \caption{ \textbf{Handout Page 1} }
     \begin{center}
-        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout1.pdf} }
+        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/Kornowske_handout_page1.pdf} }
     \end{center}
     \label{fig:handout-1}
     \hrule
 \end{figure}
+
+Handout was assembled with the tools provided by Canva.com
 
 \newpage
 
@@ -576,7 +707,7 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
     \hrule
     \caption{ \textbf{Handout Page 2} }
     \begin{center}
-        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/handout2.pdf} }
+        \scalebox{1.00}{    \includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{pdfs/Kornowske_handout_Page2.pdf} }
     \end{center}
     \label{fig:handout-2}
     \hrule
@@ -584,43 +715,10 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 
 \newpage
 
-\begin{figure}[!ht]
-    \begin{subfigure}[h]{0.5\textwidth}
-    \centering
-    %  trim={<left> <lower> <right> <upper>}
-    % https://shantoroy.com/latex/add-subfig-in-latex/
-            \includegraphics[trim = 0 0 11.25cm 0,clip,scale=1]{figures/Vitruvian.pdf}
-        \caption{ \citet{Thomas:2020} discuss this. }
-        \label{fig:sub-first}
-    \end{subfigure}
-    \begin{subfigure}[h]{0.5\textwidth}
-    \centering
-        \includegraphics[trim = 11.25cm 0 0 0,clip,scale=1]{figures/Vitruvian.pdf}
-            \caption{Schnitt realer Sensor \citep{Thomas:2020}}
-        \label{fig:sub-second}
-    \end{subfigure}
-    \vspace{2.5mm}
-    \hrule
-    \vspace{2.5mm}
-        \caption{\textbf{ Der Sensor in Theorie und Verwirklichung... caption at bottom instead? }  I can write a really long caption if I want. \newline This is using "crop" to include one image and trim it to appear as two.  Likely you will have two separate images if you use this option, so you would set the trim parameters all equal to 0.  \newline   This figure has subfigures which each also have a possible caption.   }
-        \label{fig:combined}
-    \vspace{-2.5mm}
-    \hrule
-\end{figure}
-
 \newpage
 
-\subsection{Preparing the Report Workspace as a subsection}
+\subsection{Data, Data Cleaning, and Analysis}
 \label{sec:appendix-setup}
-
-\subsubsection{Preparing the Report Workspace as a subsubsection}
-\label{sec:appendix-setup2}
-
-\paragraph{Preparing the Report Workspace as a paragraph}
-\label{sec:appendix-setup3}
-
-\subparagraph{Preparing the Report Workspace as a subparagrah}
-\label{sec:appendix-setup4}
 
 Below is the necessary functions and libraries required to run the code
 referenced in this document.
@@ -628,36 +726,620 @@ referenced in this document.
 \begin{Shaded}
 \begin{Highlighting}[]
 \KeywordTok{library}\NormalTok{(devtools);       }\CommentTok{\# required for source\_url}
+\KeywordTok{library}\NormalTok{(tidyverse);}
+\KeywordTok{library}\NormalTok{(Hmisc);}
+\KeywordTok{library}\NormalTok{(kableExtra);}
 
 \NormalTok{path.humanVerseWSU =}\StringTok{ "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"}
 \KeywordTok{source\_url}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.humanVerseWSU,}\StringTok{"master/misc/functions{-}project{-}measure.R"}\NormalTok{) );}
 \end{Highlighting}
 \end{Shaded}
 
+\subsubsection{Analysis:  Which biometrics are best correlated with height?}
+\label{sec:anrq}
+
 Below is the code to load the data and prepare it for analysis.
 
 \begin{Shaded}
 \begin{Highlighting}[]
-\NormalTok{path.project =}\StringTok{ "C:/\_git\_/WSU\_STATS419\_FALL2020/project{-}measure/"}\NormalTok{;}
+\NormalTok{path.project =}\StringTok{ "/Users/lindseykornowske/.git/STAT419/project{-}measure/"}\NormalTok{;}
+\NormalTok{path.to.secret =}\StringTok{ "/Users/lindseykornowske/Documents/FS Classes HW \& Resources/STAT 419 Multivariate/\_SECRET\_/"}\NormalTok{;}
+\NormalTok{measure =}\StringTok{ }\NormalTok{utils}\OperatorTok{::}\KeywordTok{read.csv}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.to.secret, }\StringTok{"measure{-}students.txt"}\NormalTok{), }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{sep=}\StringTok{"|"}\NormalTok{);}
+\KeywordTok{source}\NormalTok{(}\DataTypeTok{file =} \StringTok{"https://raw.githubusercontent.com/lindseymaek/STAT419/master/functions/functions{-}project{-}measure.R"}\NormalTok{,}\DataTypeTok{local =}\NormalTok{ F);}
+\NormalTok{measure.df =}\StringTok{ }\KeywordTok{prepareMeasureData}\NormalTok{(measure);}
 
-\NormalTok{path.to.secret =}\StringTok{ "C:/Users/Alexander Nevsky/Dropbox/WSU{-}419/Fall 2020/\_\_student\_access\_\_/\_SECRET\_/"}\NormalTok{;}
+\NormalTok{sum.list =}\StringTok{ }\KeywordTok{list}\NormalTok{(}\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{3}\OperatorTok{:}\DecValTok{9}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{11}\OperatorTok{:}\DecValTok{16}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{17}\OperatorTok{:}\DecValTok{21}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{22}\OperatorTok{:}\DecValTok{27}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{28}\OperatorTok{:}\DecValTok{33}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{34}\OperatorTok{:}\DecValTok{39}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{40}\OperatorTok{:}\DecValTok{45}\NormalTok{)]),}
+\KeywordTok{summary}\NormalTok{(measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{46}\OperatorTok{:}\DecValTok{47}\NormalTok{)]));}
 
-\NormalTok{measure =}\StringTok{ }\NormalTok{utils}\OperatorTok{::}\KeywordTok{read.csv}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.to.secret, }\StringTok{"measure{-}students.txt"}\NormalTok{), }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{quote=}\StringTok{""}\NormalTok{, }\DataTypeTok{sep=}\StringTok{"|"}\NormalTok{);}
-
-\CommentTok{\#path.github = "https://raw.githubusercontent.com/this{-}IS{-}YOUR{-}PATH{-}TO{-}GITHUB/";}
-\CommentTok{\#source\_url( paste0(path.github,"master/functions/functions{-}project{-}measure.R") );}
-
-\CommentTok{\# this is your function}
-\CommentTok{\# put in the same "units"}
-\CommentTok{\# merge left/right}
-\CommentTok{\# build proportion data}
-\CommentTok{\# and so on ... }
-\CommentTok{\# measure.df = prepareMeasureData(measure);}
+\KeywordTok{kable}\NormalTok{(sum.list, }\DataTypeTok{caption =} \StringTok{"Summary Statistics"}\NormalTok{, }\DataTypeTok{format =} \StringTok{"simple"}\NormalTok{) }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{kable\_styling}\NormalTok{(}\DataTypeTok{latex\_options =} \StringTok{"scale\_down"}\NormalTok{, }\DataTypeTok{font\_size =} \DecValTok{7}\NormalTok{ );}
 \end{Highlighting}
 \end{Shaded}
 
+\begin{longtable}[]{@{}lccccccc@{}}
+\toprule
+& side & writing & eye & eye\_color & swinging & gender &
+ethnicity\tabularnewline
+\midrule
+\endhead
+& left : 51 & both : 3 & both : 24 & brown :113 & both : 3 & female :122
+& caucasian :182\tabularnewline
+& NA : 1 & left : 32 & brown: 0 & blue : 78 & left : 49 & male :126 &
+asian : 29\tabularnewline
+& right:161 & right:214 & left : 71 & hazel : 31 & right:197 &
+non-binary: 1 & african american: 7\tabularnewline
+& NA's : 36 & NA & right:150 & green : 16 & NA & NA & hispanic :
+6\tabularnewline
+& NA & NA & NA's : 4 & blue/green: 4 & NA & NA & korean :
+5\tabularnewline
+& NA & NA & NA & black : 3 & NA & NA & caucasian/asian :
+4\tabularnewline
+& NA & NA & NA & (Other) : 4 & NA & NA & (Other) : 16\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lccclcl@{}}
+\toprule
+& age & quality & minutes & units & height.NA &
+head.height.NA\tabularnewline
+\midrule
+\endhead
+& Min. : 1.00 & Min. : 5.000 & Min. :-2.209e+09 & in:249 & Min. :10.75 &
+Min. : 2.559\tabularnewline
+& 1st Qu.:22.00 & 1st Qu.: 8.000 & 1st Qu.: 1.000e+01 & NA & 1st
+Qu.:62.99 & 1st Qu.: 8.071\tabularnewline
+& Median :27.00 & Median : 9.000 & Median : 1.500e+01 & NA & Median
+:66.26 & Median : 8.661\tabularnewline
+& Mean :34.55 & Mean : 8.582 & Mean :-9.128e+07 & NA & Mean :65.30 &
+Mean : 8.699\tabularnewline
+& 3rd Qu.:51.00 & 3rd Qu.:10.000 & 3rd Qu.: 2.000e+01 & NA & 3rd
+Qu.:70.00 & 3rd Qu.: 9.250\tabularnewline
+& Max. :94.00 & Max. :10.000 & Max. : 4.500e+01 & NA & Max. :75.24 &
+Max. :15.000\tabularnewline
+& NA & NA & NA's :7 & NA & NA & NA's :9\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}llllll@{}}
+\toprule
+& head.circumference.NA & hand.length.left & hand.length.right &
+hand.width.left & hand.width.right\tabularnewline
+\midrule
+\endhead
+& Min. : 7.874 & Min. : 1.968 & Min. : 1.968 & Min. : 2.165 & Min. :
+2.165\tabularnewline
+& 1st Qu.:21.654 & 1st Qu.: 6.693 & 1st Qu.: 6.693 & 1st Qu.: 7.250 &
+1st Qu.: 7.395\tabularnewline
+& Median :22.250 & Median : 7.125 & Median : 7.087 & Median : 7.874 &
+Median : 7.874\tabularnewline
+& Mean :22.000 & Mean : 7.705 & Mean : 7.681 & Mean : 7.702 & Mean :
+7.720\tabularnewline
+& 3rd Qu.:23.000 & 3rd Qu.: 7.677 & 3rd Qu.: 7.677 & 3rd Qu.: 8.465 &
+3rd Qu.: 8.473\tabularnewline
+& Max. :25.236 & Max. :87.875 & Max. :87.875 & Max. :10.433 & Max.
+:10.433\tabularnewline
+& NA's :16 & NA's :6 & NA's :2 & NA's :16 & NA's :13\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lllllll@{}}
+\toprule
+& hand.elbow.left & hand.elbow.right & elbow.armpit.left &
+elbow.armpit.right & arm.reach.left & arm.reach.right\tabularnewline
+\midrule
+\endhead
+& Min. : 4.429 & Min. : 4.429 & Min. : 2.362 & Min. : 2.362 & Min.
+:14.96 & Min. :20.47\tabularnewline
+& 1st Qu.:15.750 & 1st Qu.:15.750 & 1st Qu.: 9.004 & 1st Qu.: 9.000 &
+1st Qu.:74.33 & 1st Qu.:74.05\tabularnewline
+& Median :16.929 & Median :16.929 & Median :10.118 & Median :10.039 &
+Median :81.10 & Median :81.10\tabularnewline
+& Mean :16.664 & Mean :16.650 & Mean :10.452 & Mean :10.481 & Mean
+:74.61 & Mean :74.93\tabularnewline
+& 3rd Qu.:17.913 & 3rd Qu.:17.913 & 3rd Qu.:11.500 & 3rd Qu.:11.811 &
+3rd Qu.:87.22 & 3rd Qu.:87.62\tabularnewline
+& Max. :20.472 & Max. :20.669 & Max. :27.953 & Max. :27.953 & Max.
+:96.46 & Max. :96.06\tabularnewline
+& NA's :16 & NA's :13 & NA's :15 & NA's :12 & NA's :17 & NA's
+:14\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lclllll@{}}
+\toprule
+& arm.span.NA & foot.length.left & foot.length.right &
+floor.kneepit.left & floor.kneepit.right & floor.hip.left\tabularnewline
+\midrule
+\endhead
+& Min. : 3.50 & Min. : 2.756 & Min. : 2.756 & Min. : 5.118 & Min. :
+5.118 & Min. : 9.646\tabularnewline
+& 1st Qu.:62.25 & 1st Qu.: 9.055 & 1st Qu.: 9.055 & 1st Qu.:16.535 & 1st
+Qu.:16.500 & 1st Qu.:35.710\tabularnewline
+& Median :66.14 & Median : 9.750 & Median : 9.750 & Median :17.750 &
+Median :17.795 & Median :37.795\tabularnewline
+& Mean :65.28 & Mean : 9.703 & Mean : 9.735 & Mean :17.733 & Mean
+:17.781 & Mean :37.266\tabularnewline
+& 3rd Qu.:70.47 & 3rd Qu.:10.287 & 3rd Qu.:10.433 & 3rd Qu.:19.000 & 3rd
+Qu.:19.000 & 3rd Qu.:39.764\tabularnewline
+& Max. :88.19 & Max. :15.000 & Max. :18.504 & Max. :28.425 & Max.
+:39.764 & Max. :44.488\tabularnewline
+& NA & NA's :15 & NA's :12 & NA's :15 & NA's :12 & NA's
+:25\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lllllcc@{}}
+\toprule
+& floor.hip.right & floor.navel.NA & floor.armpit.left &
+floor.armpit.right & hand.length & hand.width\tabularnewline
+\midrule
+\endhead
+& Min. : 9.646 & Min. :10.63 & Min. :13.98 & Min. :13.78 & Min. : 1.968
+& Min. : 2.165\tabularnewline
+& 1st Qu.:35.467 & 1st Qu.:37.40 & 1st Qu.:49.00 & 1st Qu.:48.43 & 1st
+Qu.: 6.732 & 1st Qu.: 7.336\tabularnewline
+& Median :37.795 & Median :39.76 & Median :51.70 & Median :51.50 &
+Median : 7.165 & Median : 7.874\tabularnewline
+& Mean :37.228 & Mean :39.87 & Mean :51.46 & Mean :50.76 & Mean : 7.712
+& Mean : 7.725\tabularnewline
+& 3rd Qu.:39.764 & 3rd Qu.:42.13 & 3rd Qu.:54.93 & 3rd Qu.:54.72 & 3rd
+Qu.: 7.675 & 3rd Qu.: 8.465\tabularnewline
+& Max. :44.488 & Max. :67.00 & Max. :61.71 & Max. :62.00 & Max. :87.875
+& Max. :10.433\tabularnewline
+& NA's :22 & NA's :40 & NA's :15 & NA's :14 & NA's :8 & NA's
+:19\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lccclcc@{}}
+\toprule
+& floor.armpit & hand.elbow & elbow.armpit & floor.kneepit & floor.hip &
+arm.reach\tabularnewline
+\midrule
+\endhead
+& Min. :13.88 & Min. : 4.429 & Min. : 2.362 & Min. : 5.118 & Min. :
+9.646 & Min. :20.67\tabularnewline
+& 1st Qu.:48.62 & 1st Qu.:15.901 & 1st Qu.: 9.000 & 1st Qu.:16.535 & 1st
+Qu.:35.500 & 1st Qu.:75.12\tabularnewline
+& Median :51.50 & Median :16.929 & Median :10.150 & Median :17.815 &
+Median :37.795 & Median :81.40\tabularnewline
+& Mean :51.14 & Mean :16.686 & Mean :10.478 & Mean :17.806 & Mean
+:37.273 & Mean :74.89\tabularnewline
+& 3rd Qu.:54.72 & 3rd Qu.:17.928 & 3rd Qu.:11.620 & 3rd Qu.:19.094 & 3rd
+Qu.:39.764 & 3rd Qu.:87.40\tabularnewline
+& Max. :61.61 & Max. :20.571 & Max. :27.953 & Max. :29.134 & Max.
+:44.488 & Max. :96.26\tabularnewline
+& NA's :20 & NA's :19 & NA's :18 & NA's :18 & NA's :28 & NA's
+:20\tabularnewline
+\bottomrule
+\end{longtable}
+
+\begin{longtable}[]{@{}lcc@{}}
+\toprule
+& foot.length & ape.index\tabularnewline
+\midrule
+\endhead
+& Min. : 2.756 & Min. :-59.00000\tabularnewline
+& 1st Qu.: 9.090 & 1st Qu.: -1.18110\tabularnewline
+& Median : 9.803 & Median : 0.30000\tabularnewline
+& Mean : 9.732 & Mean : -0.01708\tabularnewline
+& 3rd Qu.:10.375 & 3rd Qu.: 1.75000\tabularnewline
+& Max. :15.256 & Max. : 61.95000\tabularnewline
+& NA's :18 & NA\tabularnewline
+\bottomrule
+\end{longtable}
+
 Below is the code to generate the summary statistics and save them as a
-table that you see in Section \ref{}.
+table.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{measure.collapsed =}\StringTok{ }\NormalTok{measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{15}\OperatorTok{:}\DecValTok{17}\NormalTok{,}\DecValTok{28}\NormalTok{,}\DecValTok{35}\NormalTok{, }\DecValTok{38}\OperatorTok{:}\DecValTok{46}\NormalTok{)]}
+\NormalTok{names =}\StringTok{ }\KeywordTok{colnames}\NormalTok{(measure.collapsed);}
+\NormalTok{summary =}\StringTok{ }\KeywordTok{summarizeMeanSD}\NormalTok{(measure.collapsed);}
+
+\NormalTok{mean =}\StringTok{ }\KeywordTok{t}\NormalTok{(summary[}\DecValTok{1}\NormalTok{,]);}
+\NormalTok{sd =}\StringTok{ }\KeywordTok{t}\NormalTok{(summary[}\DecValTok{2}\NormalTok{,]);}
+\NormalTok{measure.scale =}\StringTok{ }\NormalTok{measure.collapsed}\OperatorTok{/}\NormalTok{measure.collapsed[,}\DecValTok{1}\NormalTok{];}
+
+\NormalTok{my.corr =}\StringTok{ }\KeywordTok{rcorr}\NormalTok{( }\KeywordTok{as.matrix}\NormalTok{(measure.scale), }\DataTypeTok{type=}\StringTok{"pearson"}\NormalTok{);}
+
+\CommentTok{\#str(my.corr);}
+
+\NormalTok{my.corr.r =}\StringTok{ }\NormalTok{my.corr}\OperatorTok{$}\NormalTok{r;}
+\NormalTok{my.corr.pval =}\StringTok{ }\NormalTok{my.corr}\OperatorTok{$}\NormalTok{P;}
+
+\NormalTok{my.corr.r}\FloatTok{.2}\NormalTok{ =}\StringTok{ }\KeywordTok{round}\NormalTok{(my.corr.r,}\DecValTok{2}\NormalTok{);}
+\NormalTok{my.corr.p}\FloatTok{.3}\NormalTok{ =}\StringTok{ }\KeywordTok{as.numeric}\NormalTok{( }\KeywordTok{round}\NormalTok{(my.corr.pval,}\DecValTok{3}\NormalTok{) ); }\CommentTok{\# flatten}
+
+\NormalTok{cuts =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{0.10}\NormalTok{, }\FloatTok{0.05}\NormalTok{, }\FloatTok{0.01}\NormalTok{, }\FloatTok{0.001}\NormalTok{);}
+\NormalTok{symb =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"+"}\NormalTok{, }\StringTok{"*"}\NormalTok{, }\StringTok{"**"}\NormalTok{, }\StringTok{"***"}\NormalTok{);}
+
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb =}\StringTok{ ""}\NormalTok{;}
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb[}\KeywordTok{is.na}\NormalTok{(my.corr.p}\FloatTok{.3}\NormalTok{)] =}\StringTok{ ""}\NormalTok{;}
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb[my.corr.p}\FloatTok{.3} \OperatorTok{\textless{}=}\StringTok{ }\FloatTok{0.10}\NormalTok{] =}\StringTok{ "+"}\NormalTok{;}
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb[my.corr.p}\FloatTok{.3} \OperatorTok{\textless{}=}\StringTok{ }\FloatTok{0.05}\NormalTok{] =}\StringTok{ "*"}\NormalTok{;}
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb[my.corr.p}\FloatTok{.3} \OperatorTok{\textless{}=}\StringTok{ }\FloatTok{0.01}\NormalTok{] =}\StringTok{ "**"}\NormalTok{;}
+\NormalTok{my.corr.p.}\FloatTok{3.}\NormalTok{symb[my.corr.p}\FloatTok{.3} \OperatorTok{\textless{}=}\StringTok{ }\FloatTok{0.001}\NormalTok{] =}\StringTok{ "***"}\NormalTok{;}
+
+\NormalTok{include.diag =}\StringTok{ }\OtherTok{FALSE}\NormalTok{;  }\CommentTok{\# the 1\textquotesingle{}s on the diagonal are not included}
+\CommentTok{\# this is a lower triangular form ...}
+
+\NormalTok{char.matrix =}\StringTok{ }\KeywordTok{as.character}\NormalTok{(my.corr.r}\FloatTok{.2}\NormalTok{);  }
+
+
+\NormalTok{my.matrix =}\StringTok{ }\KeywordTok{matrix}\NormalTok{( }
+                \KeywordTok{paste0}\NormalTok{(char.matrix, my.corr.p.}\FloatTok{3.}\NormalTok{symb),}
+                \DataTypeTok{nrow=}\KeywordTok{ncol}\NormalTok{(measure.collapsed));}
+\NormalTok{my.matrix =}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(my.matrix);}
+\KeywordTok{colnames}\NormalTok{(my.matrix) =}\StringTok{ }\NormalTok{names;}
+\KeywordTok{rownames}\NormalTok{(my.matrix) =}\StringTok{ }\NormalTok{names;}
+\NormalTok{my.matrix}\OperatorTok{$}\NormalTok{mean =}\StringTok{ }\NormalTok{mean;}
+\NormalTok{my.matrix}\OperatorTok{$}\NormalTok{sd =}\StringTok{ }\NormalTok{sd[}\DecValTok{1}\NormalTok{,];}
+\NormalTok{my.matrix =}\StringTok{ }\NormalTok{my.matrix[,}\KeywordTok{c}\NormalTok{(}\DecValTok{15}\NormalTok{,}\DecValTok{16}\NormalTok{,}\DecValTok{1}\OperatorTok{:}\DecValTok{14}\NormalTok{)];}
+
+\NormalTok{my.matrix}\FloatTok{.1}\NormalTok{=my.matrix[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{4}\NormalTok{)];}
+\NormalTok{my.matrix}\FloatTok{.2}\NormalTok{=my.matrix[,}\KeywordTok{c}\NormalTok{(}\DecValTok{6}\OperatorTok{:}\DecValTok{8}\NormalTok{)];}
+\NormalTok{my.matrix}\FloatTok{.3}\NormalTok{=my.matrix[,}\KeywordTok{c}\NormalTok{(}\DecValTok{9}\OperatorTok{:}\DecValTok{12}\NormalTok{)];}
+\NormalTok{my.matrix}\FloatTok{.4}\NormalTok{=my.matrix[,}\KeywordTok{c}\NormalTok{(}\DecValTok{13}\OperatorTok{:}\DecValTok{16}\NormalTok{)];}
+
+\KeywordTok{kable}\NormalTok{(my.matrix}\FloatTok{.1}\NormalTok{,}
+      \DataTypeTok{format =} \StringTok{"latex"}\NormalTok{, }\DataTypeTok{booktabs =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{kable\_styling}\NormalTok{(}\DataTypeTok{latex\_options =} \StringTok{"scale\_down"}\NormalTok{, }\DataTypeTok{font\_size =} \DecValTok{7}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{7}{9}\selectfont
+
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lrrll}
+\toprule
+  & mean & sd & height.NA & head.height.NA\\
+\midrule
+height.NA & 65.3 & 8.02 & 1 & NaN\\
+head.height.NA & 8.7 & 8.02 & NaN & 1\\
+head.circumference.NA & 22.0 & 8.02 & NaN & 0.93***\\
+arm.span.NA & 65.3 & 8.02 & NaN & 0.86***\\
+floor.navel.NA & 39.9 & 8.02 & NaN & 0.9***\\
+\addlinespace
+hand.length & 7.7 & 8.02 & NaN & 0.33***\\
+hand.width & 7.7 & 8.02 & NaN & 0.89***\\
+floor.armpit & 51.1 & 8.02 & NaN & 0.91***\\
+hand.elbow & 16.7 & 8.02 & NaN & 0.91***\\
+elbow.armpit & 10.5 & 8.02 & NaN & 0.78***\\
+\addlinespace
+floor.kneepit & 17.8 & 8.02 & NaN & 0.9***\\
+floor.hip & 37.3 & 8.02 & NaN & 0.91***\\
+arm.reach & 74.9 & 8.02 & NaN & 0.8***\\
+foot.length & 9.7 & 8.02 & NaN & 0.91***\\
+\bottomrule
+\end{tabular}}
+\endgroup{}
+\end{table}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(my.matrix}\FloatTok{.2}\NormalTok{,}
+      \DataTypeTok{format =} \StringTok{"latex"}\NormalTok{, }\DataTypeTok{booktabs =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{kable\_styling}\NormalTok{(}\DataTypeTok{latex\_options =} \StringTok{"scale\_down"}\NormalTok{, }\DataTypeTok{font\_size =} \DecValTok{7}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{7}{9}\selectfont
+
+\resizebox{\linewidth}{!}{
+\begin{tabular}{llll}
+\toprule
+  & arm.span.NA & floor.navel.NA & hand.length\\
+\midrule
+height.NA & NaN & NaN & NaN\\
+head.height.NA & 0.86*** & 0.9*** & 0.33***\\
+head.circumference.NA & 0.89*** & 0.92*** & 0.36***\\
+arm.span.NA & 1 & 0.93*** & 0.38***\\
+floor.navel.NA & 0.93*** & 1 & 0.38***\\
+\addlinespace
+hand.length & 0.38*** & 0.38*** & 1\\
+hand.width & 0.93*** & 0.94*** & 0.36***\\
+floor.armpit & 0.95*** & 0.96*** & 0.39***\\
+hand.elbow & 0.95*** & 0.96*** & 0.38***\\
+elbow.armpit & 0.83*** & 0.85*** & 0.34***\\
+\addlinespace
+floor.kneepit & 0.92*** & 0.95*** & 0.38***\\
+floor.hip & 0.95*** & 0.98*** & 0.39***\\
+arm.reach & 0.85*** & 0.81*** & 0.36***\\
+foot.length & 0.95*** & 0.96*** & 0.38***\\
+\bottomrule
+\end{tabular}}
+\endgroup{}
+\end{table}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(my.matrix}\FloatTok{.3}\NormalTok{,}
+      \DataTypeTok{format =} \StringTok{"latex"}\NormalTok{, }\DataTypeTok{booktabs =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{kable\_styling}\NormalTok{(}\DataTypeTok{latex\_options =} \StringTok{"scale\_down"}\NormalTok{, }\DataTypeTok{font\_size =} \DecValTok{7}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{7}{9}\selectfont
+
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lllll}
+\toprule
+  & hand.width & floor.armpit & hand.elbow & elbow.armpit\\
+\midrule
+height.NA & NaN & NaN & NaN & NaN\\
+head.height.NA & 0.89*** & 0.91*** & 0.91*** & 0.78***\\
+head.circumference.NA & 0.91*** & 0.94*** & 0.93*** & 0.78***\\
+arm.span.NA & 0.93*** & 0.95*** & 0.95*** & 0.83***\\
+floor.navel.NA & 0.94*** & 0.96*** & 0.96*** & 0.85***\\
+\addlinespace
+hand.length & 0.36*** & 0.39*** & 0.38*** & 0.34***\\
+hand.width & 1 & 0.94*** & 0.94*** & 0.8***\\
+floor.armpit & 0.94*** & 1 & 0.97*** & 0.86***\\
+hand.elbow & 0.94*** & 0.97*** & 1 & 0.87***\\
+elbow.armpit & 0.8*** & 0.86*** & 0.87*** & 1\\
+\addlinespace
+floor.kneepit & 0.9*** & 0.96*** & 0.95*** & 0.85***\\
+floor.hip & 0.94*** & 0.98*** & 0.96*** & 0.85***\\
+arm.reach & 0.88*** & 0.88*** & 0.83*** & 0.7***\\
+foot.length & 0.94*** & 0.97*** & 0.97*** & 0.85***\\
+\bottomrule
+\end{tabular}}
+\endgroup{}
+\end{table}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{kable}\NormalTok{(my.matrix}\FloatTok{.4}\NormalTok{,}
+      \DataTypeTok{format =} \StringTok{"latex"}\NormalTok{, }\DataTypeTok{booktabs =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{\%\textgreater{}\%}\StringTok{ }\KeywordTok{kable\_styling}\NormalTok{(}\DataTypeTok{latex\_options =} \StringTok{"scale\_down"}\NormalTok{, }\DataTypeTok{font\_size =} \DecValTok{7}\NormalTok{ )}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{table}[H]
+\centering\begingroup\fontsize{7}{9}\selectfont
+
+\resizebox{\linewidth}{!}{
+\begin{tabular}{lllll}
+\toprule
+  & floor.kneepit & floor.hip & arm.reach & foot.length\\
+\midrule
+height.NA & NaN & NaN & NaN & NaN\\
+head.height.NA & 0.9*** & 0.91*** & 0.8*** & 0.91***\\
+head.circumference.NA & 0.93*** & 0.94*** & 0.83*** & 0.94***\\
+arm.span.NA & 0.92*** & 0.95*** & 0.85*** & 0.95***\\
+floor.navel.NA & 0.95*** & 0.98*** & 0.81*** & 0.96***\\
+\addlinespace
+hand.length & 0.38*** & 0.39*** & 0.36*** & 0.38***\\
+hand.width & 0.9*** & 0.94*** & 0.88*** & 0.94***\\
+floor.armpit & 0.96*** & 0.98*** & 0.88*** & 0.97***\\
+hand.elbow & 0.95*** & 0.96*** & 0.83*** & 0.97***\\
+elbow.armpit & 0.85*** & 0.85*** & 0.7*** & 0.85***\\
+\addlinespace
+floor.kneepit & 1 & 0.95*** & 0.83*** & 0.96***\\
+floor.hip & 0.95*** & 1 & 0.88*** & 0.97***\\
+arm.reach & 0.83*** & 0.88*** & 1 & 0.86***\\
+foot.length & 0.96*** & 0.97*** & 0.86*** & 1\\
+\bottomrule
+\end{tabular}}
+\endgroup{}
+\end{table}
+\newpage
+
+\subsubsection{Analysis: How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?}
+\label{sec:anrq2}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#read in climber data}
+\NormalTok{measure.climbers =}\StringTok{ }\NormalTok{utils}\OperatorTok{::}\KeywordTok{read.csv}\NormalTok{( }\KeywordTok{paste0}\NormalTok{(path.to.secret, }\StringTok{"measure\_climbers.csv"}\NormalTok{), }\DataTypeTok{header=}\OtherTok{TRUE}\NormalTok{, }\DataTypeTok{quote=}\StringTok{""}\NormalTok{, }\DataTypeTok{sep=}\StringTok{","}\NormalTok{);}
+\NormalTok{climbers =}\StringTok{ }\NormalTok{measure.climbers}\OperatorTok{$}\NormalTok{Climber;}
+\KeywordTok{rownames}\NormalTok{(measure.climbers) =}\StringTok{ }\NormalTok{climbers;}
+\NormalTok{measure.climbers =}\StringTok{ }\NormalTok{measure.climbers[,}\KeywordTok{c}\NormalTok{(}\DecValTok{2}\OperatorTok{:}\DecValTok{4}\NormalTok{)];}
+\KeywordTok{colnames}\NormalTok{(measure.climbers) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"height.NA"}\NormalTok{, }\StringTok{"arm.span.NA"}\NormalTok{, }\StringTok{"ape.index"}\NormalTok{);}
+
+\KeywordTok{summarizeMeanSD}\NormalTok{(measure.climbers);}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{tabular}{l|r|r|r}
+\hline
+  & height.NA & arm.span.NA & ape.index\\
+\hline
+mean & 67.50 & 69.80 & 2.30\\
+\hline
+standard deviation & 4.36 & 5.31 & 1.75\\
+\hline
+\end{tabular}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{measure.rq2 =}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{cbind}\NormalTok{(measure.df}\OperatorTok{$}\NormalTok{height.NA, measure.df}\OperatorTok{$}\NormalTok{arm.span.NA, measure.df}\OperatorTok{$}\NormalTok{ape.index));}
+\KeywordTok{rownames}\NormalTok{(measure.rq2) =}\StringTok{ }\KeywordTok{rownames}\NormalTok{(measure.df);}
+\KeywordTok{colnames}\NormalTok{(measure.rq2) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"height.NA"}\NormalTok{, }\StringTok{"arm.span.NA"}\NormalTok{, }\StringTok{"ape.index"}\NormalTok{);}
+  
+\NormalTok{measure.rq2 =}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(measure.climbers,measure.rq2));}
+\NormalTok{measure.rq2 =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(measure.rq2);}
+
+\NormalTok{m.kmeans =}\StringTok{ }\KeywordTok{kmeans}\NormalTok{(measure.rq2, }\DecValTok{5}\NormalTok{);}
+
+\NormalTok{m.kmeans}\OperatorTok{$}\NormalTok{centers;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##   height.NA arm.span.NA   ape.index
+## 1  67.89193    67.38850  -0.5036246
+## 2  71.15596    73.18522   2.0289076
+## 3  46.04543    31.70260 -14.3428225
+## 4  63.37854    82.38575  19.0072047
+## 5  61.88488    61.48858  -0.3963022
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{membership =}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{( }\KeywordTok{matrix}\NormalTok{( m.kmeans}\OperatorTok{$}\NormalTok{cluster, }\DataTypeTok{ncol=}\DecValTok{1}\NormalTok{)) ;}
+    
+\KeywordTok{rownames}\NormalTok{(membership) =}\StringTok{ }\KeywordTok{rownames}\NormalTok{(measure.rq2);}
+
+
+\CommentTok{\#print( table(membership) ) ; }
+\end{Highlighting}
+\end{Shaded}
+
+\newpage
+\subsubsection{Analysis:Are dominant limbs of consistent greater or lesser relative size?}
+\label{sec:anrq3}
+
+Below is the code used to assess the number of occurances for which
+dominant hand was the larger or smaller of the hand sizes.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{measure.rl =}\StringTok{ }\NormalTok{measure.df[,}\KeywordTok{c}\NormalTok{(}\DecValTok{4}\NormalTok{,}\DecValTok{7}\NormalTok{,}\DecValTok{18}\OperatorTok{:}\DecValTok{21}\NormalTok{,}\DecValTok{22}\OperatorTok{:}\DecValTok{25}\NormalTok{)]; }\CommentTok{\#separate variables of interest}
+
+\CommentTok{\#calculate arm length}
+\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{left.arm =}\StringTok{ }\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{hand.elbow.left}\OperatorTok{+}\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{elbow.armpit.left;}
+\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{right.arm =}\StringTok{ }\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{hand.elbow.right }\OperatorTok{+}\StringTok{ }\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{elbow.armpit.right;}
+
+\NormalTok{measure.rl =}\StringTok{ }\NormalTok{measure.rl[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\OperatorTok{:}\DecValTok{6}\NormalTok{,}\DecValTok{11}\NormalTok{,}\DecValTok{12}\NormalTok{)];}
+
+\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{RminusL.arm.diff =}\StringTok{ }\KeywordTok{round}\NormalTok{((measure.rl}\OperatorTok{$}\NormalTok{right.arm }\OperatorTok{{-}}\StringTok{ }\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{left.arm), }\DecValTok{2}\NormalTok{); }\CommentTok{\#positive value if right arm is bigger}
+\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{RminusL.hand.diff =}\StringTok{ }\KeywordTok{round}\NormalTok{((measure.rl}\OperatorTok{$}\NormalTok{hand.length.right }\OperatorTok{{-}}\StringTok{ }\NormalTok{measure.rl}\OperatorTok{$}\NormalTok{hand.length.left),}\DecValTok{2}\NormalTok{);}
+
+\NormalTok{measure.rl.diff =}\StringTok{ }\NormalTok{measure.rl[,}\KeywordTok{c}\NormalTok{(}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{,}\DecValTok{9}\NormalTok{,}\DecValTok{10}\NormalTok{)];}
+\NormalTok{measure.rl.diff =}\StringTok{ }\KeywordTok{na.omit}\NormalTok{(measure.rl.diff);}
+
+\NormalTok{  same =}\StringTok{ }\DecValTok{0}\NormalTok{;}
+\NormalTok{  different =}\StringTok{ }\DecValTok{0}\NormalTok{;}
+\NormalTok{ndiffs =}\StringTok{ }\KeywordTok{length}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{writing);}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{ndiffs) \{}
+\NormalTok{  names =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Same"}\NormalTok{, }\StringTok{"Different"}\NormalTok{)}
+\NormalTok{  count.table.hand =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =}\DecValTok{2}\NormalTok{);}
+  \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{writing[i] }\OperatorTok{==}\StringTok{ "right"}\NormalTok{)\{}
+    \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.hand.diff[i] }\OperatorTok{\textgreater{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      same =}\StringTok{ }\NormalTok{same }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.hand.diff[i] }\OperatorTok{\textless{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      different =}\StringTok{ }\NormalTok{different }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \}}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{writing[i] }\OperatorTok{==}\StringTok{ "left"}\NormalTok{)\{}
+    \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.hand.diff[i] }\OperatorTok{\textless{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      same =}\StringTok{ }\NormalTok{same }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.hand.diff[i] }\OperatorTok{\textgreater{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      different =}\StringTok{ }\NormalTok{different }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{  count.table.hand[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] =}\StringTok{ }\NormalTok{same;}
+\NormalTok{  count.table.hand[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{] =}\StringTok{ }\NormalTok{different;}
+\NormalTok{\}}
+
+\KeywordTok{colnames}\NormalTok{(count.table.hand) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Dominant Hand Larger"}\NormalTok{, }\StringTok{"Dominant Hand Smaller"}\NormalTok{);}
+\KeywordTok{rownames}\NormalTok{(count.table.hand) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Count"}\NormalTok{);}
+\NormalTok{count.table.hand;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Dominant Hand Larger Dominant Hand Smaller
+## Count                   48                    52
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{  same =}\StringTok{ }\DecValTok{0}\NormalTok{;}
+\NormalTok{  different =}\StringTok{ }\DecValTok{0}\NormalTok{;}
+\NormalTok{ndiffs =}\StringTok{ }\KeywordTok{length}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{swinging);}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{ndiffs) \{}
+\NormalTok{  names =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Same"}\NormalTok{, }\StringTok{"Different"}\NormalTok{)}
+\NormalTok{  count.table.arm =}\StringTok{ }\KeywordTok{matrix}\NormalTok{(}\DataTypeTok{ncol =}\DecValTok{2}\NormalTok{);}
+  \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{swinging[i] }\OperatorTok{==}\StringTok{ "right"}\NormalTok{)\{}
+    \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.arm.diff[i] }\OperatorTok{\textgreater{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      same =}\StringTok{ }\NormalTok{same }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.arm.diff[i] }\OperatorTok{\textless{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      different =}\StringTok{ }\NormalTok{different }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \}}
+\NormalTok{  \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{swinging[i] }\OperatorTok{==}\StringTok{ "left"}\NormalTok{)\{}
+    \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.arm.diff[i] }\OperatorTok{\textless{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      same =}\StringTok{ }\NormalTok{same }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \} }\ControlFlowTok{else} \ControlFlowTok{if}\NormalTok{(measure.rl.diff}\OperatorTok{$}\NormalTok{RminusL.arm.diff[i] }\OperatorTok{\textgreater{}}\StringTok{ }\DecValTok{0}\NormalTok{)\{}
+\NormalTok{      different =}\StringTok{ }\NormalTok{different }\OperatorTok{+}\DecValTok{1}\NormalTok{;}
+\NormalTok{    \}}
+\NormalTok{  \}}
+\NormalTok{  count.table.arm[}\DecValTok{1}\NormalTok{,}\DecValTok{1}\NormalTok{] =}\StringTok{ }\NormalTok{same;}
+\NormalTok{  count.table.arm[}\DecValTok{1}\NormalTok{,}\DecValTok{2}\NormalTok{] =}\StringTok{ }\NormalTok{different;}
+\NormalTok{\}}
+
+\KeywordTok{colnames}\NormalTok{(count.table.arm) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Dominant Arm Larger"}\NormalTok{, }\StringTok{"Dominant Arm Smaller"}\NormalTok{);}
+\KeywordTok{rownames}\NormalTok{(count.table.arm) =}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Count"}\NormalTok{);}
+\NormalTok{count.table.arm;}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##       Dominant Arm Larger Dominant Arm Smaller
+## Count                  74                   78
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{\#\# A different approach I thought about for this is below,}
+\CommentTok{\#\#ultimately I was not certain that it was appropriate to calculate correlations this way}
+
+\CommentTok{\#ndiffs = nrow(measure.rl.diff);}
+\CommentTok{\#  for (i in 1:ndiffs) \{}
+ \CommentTok{\#   if (measure.rl.diff$writing[i] == "right")\{}
+  \CommentTok{\#    measure.rl.diff$writingNum[i] = 1;}
+   \CommentTok{\# \} else if (measure.rl.diff$writing[i] == "left") \{}
+    \CommentTok{\#  measure.rl.diff$writingNum[i] = c({-}1);}
+ \CommentTok{\#   \}}
+  \CommentTok{\#  measure.rl.diff;}
+  \CommentTok{\#\}}
+  
+\CommentTok{\#    for (i in 1:ndiffs) \{}
+\CommentTok{\#    if (measure.rl.diff$swinging[i] == "right")\{}
+\CommentTok{\#      measure.rl.diff$swingingNum[i] = 1;}
+\CommentTok{\#    \} else if (measure.rl.diff$swinging[i] == "left") \{}
+\CommentTok{\#      measure.rl.diff$swingingNum[i] = c({-}1);}
+\CommentTok{\#    \}}
+\CommentTok{\#    measure.rl.diff;}
+\CommentTok{\#  \}}
+  
+\CommentTok{\#  measure.rl.diff = measure.rl.diff[,{-}c(1,2)];}
+  
+\CommentTok{\#  my.corr = rcorr( as.matrix(measure.rl.diff), type="pearson");}
+
+\CommentTok{\#my.corr.r = my.corr$r;}
+\CommentTok{\#my.corr.pval = my.corr$P;}
+
+\CommentTok{\#my.corr.r;}
+\CommentTok{\#  my.corr.r.2 = round(my.corr.r,2);}
+\CommentTok{\#my.corr.p.3 = as.numeric( round(my.corr.pval,3) ); \# flatten}
+\CommentTok{\#cuts = c(0.10, 0.05, 0.01, 0.001);}
+\CommentTok{\#symb = c("+", "*", "**", "***");}
+\CommentTok{\#my.corr.p.3.symb = "";}
+\CommentTok{\#my.corr.p.3.symb[is.na(my.corr.p.3)] = "";}
+\CommentTok{\#my.corr.p.3.symb[my.corr.p.3 \textless{}= 0.10] = "+";}
+\CommentTok{\#my.corr.p.3.symb[my.corr.p.3 \textless{}= 0.05] = "*";}
+\CommentTok{\#my.corr.p.3.symb[my.corr.p.3 \textless{}= 0.01] = "**";}
+\CommentTok{\#my.corr.p.3.symb[my.corr.p.3 \textless{}= 0.001] = "***";}
+\CommentTok{\#include.diag = FALSE;  \# the 1\textquotesingle{}s on the diagonal are not included}
+\CommentTok{\# this is a lower triangular form ...}
+
+\CommentTok{\#char.matrix = as.character(my.corr.r.2);  }
+
+\CommentTok{\#names = as.list(row.names(my.corr.r));}
+\CommentTok{\#my.matrix = matrix( }
+\CommentTok{\#                paste0(char.matrix, my.corr.p.3.symb),}
+\CommentTok{\#                nrow=ncol(measure.rl.diff),ncol = 4,);}
+\CommentTok{\#as.table(my.matrix);}
+\end{Highlighting}
+\end{Shaded}
+
 
 
 
@@ -672,7 +1354,7 @@ table that you see in Section \ref{}.
 \newpage
 \begin{auxmulticols}{2}
 \singlespacing 
-\bibliography{./../biblio/master.bib}
+\bibliography{./../biblio/STAT419.bib}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%  biblio %%%%%%%%
 \end{auxmulticols}

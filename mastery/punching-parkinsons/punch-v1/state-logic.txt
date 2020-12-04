@@ -1,0 +1,145 @@
+
+           if(i==1)
+                {
+                // first value
+                t_0 = time;
+                V_0 = myCSV["rawtime"][t_0]["voltage"];
+                }       
+            
+            
+           switch(state)
+            {
+            case "level":
+                switch(sign)
+                    {
+                    case 0: // if level, let's just update V_0
+                        //t_0 = time;
+                        //V_0 = myCSV["rawtime"][t_0]["voltage"];
+                        
+                        vStack = [];
+                        vStack.push(V_0);
+                        zStack.push(t_0);
+                        
+                        console.log("### LEVEL ### ... level - updating V_0 ... " + V_0);
+                    break;
+                    
+                    case 1: // positive slope [press]
+                        state = "press";
+                        vStack.push(currentV);
+                        zStack = [];
+                        
+                        console.log("--------------------------------------");
+                        console.log("### LEVEL ### ... pressed [positive slope] - currentV ... " + currentV);
+                    break;
+                    
+                    case -1: // negative slope [release]
+                        state = "release";
+                        vStack.push(currentV);
+                        zStack = [];
+                        console.log("--------------------------------------");
+                        console.log("### LEVEL ### ... released [negative slope] - currentV ... " + currentV);
+                    break;
+                    }
+                    
+                    
+
+            break; 
+
+
+            case "press":  // positive slope [press] ... tc recovery should be complete after currentV - V_0 = 0ish ... ?
+                switch(sign)
+                    {
+                    
+                    case 1: 
+                        // should be positive slope ... just update stack if needed
+                        if(vn <= toleranceFalseFlag)
+                           {                                 
+                           vStack.push(currentV);
+                           }
+                        console.log("### PRESS ### ... still tracking press ... ");
+                        zStack = [];
+                    break;
+                    
+                    case -1: 
+                            // if negative, like zero
+                    case 0: // if back to zero, we are done with press state?
+                            // if zero, but stack wasn't large enough, then maybe a false flag ...
+                            
+                            if(vn >= toleranceFalseFlag)
+                                {
+                                var result = "pressed";    
+                                }
+                                else
+                                    {
+                                    console.log("### PRESS ### ... false flag");  
+                                    console.log("======================================");                                    
+                                    // if zero, but stack wasn't large enough, then maybe a false flag ...
+                                    var result = "falseflag";
+                                    }  
+                                    
+                            state = "level";  
+                            if(sign == -1) { state = "release"; zStack = []; }
+                            if(sign == 0) 
+                                {
+                                //t_0 = time;
+                        //V_0 = myCSV["rawtime"][t_0]["voltage"];
+                                zStack.push(time); 
+                                }
+                                t_t = time;
+                                V_t = myCSV["rawtime"][t_t]["voltage"];
+                            punches.push( {"result": result, "t_0": t_0, "t_t": t_t, "V_0": V_0, "V_t": V_t } );
+                            
+                    break;
+                    }
+            
+            break;
+            
+            
+            
+            
+            case "release":  // negative slope [release]
+                switch(sign)
+                    {
+                    case 1: 
+                            // if positive, like zero
+                    case 0: // if back to zero, we are done with press state?
+                            // if zero, but stack wasn't large enough, then maybe a false flag ...
+                            if(vn >= toleranceFalseFlag)
+                                {
+                                var result = "released";    
+                                }
+                                else
+                                    {
+                                    console.log("### RELEASE ### ... false flag");  
+                                    console.log("======================================");                                    
+                                    // if zero, but stack wasn't large enough, then maybe a false flag ...
+                                    var result = "falseflag";
+                                    }  
+                                    
+                            state = "level";  
+                            if(sign == 0) { zStack.push(time); }
+                            if(sign == -1) { state = "press"; zStack = []; }
+                                t_t = time;
+                                V_t = myCSV["rawtime"][t_t]["voltage"];
+                            punches.push( {"result": result, "t_0": t_0, "t_t": t_t, "V_0": V_0, "V_t": V_t } );                            
+                    break;
+                    
+                    case -1: 
+                        zStack = [];
+                        // should be positive slope ... just update stack if needed
+                        if(vn <= toleranceFalseFlag)
+                           {                                 
+                           vStack.push(currentV);
+                           }
+                        console.log("### RELEASE ### ... still tracking release ... ");
+                    break;
+                    
+                    }
+            
+            break;
+            
+            
+            }
+            
+            
+            

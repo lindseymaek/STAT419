@@ -1,38 +1,37 @@
 ---
+title: "A Study of Human Proportions, Climbing Advantage, and Limb Dominance"
+author:
+- name: Lindsey Kornowske
+  affiliation: Washington State University
+date: "`r format(Sys.time(), '%B %d, %Y')`"
 output:
   pdf_document:
-    keep_tex: true
-    fig_caption: true
-    toc: true
-    toc_depth: 3 
-    number_sections: true
+    keep_tex: yes
+    fig_caption: yes
+    toc: yes
+    toc_depth: 3
+    number_sections: yes
+    df_print: kable
     citation_package: natbib
     latex_engine: pdflatex
     template: ./../latex-templates/report.tex
   html_document:
     df_print: paged
-    
-title: "A boring (academic) title or a clever title?"
-subtitle: "A secondary title"
-author: 
-- name: "Lindsey Kornowske"
-  affiliation: "Washington State University"
+  word_document:
+    toc: yes
+    toc_depth: '3'
 keywords: |
-    multiple comparisons to control; multivariate chi-square distribution; nonlinear growth curves; Richard's curve; simulated critical points
+  vitruvian man; biometric; ape-index; correlation; WSU STATS 419
 abstract: |
-  In this article we compare the \emph{empirical characteristic function} \citep{Tukey:1977, Becker:1988} to a \emph{moment-generating-functional form} to compute the proportion of hypotheses $m$ that are rejected under the null hypothesis. \vspace{0.25in}
-
-  \noindent Here is a second paragraph of the abstract (if necessary), and with the pipe notation it doesn't break. Notice it still needs to be indented. \vspace{0.25in}
-
-  \noindent Generally, we write this abstract last.  Often it is called the executive summary. It should succinctly summarize the entire document.  You can include references such as this one to the Appendices section \ref{sec:appendix} if necessary.
+  This study uses a student-collected dataset containing quantitative biometric variables inspired by the Leonardo Da Vinci's Vitruvian Man to investigate how these measurements are correlated with height, how relative arm span to height size compares to that of famous rock climbers, and how limb dominance may relate to size assymetries. A combination of correlation analysis, summary statistics, and kmeans were used to evaluate these questions. Height was found to be the best predictor for hand-elbow length, foot length, floor to hip height, and floor to armpit height, and not a good predictor for hand length. The average ape-index for the climbers (2.3 inches) was greater than that of the class dataset (0 inches), but the standard deviation was much lower. More members of the class dataset had dominant limbs that were smaller than their nondominant limbs.  \vspace{0.25in}
 sectionnumberdepth: 3
-titleEndnotes: "NOTES"
-titleReferences: "REFERENCES"
+titleEndnotes: NOTES
+titleReferences: REFERENCES
 columnsReferences: 2
-titleTOC:  "CONTENTS"
-bibliography: ./../biblio/master.bib
+titleTOC: CONTENTS
+bibliography: ./../biblio/STAT419.bib
 bibliostyle: ./../biblio/ormsv080.bst
-date: "`r format(Sys.time(), '%B %d, %Y')`"
+subtitle: Insights from the FALL 2020 STAT 419 Measure Dataset
 ---
 
 ```{r setup, include=FALSE}
@@ -42,205 +41,107 @@ knitr::opts_chunk$set(echo = TRUE)
 \section{Introduction}
 \label{sec:intro}
 
-Write something here.
+\indent The Fall 2020 STAT 419 measure dataset presents an interesting opportunity to investigate which biometrics are best associated with height. According to Leonardo Da Vinci's Vitruvian Man, the perfectly-proportioned man is a paragon of mathematics: his body is eight times his head, four times his shoulder width, knee height, and thigh length, and two times his groin height. And yet, a modern study of 65 thousand Air Force recruits found that these idealized proportions were not represented true to Vitruvian standards \citep{Thomas:2020}. If all persons in the dataset assessed herein were "ideal" by Vitruvian standards, all correlations between height and other biometrics would be 1, therefore it is far more interesting to understand the relationship of these variables as they exist in true populations. I can best illustrate this bias with a personal example: I am as tall as my mother, but my feet are 2 shoe sizes smaller, possibly because I danced pointe as a child before my bones fully developed. Given the variability that may be introduced by gender, ethnicity, age, and lifestyle factors, are there biometrics that are well-correlated with height? This evaluation will use correlation to evaluate where these stronger relationships lie.
 
-[ONE GRAPHIC]
+\indent A secondary question of interest related to this dataset was inspired by my experience in the world of sport climbing, where it is fashionable to conflate climbing ability to ape index. The ape-index, which may be calculated either as the wingspan minus height, or the wingspan divided by height, enumerates an individual's reach relative to their height. In a sport where the difference between victory and a critical fall may be a game of a few centimeters, it is easy to understand why sponsors proudly display photos of their athletes immediately aside this "all-important" metric. For the record, Da Vinci's man, with an arm span 4/5 the length of total body height, would have made an exceptionally poor climber by this standard \citep{Thomas:2020}. As an ammature rock climber, I have an anecdotal understanding that the most elite athletes in my community tend to have a positive ape index. Researchers have evaluated this phenomenon in assorted climbing groups. \citet{Watts:2003} found that a set of competitive child climbers (average age of 13) had a significantly greater (p = 0,02) ape index (cm/cm) of 1.01, relative to non-climbers of similar age. Within groups of climbers, however, Ape Index was not significantly different between advanced and elite athletes \citep{Ozimek:2017}. Given this, I wanted to understand how Ape Index data for famous climbers (for more information on data collection see section \ref{sec:climbdat}) compared with our Fall 2020 STAT 419 measure dataset. 
 
-
-
-[TWO GRAPHICS AS ONE]
+\indent The STAT 419 measure dataset also contains qualitative variables. I was interested in understanding how two variables that would pertain to almost everyone in the dataset - writing hand and swinging arm dominance -  related to the measures of size in both the hand length and arm length, respectively. In a study of 196 participants, \citet{Maleki:2019} found that hand dominance was associated with 5.3% to 7.5% greater strength relative to the non-dominant hand. Furthermore, longer hand and forearm length were positively correlated with greater pinch strength \citep{Maleki:2019}. Based on this, my hypothesis is that the dominant hand will be larger than the non-dominant hand in the dataset, and that this pattern will also be observed in the relationship between dominant swinging arm and larger arm. 
 
 
-Write something here.
+\begin{figure}[!ht]
+	\hrule
+	\caption{ \textbf{The New Ideal?} }
+	\begin{center}
+	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=0.85\textwidth]{figures/newideal.jpg} }
+	\end{center}
+	\label{fig:handout-1}
+	\hrule
+\end{figure}
 
 
-\section{Research Question:  Which biometrics are best predicted by height?}
+
+Image modified from \citet{Thomas:2020}. Da Vinci's Vitruvian Man reflected concepts of ideal symmetry and proportion, yet the meaning of ideal is fluid depending on an individual's lifestyle. This study investigates the Vitruvian proportions as they pertain to the STAT 419 student measure dataset, how one's status as a professional sport climber makes them more or less likely to exceed average wingspan proportions, and how dominance is associated with relative side size.
+
+
+\section{Research Question:  Which biometrics are best correlated with height?}
 \label{sec:rq}
 
+This question will be investigated using correlations of select biometrics scaled relative to the height. Then the means will be used to determine the STAT 419 student measure dataset values for the proportions listed by \citet{Thomas:2020}.
 
-\subsection{Do famous climbers represent the population for ape index?}
+\subsection{How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?} 
 \label{sec:rq2}
 
-As a sport climber, I'm often told about the advantages a positive ape index (wingspan-height) lends to climbing ability. If the data exists, it would be interesting to know how the measurement data for athletes on the would-be first-ever climbing Olympics teams compares to our sample set. Is this positive ape index strongly represented among the top climbers, or is this a myth?
+A supplementary dataset containing the Ape-Index of 29 professional climbers will be collected for comparison to the STAT 419 measure dataset described in section. The average ape-index will be calculated for each dataset. Then Kmeans clustering will be applied on the combined datasets to determine how the climbers group among the class data.
 
-\subsection{Are dominant limbs of greater size?}
+\subsection{Are dominant limbs of consistent greater or lesser relative size?}
 \label{sec:rq3}
 
-This question attempts to understand if qualitative variables may be associated with trends observed in the biometric data. My right leg is dominant and my right foot is also slightly larger - does dominance have a relationship with relative size? 
+Count information will be collected for each observance of dominant side being greater than or lesser than the non-dominant side. Ambidextrous individuals and persons missing data on either side will not be counted.
 
 \section{Data Description}
 \label{sec:data}
 
-Very brief introduction to the data, how it was collected, and so on.  Remember that everything is covered (who, what, when, where, why, how, so what, and so on).  Reference the section in the Appendix with greater detail about the data provenance.  This section should be about two paragraphs, and the Appendix should have more information.
+The Fall 2020 Stat 419 measure dataset was collected by the enrolled students in August and September of 2020. The data contains 23 quantitative biometric variables and 9 supplementary variables for each student, and approximately 9 members of their family and friends. The final dataset compiled 428 observations that may have been collected by the students themselves, or by participants due to COVID-19 social-distancing guidelines in place at the time of data collection. For this reason, data collection practices were not uniform; some observations are missing, duplicated, and in some cases both left and right side information is provided.
 
-\subsection{Summary of Sample}
-\label{sec:data-sample}
+\subsubsection{Climbers Measure Data}
+\label{sec:climbdat}
+
+The climbers measure dataset is comprised of name, height, wingspan, ape-index, gender, and source data for 29 professional rock climbers \citep{99Boulders, youtube, Sportiva, GymClimber2019a}, Ape index was calculated as in the STAT 419 measure dataset by subtracting the height from wingspan.
 
 
 \subsection{Summary Statistics of Data}
 \label{sec:data-summary}
 
+Summary statistics and correlation tables of the STAT 419 measure data can be found in Section \ref{sec:anrq}.
 
 \section{Key Findings}
 \label{sec:findings}
+
+\subsubsection{Findings: Which biometrics are best correlated with height?}
+\label{sec:findRQ}
+
+All biometric measurements had significant correlations relative to total height. Hand-elbow length and foot-length were as strongly correlated with height (0.95), as floor to hip and floor to armpit. This conflicts somewhat with my hypothesis that lifestyle factors may contribute to relative foot size, and suggests that overall, height is a good predictor for footlength.  Hand-length was the least correlated with height (0.38), which was unexpected given that the hand-to-elbow measurement also includes the length of the hand.
+
+Another observation of interest was that foot-length was very highly correlated with hand-to-elbow (0.97), The play-ground myth that one's foot is exactly the size of their forearm may have some merit given this finding.
+
+The averages collected as a part of this first research question were used to calculate the proportions of interest that were also calculated in the paper by \citet{Thomas:2020}.
+
+Proportions to body length:
+Head Height: 0.13 
+Arm span: 1.00
+Groin height: 0.57
+Knee height: 0.27
+Thigh length: 0.30
+
+Head height and knee height proportions were very close to the Vitruvian man proportions of 0.125 and 0.25, respectively. The arm span proportion was the most different; much greater at 1, compared with 0.8. Groin height was also larger - 0.57 compared to 0.5 - but I used the floor to hip measurement, which likely leads to an over-approximation of this measurement. This over-approximation may also be responsible for the fact that the thigh length proportion was greater - 0.3 compared with 0.25 - as thigh length was calculated by subtracting the knee height from the hip-height value.  
+
+\subsubsection{Findings: How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?}
+\label{sec:findRQ2}
+
+The average wingspan of the climbers dataset is 2.2 inches with a standard deviation of 1.76 inches. This is much greater than the average of the student measure dataset, 0.0 inches; the standard deviation of the student measure dataset is 7.95 inches, which suggests that while the subset of climbers averaged greater, more extremes are present in the student dataset.
+
+
+
+\subsubsection{Findings: Are dominant limbs of consistent greater or lesser relative size?}
+\label{sec:findRQ3}
+
+Dominance appears to be associated with the smaller limb of the two sides.
+In 51% of the observations of the sample subset, the dominant swinging arm was smaller than the non-dominant arm.
+In 52% of the observations of the sample subset, the dominant writing hand was smaller than the non-dominant hand.
 
 
 \section{Conclusion}
 \label{sec:conclusion}
 
+\indent The FALL 2020 STAT 419 Student measure dataset was collected at the beginning of the Fall 2020 semester by student participants and compiled for this analysis. Upon appropriate cleaning of the data, three questions were formulated, informed by the study written by \citet{Thomas:2020} examining the proportions behind Da Vinci's Vitruvian Man with a modern dataset.
 
+\indent The class data was comparable to the Vitruvian man for the proportions of head height and knee height, but were greater for the proportions of armspan, thigh length, and groin height. Height was found to be the best predictor for hand-elbow length, foot length, floor to hip height, and floor to armpit height, and not a good predictor for hand length.
 
+\indent A dataset of height, wingspan, and ape-index measurements was collected for 29 professional climbers. The average of this dataset was greater than that of the class dataset, as was somewhat expected based on work conducted by \citet{Ozimek:2017}, although it is not clear how conclusive this comparison is, given the high standard deviation for ape-index that was observed in the class dataset. Kmeans clustering of the results did not suggest any particular trends for the climbers among the class data. This is likely a product of the fact that some of the data collectors in the STAT 419 may have misunderstood armspan measurement. At least one data collector regularly produced ape-index values of above 15, which if biologically possible, is expected to be extremely unlikely. Further analysis of this data should involve removal of such outliers, although data removal is a process that can easily contribute to skewed results. This criteria should not be taken lightly, and was considered to be beyond the scope of this work at this time.
 
+\indent A preliminary look into the assocations between dominance and size was completed based on count data. These data show that more persons in the STAT 419 dataset had dominant limbs that were smaller than their nondominant limbs. However, statistics were not applied to this assessment and to conclude based on count data is to accept a high Type II error risk. However, this finding was interesting in that it conflicted with a study that was found assessing the relationship between dominance, size, and grip strength, which lead to the hypothesis that the dominant limb would more often be of greater size \citep{Maleki:2019}. However, the scope of the size difference was not evaluated as it was in this study, it is possible that these differences are rather nominal and do not have a large impact. 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-\newpage
-This was a new page
-
-This is a newline. \newline  Here is some more text.
-
-
-
-Below are some example code that may benefit you in preparing your document. \newline
-
-
-\vspace{0.25in}
-\noindent Please state your name: \hrulefill \newline
-I was born on \hrulefill in \hrulefill
-\vspace{0.25in}
-
-
-
-
-\begin{equation}
-\label{eq:my-model}
-	Y_{jt} = \alpha + \bm{\beta}X_{jt} + \upsilon_{j}  + \varepsilon_{jt} ,
-\end{equation}
-
-\noindent where $\alpha$ is the grand mean, $\upsilon_{j}$ is the fixed-time country mean, $X_{jt}$ (country $j$ at time $t$) is the matrix of country-level observations for the vector of aforementioned parameters $\bm{\beta}$, and $\varepsilon_{jt}$ represents the residual idiosyncratic disturbance.  Our panel data set consists of repeated observations of countries over time.  Therefore, we employ cross-section time-series models.  This approach redefines Equation~\ref{eq:my-model} by subtracting time-demeaned values.  This \emph{within} transformation subtracts constant country effects for the dependent variable $\bar{Y_{j}}$, the predictor variables $\bar{X_{j}}$, and the intercept $\bar{\upsilon_{j}}$:
-
-\begin{equation}
-\label{eq:my-random}
-	(Y_{jt} - \theta \bar{Y_{j}}) = (1-\theta)\alpha + \bm{\beta}(X_{jt} - \bar{X_{j}}) +  (\upsilon_{jt} - \theta \bar{\upsilon_{j}})  ,
-\end{equation}
-
-\noindent If $\theta = 0$, the model reduces to a basic pooled ordinary-least-squares (OLS) model; if $\theta = 1$, the model reduces to a fixed-effects model; otherwise the model represents a random-effects model.  The pooled OLS estimation is biased if country effects exist  \citep{Hsiao:2003}.  The random-effects model may be susceptible to omitted-variable bias \citep{Wooldridge:2006}:  bias because a predictor was excluded from the model specification.   Conversely, the fixed-effects model is not susceptible to this bias as it captures unobserved intracountry variation around its average country-level ``fixed effect."  Panel-data analysis commonly has issues with heteroskedasticity, serial autocorrelation, and cross-sectional autocorrelation.   
-
-
-
-
-
-\vspace{0.5in}
-
-$i=1$ and $$i = 1$$
-
-\vspace{0.5in}
-
-
-
-
-\begin{tabular}{ c c c c c}
-  1 & 2 & 3 & 4 & 5 \\
-  \hline
-  6 & 7 & 8 & 9 & 10
-\end{tabular}
-
-\vspace{0.5in}
-
-
-
-
-\begin{figure}[!ht]
-%% figures have hrule, tables have hline
-	\hrule
-	\caption{ \textbf{Conceptual Model} }
-	\begin{center}
-	    \scalebox{1.00}{	\includegraphics[trim = 0 0 0 0,clip,width=\textwidth]{figures/conceptual-model-v4.pdf} }
-	\end{center}
-	\label{fig:conceptual-model}
-	\hrule
-\end{figure}
-
-
-See Figure \ref{fig:conceptual-model}.
-
-\newpage
-
-This is a footnote\footnote{This is a footnote that can be really long.  \newline You can have multiple paragraphs in the footnote.  You can have \underline{underline} or \textbf{bold} or \emph{italics}.  You can even have a math equation inline. \newline In this section, we review the regression results to summarize our findings.  First, we examine each model for significance, and conclude the hypothesized models fit well with the data.  Second, we conclude that the fixed country effects represent consistent and unbiased parameter estimates.  Third, with the use of the \citet{Driscoll:1998} robust standard errors, we adjust any variance bias to ascertain the significance of these consistent estimates.  Therefore, we are able to make inferences about the hypotheses using our model estimates.  For ease of interpretation across these 12 models, we introduce $\betaSH{{ \ \ }M1}{Total}{1}$ as notation to refer to parameter estimate $\hat{\beta}_{1}$ (HDI) for the Total Sample and (M1) Model 1:  Main Effects.  We proceed by reporting findings for the total sample. \newline The footnotes are automatically converted to "endnotes" and will be included at the end of the document.  It will finish when you have that outer brace like this.} that can be placed within a document.
-
-\vspace{1.5in}
-
-
-Refer to the Appendices in section~\ref{sec:appendix} where I am going to cite John \citep[pp. 2-3]{Tukey:1962}. 
-
-
-Here is a quote by \citet[pp. 2-3]{Tukey:1962}:
-
-\begin{quote}
-For a long time I have thought I was a statistician, interested in inferences from the particular to the general.  But as I have watched mathematical statistics evolve, I have had to cause to wonder and to doubt. [...] All in all, I have come to feel that my central interest is in \emph{data analysis}, which I take to include among other things: procedures for analyzing data, techniques for interpreting the results of such procedures, ways of planning the gathering of data to make its analysis easier, more precise or more accurate, and all the machinery and results of (mathematical) statistics which apply to analyzing the data.
-
-Large parts of data analysis are inferential in the sample-to-population sense, but these are only parts, not the whole.  Large parts of data analysis are incisive, laying bare indications which we could not perceive by simple and direct examination of the raw data, but these too are only parts, not the whole.  Some parts of data analysis, as the term is her stretch beyond its philology, are allocation, in the sense that they guide us in the distribution of effort and other valuable considerations in observation, experimentation, or analysis.  Data analysis is a larger and more varied field than inference, or incisive procedures, or allocation.
-
-Statistics has contributed much to data analysis.  In the future it can, and in my view should, contribute more.  For such contributions to exist, and be valuable, it is not necessary that they be direct.  They need not provide new techniques, or better tables for old techniques, in order to influence the practice of data analysis.
-\end{quote}
-
-
-
-
-
-\newpage
-
-\input{tables/example-correlation-table} 
-
-\newpage
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\indent In conclusion, these data were sufficient for a preliminary view of the research questions, but the overall reliability of these observations is limited by suspected occurrences of poor data provenance among some of the data collectors. On the whole, it is interesting that the final proportions were so close to those of the "ideal" man given the non-ideal circumstances of data collection.
 
 
 \newpage
@@ -250,6 +151,7 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 
 \subsection{Data Provenance}
 \label{sec:appendix-data-provenance}
+For my contribution to the dataset, measurements were collected as indicated on the handout. My participants were responsible for collecting and reporting their own data. A spreadsheet with the mandatory measurements as well as the handout were supplied by email to the participants. The compiled class dataset was cleaned with the function cleanMeasureData. This function corrects for data entry mistakes that inappropriately affected the number of levels viewed for each variable: quotations, variations on NA, capitalizations, mispellings, or abbreviations. In some cases, a quantitative variable and qualitative variable were switched, or incorrect units were assigned, these mistakes had to be adjusted on a row-by-row basis. All units were converted to inches, expressed as "in." Variables for which sidedness was a factor were averaged, but the individual sides were retained in order to investigate the third research question on limb dominance. A variable for ape-index was created by subtracting the height by the armspan for each respective column. All individuals that were missing data for height for armspan information were removed. All duplicate rows were removed to ensure that only unique observations informed the data analysis.
 
 \newpage
 \subsubsection{Data Collection Handout}
@@ -264,7 +166,7 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 	\label{fig:handout-1}
 	\hrule
 \end{figure}
-
+Handout was assembled with the tools provided by Canva.com
 
 \newpage
 
@@ -281,163 +183,283 @@ Statistics has contributed much to data analysis.  In the future it can, and in 
 \newpage
 
 
-\begin{figure}[!ht]
-    \begin{subfigure}[h]{0.5\textwidth}
-    \centering
-    %  trim={<left> <lower> <right> <upper>}
-    % https://shantoroy.com/latex/add-subfig-in-latex/
-            \includegraphics[trim = 0 0 11.25cm 0,clip,scale=1]{figures/Vitruvian.pdf}
-        \caption{ \citet{Thomas:2020} discuss this. }
-        \label{fig:sub-first}
-    \end{subfigure}
-    \begin{subfigure}[h]{0.5\textwidth}
-    \centering
-        \includegraphics[trim = 11.25cm 0 0 0,clip,scale=1]{figures/Vitruvian.pdf}
-            \caption{Schnitt realer Sensor \citep{Thomas:2020}}
-        \label{fig:sub-second}
-    \end{subfigure}
-    \vspace{2.5mm}
-    \hrule
-    \vspace{2.5mm}
-        \caption{\textbf{ Der Sensor in Theorie und Verwirklichung... caption at bottom instead? }  I can write a really long caption if I want. \newline This is using "crop" to include one image and trim it to appear as two.  Likely you will have two separate images if you use this option, so you would set the trim parameters all equal to 0.  \newline   This figure has subfigures which each also have a possible caption.   }
-        \label{fig:combined}
-    \vspace{-2.5mm}
-    \hrule
-\end{figure}
-
-
 \newpage
 
-\subsection{Preparing the Report Workspace as a subsection}
+\subsection{Data, Data Cleaning, and Analysis}
 \label{sec:appendix-setup}
 
-\subsubsection{Preparing the Report Workspace as a subsubsection}
-\label{sec:appendix-setup2}
-
-\paragraph{Preparing the Report Workspace as a paragraph}
-\label{sec:appendix-setup3}
-
-\subparagraph{Preparing the Report Workspace as a subparagrah}
-\label{sec:appendix-setup4}
 
 Below is the necessary functions and libraries required to run the code referenced in this document.
 
-```{r,appendix-setup,message=FALSE}
+```{r,appendix-setup,warning=FALSE,message=FALSE}
 library(devtools);       # required for source_url
 library(tidyverse);
 library(Hmisc);
+library(kableExtra);
 
 path.humanVerseWSU = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/"
 source_url( paste0(path.humanVerseWSU,"master/misc/functions-project-measure.R") );
 
 ```
 
+\subsubsection{Analysis:  Which biometrics are best correlated with height?}
+\label{sec:anrq}
+
 Below is the code to load the data and prepare it for analysis.
 
-```{r,appendix-secret,message=FALSE}
 
+```{r, warning=FALSE}
 path.project = "/Users/lindseykornowske/.git/STAT419/project-measure/";
-
-path.to.secret = path.to.secret = "/Users/lindseykornowske/Documents/FS Classes HW & Resources/STAT 419 Multivariate/_SECRET_/";
-
-measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, quote="", sep="|");
-
+path.to.secret = "/Users/lindseykornowske/Documents/FS Classes HW & Resources/STAT 419 Multivariate/_SECRET_/";
+measure = utils::read.csv( paste0(path.to.secret, "measure-students.txt"), header=TRUE, sep="|");
 source(file = "https://raw.githubusercontent.com/lindseymaek/STAT419/master/functions/functions-project-measure.R",local = F);
-
 measure.df = prepareMeasureData(measure);
-str(measure.df)
 
-#scale relative to the height data
-measure.scale = measure.df[,c(15:46)]/measure.df[,15];
-measure.scale = as.data.frame(cbind(measure.df[,c(1:14,47)], measure.scale));
+sum.list = list(summary(measure.df[,c(3:9)]),
+summary(measure.df[,c(11:16)]),
+summary(measure.df[,c(17:21)]),
+summary(measure.df[,c(22:27)]),
+summary(measure.df[,c(28:33)]),
+summary(measure.df[,c(34:39)]),
+summary(measure.df[,c(40:45)]),
+summary(measure.df[,c(46:47)]));
 
+kable(sum.list, caption = "Summary Statistics", format = "simple") %>% kable_styling(latex_options = "scale_down", font_size = 7 );
 ```
 
 
-Below is the code to generate the summary statistics and save them as a table that you see in Section \ref{}.
-
-```{r,appendix-summary,message=FALSE}
+Below is the code to generate the summary statistics and save them as a table.
+```{r, out.extra='angle=90'}
 measure.collapsed = measure.df[,c(15:17,28,35, 38:46)]
+names = colnames(measure.collapsed);
+summary = summarizeMeanSD(measure.collapsed);
 
-summarizeMeanSD(measure.collapsed);
-
+mean = t(summary[1,]);
+sd = t(summary[2,]);
 measure.scale = measure.collapsed/measure.collapsed[,1];
 
 my.corr = rcorr( as.matrix(measure.scale), type="pearson");
 
-str(my.corr);
+#str(my.corr);
 
 my.corr.r = my.corr$r;
 my.corr.pval = my.corr$P;
 
-my.corr.r; 
-my.corr.pval; #all correlations are significant
+my.corr.r.2 = round(my.corr.r,2);
+my.corr.p.3 = as.numeric( round(my.corr.pval,3) ); # flatten
+
+cuts = c(0.10, 0.05, 0.01, 0.001);
+symb = c("+", "*", "**", "***");
+
+my.corr.p.3.symb = "";
+my.corr.p.3.symb[is.na(my.corr.p.3)] = "";
+my.corr.p.3.symb[my.corr.p.3 <= 0.10] = "+";
+my.corr.p.3.symb[my.corr.p.3 <= 0.05] = "*";
+my.corr.p.3.symb[my.corr.p.3 <= 0.01] = "**";
+my.corr.p.3.symb[my.corr.p.3 <= 0.001] = "***";
+
+include.diag = FALSE;  # the 1's on the diagonal are not included
+# this is a lower triangular form ...
+
+char.matrix = as.character(my.corr.r.2);  
+
+
+my.matrix = matrix( 
+                paste0(char.matrix, my.corr.p.3.symb),
+                nrow=ncol(measure.collapsed));
+my.matrix = as.data.frame(my.matrix);
+colnames(my.matrix) = names;
+rownames(my.matrix) = names;
+my.matrix$mean = mean;
+my.matrix$sd = sd[1,];
+my.matrix = my.matrix[,c(15,16,1:14)];
+
+my.matrix.1=my.matrix[,c(1:4)];
+my.matrix.2=my.matrix[,c(6:8)];
+my.matrix.3=my.matrix[,c(9:12)];
+my.matrix.4=my.matrix[,c(13:16)];
+
+kable(my.matrix.1,
+      format = "latex", booktabs = TRUE) %>% kable_styling(latex_options = "scale_down", font_size = 7 )
+kable(my.matrix.2,
+      format = "latex", booktabs = TRUE) %>% kable_styling(latex_options = "scale_down", font_size = 7 )
+kable(my.matrix.3,
+      format = "latex", booktabs = TRUE) %>% kable_styling(latex_options = "scale_down", font_size = 7 )
+kable(my.matrix.4,
+      format = "latex", booktabs = TRUE) %>% kable_styling(latex_options = "scale_down", font_size = 7 )
+
+
 
 ```
+\newpage
+
+\subsubsection{Analysis: How do famous climbers compare to the FALL 2020 STAT 419 Measure dataset for ape index?}
+\label{sec:anrq2}
 
 ```{r}
-## Question 3 - Is there a relationship between dominant writing hand or swinging arm and length asymmetries between the two sides?
 
-measure.rl = measure.df[,c(4,7,18:21,22:25)];
+#read in climber data
+measure.climbers = utils::read.csv( paste0(path.to.secret, "measure_climbers.csv"), header=TRUE, quote="", sep=",");
+climbers = measure.climbers$Climber;
+rownames(measure.climbers) = climbers;
+measure.climbers = measure.climbers[,c(2:4)];
+colnames(measure.climbers) = c("height.NA", "arm.span.NA", "ape.index");
 
+summarizeMeanSD(measure.climbers);
+
+measure.rq2 = as.data.frame(cbind(measure.df$height.NA, measure.df$arm.span.NA, measure.df$ape.index));
+rownames(measure.rq2) = rownames(measure.df);
+colnames(measure.rq2) = c("height.NA", "arm.span.NA", "ape.index");
+  
+measure.rq2 = as.data.frame(rbind(measure.climbers,measure.rq2));
+measure.rq2 = na.omit(measure.rq2);
+
+m.kmeans = kmeans(measure.rq2, 5);
+
+m.kmeans$centers;
+
+membership = as.data.frame( matrix( m.kmeans$cluster, ncol=1)) ;
+    
+rownames(membership) = rownames(measure.rq2);
+
+
+#print( table(membership) ) ; 
+```
+
+\newpage
+\subsubsection{Analysis:Are dominant limbs of consistent greater or lesser relative size?}
+\label{sec:anrq3}
+
+Below is the code used to assess the number of occurances for which dominant hand was the larger or smaller of the  hand sizes.
+```{r}
+measure.rl = measure.df[,c(4,7,18:21,22:25)]; #separate variables of interest
+
+#calculate arm length
 measure.rl$left.arm = measure.rl$hand.elbow.left+measure.rl$elbow.armpit.left;
 measure.rl$right.arm = measure.rl$hand.elbow.right + measure.rl$elbow.armpit.right;
 
 measure.rl = measure.rl[,c(1:6,11,12)];
 
-measure.rl$RminusL.arm.diff = measure.rl$right.arm - measure.rl$left.arm;
-measure.rl$RminusL.hand.diff = measure.rl$hand.length.right - measure.rl$hand.length.left;
+measure.rl$RminusL.arm.diff = round((measure.rl$right.arm - measure.rl$left.arm), 2); #positive value if right arm is bigger
+measure.rl$RminusL.hand.diff = round((measure.rl$hand.length.right - measure.rl$hand.length.left),2);
 
 measure.rl.diff = measure.rl[,c(1,2,9,10)];
-measure.rl.diff
+measure.rl.diff = na.omit(measure.rl.diff);
 
-
-  ndiffs = nrow(measure.rl.diff);
-  for (i in 1:ndiffs) {
-    if (measure.rl.diff$writing[i] == "right"){
-      measure.rl.diff$writingNum[i] = 1;
-    } else if (measure.rl.diff$writing[i] == "left") {
-      measure.rl.diff$writingNum[i] = c(-1);
+  same = 0;
+  different = 0;
+ndiffs = length(measure.rl.diff$writing);
+for (i in 1:ndiffs) {
+  names = c("Same", "Different")
+  count.table.hand = matrix(ncol =2);
+  if(measure.rl.diff$writing[i] == "right"){
+    if(measure.rl.diff$RminusL.hand.diff[i] > 0){
+      same = same +1;
+    } else if(measure.rl.diff$RminusL.hand.diff[i] < 0){
+      different = different +1;
     }
-    measure.rl.diff;
-  }
-  
-    for (i in 1:ndiffs) {
-    if (measure.rl.diff$swinging[i] == "right"){
-      measure.rl.diff$swingingNum[i] = 1;
-    } else if (measure.rl.diff$swinging[i] == "left") {
-      measure.rl.diff$swingingNum[i] = c(-1);
+  } else if(measure.rl.diff$writing[i] == "left"){
+    if(measure.rl.diff$RminusL.hand.diff[i] < 0){
+      same = same +1;
+    } else if(measure.rl.diff$RminusL.hand.diff[i] > 0){
+      different = different +1;
     }
-    measure.rl.diff;
   }
-  
-  measure.rl.diff = measure.rl.diff[,-c(1,2)];
-  
-  my.corr = rcorr( as.matrix(measure.rl.diff), type="pearson");
+  count.table.hand[1,1] = same;
+  count.table.hand[1,2] = different;
+}
 
-str(my.corr);
-
-my.corr.r = my.corr$r;
-my.corr.pval = my.corr$P;
-
-my.corr.r; 
-my.corr.pval; #all correlations are significant
-
-
+colnames(count.table.hand) = c("Dominant Hand Larger", "Dominant Hand Smaller");
+rownames(count.table.hand) = c("Count");
+count.table.hand;
 ```
 
 
 ```{r}
-#Question - How do ape index measurements of accomplished rock climbers compare to our class dataset?
+  same = 0;
+  different = 0;
+ndiffs = length(measure.rl.diff$swinging);
+for (i in 1:ndiffs) {
+  names = c("Same", "Different")
+  count.table.arm = matrix(ncol =2);
+  if(measure.rl.diff$swinging[i] == "right"){
+    if(measure.rl.diff$RminusL.arm.diff[i] > 0){
+      same = same +1;
+    } else if(measure.rl.diff$RminusL.arm.diff[i] < 0){
+      different = different +1;
+    }
+  } else if(measure.rl.diff$swinging[i] == "left"){
+    if(measure.rl.diff$RminusL.arm.diff[i] < 0){
+      same = same +1;
+    } else if(measure.rl.diff$RminusL.arm.diff[i] > 0){
+      different = different +1;
+    }
+  }
+  count.table.arm[1,1] = same;
+  count.table.arm[1,2] = different;
+}
 
-measure.climbers = utils::read.csv( paste0(path.to.secret, "measure_climbers.csv"), header=TRUE, quote="", sep=",");
+colnames(count.table.arm) = c("Dominant Arm Larger", "Dominant Arm Smaller");
+rownames(count.table.arm) = c("Count");
+count.table.arm;
 
-measure.climbers = measure.climbers[,c(2:4)];
+```
 
-summarizeMeanSD(measure.climbers);
 
-mean(measure.df$ape.index)
-sd(measure.df$ape.index)
+
+```{r}
+
+## A different approach I thought about for this is below,
+##ultimately I was not certain that it was appropriate to calculate correlations this way
+
+#ndiffs = nrow(measure.rl.diff);
+#  for (i in 1:ndiffs) {
+ #   if (measure.rl.diff$writing[i] == "right"){
+  #    measure.rl.diff$writingNum[i] = 1;
+   # } else if (measure.rl.diff$writing[i] == "left") {
+    #  measure.rl.diff$writingNum[i] = c(-1);
+ #   }
+  #  measure.rl.diff;
+  #}
+  
+#    for (i in 1:ndiffs) {
+#    if (measure.rl.diff$swinging[i] == "right"){
+#      measure.rl.diff$swingingNum[i] = 1;
+#    } else if (measure.rl.diff$swinging[i] == "left") {
+#      measure.rl.diff$swingingNum[i] = c(-1);
+#    }
+#    measure.rl.diff;
+#  }
+  
+#  measure.rl.diff = measure.rl.diff[,-c(1,2)];
+  
+#  my.corr = rcorr( as.matrix(measure.rl.diff), type="pearson");
+
+#my.corr.r = my.corr$r;
+#my.corr.pval = my.corr$P;
+
+#my.corr.r;
+#  my.corr.r.2 = round(my.corr.r,2);
+#my.corr.p.3 = as.numeric( round(my.corr.pval,3) ); # flatten
+#cuts = c(0.10, 0.05, 0.01, 0.001);
+#symb = c("+", "*", "**", "***");
+#my.corr.p.3.symb = "";
+#my.corr.p.3.symb[is.na(my.corr.p.3)] = "";
+#my.corr.p.3.symb[my.corr.p.3 <= 0.10] = "+";
+#my.corr.p.3.symb[my.corr.p.3 <= 0.05] = "*";
+#my.corr.p.3.symb[my.corr.p.3 <= 0.01] = "**";
+#my.corr.p.3.symb[my.corr.p.3 <= 0.001] = "***";
+#include.diag = FALSE;  # the 1's on the diagonal are not included
+# this is a lower triangular form ...
+
+#char.matrix = as.character(my.corr.r.2);  
+
+#names = as.list(row.names(my.corr.r));
+#my.matrix = matrix( 
+#                paste0(char.matrix, my.corr.p.3.symb),
+#                nrow=ncol(measure.rl.diff),ncol = 4,);
+#as.table(my.matrix);
+
 ```
 
 

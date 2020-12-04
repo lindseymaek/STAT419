@@ -1,0 +1,1084 @@
+---
+title: 'R Notebook: introduction to classification (ideal with variants)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+
+```
+
+# Classification
+
+To "classify" something is to place it into a category or a "bucket" - many times this is one step in a multiple-step data-analytics project.
+
+Many define classification as a two-step "machine-learning" process.  I really don't like the term "machine-learning" because someone had to program it to learn.  But in truth, as classification algorithms get more complex, they turn into black boxes, and the creators actually don't fully understand what is going on.  That, IMO, is bad data analytics.
+
+So we will begin by fully understanding what is going on and how it is happening.  We are not using any model assumptions, we will identify some ideal cases (with variants) to set as a "gold-standard" from which we will compare other items.
+
+This setup requires establishing a "gold-standard" which is often called the "learning stage".
+
+- Training data is a dataset used to establish the parameters of how the algorithm will make decisions.
+
+- Prediction data is a dataset tht will use the established algorithm to make decisions.  This is best to be "out-of-sample" meaning it does not overlap with the training data.
+
+- Test data is a dataset often found to benchmark how good the algorithm is.  It is similar to the "training data" in that a TRUE "gold-standard" result is known.  It may not NECESSARILY be known to the algorithm developer initially (many contests such as KAGGLE or DREAM CHALLENGE allow you to upload your algorithm results on a "test data" set and they will report how well it performed).
+
+## Handwritten numbers
+
+This is a "hello world" in classifying.  It is well established, and there are lots of different algorithms and links to address this problem:
+
+- <https://shyamalapriya.github.io/digit-recognition-using-k-nearest-neighbors/>
+- <https://medium.com/analytics-vidhya/a-guide-to-using-logistic-regression-for-digit-recognition-with-python-codes-86aae6da10fe>
+- <https://www.kaggle.com/c/digit-recognizer/leaderboard>
+- <https://github.com/antononcube/MathematicaVsR/tree/master/Projects/HandwrittenDigitsClassificationByMatrixFactorization>
+- <https://www.kaggle.com/scolianni/mnistasjpg>
+- <https://github.com/myleott/mnist_png>
+
+[Succinctly describe the common database MNIST used on such projects.  Remember:  who, what, when, where, why, how, so what?] 
+
+<http://yann.lecun.com/exdb/mnist/> shows dozens of "classification algorithms" applied to this dataset. <http://yann.lecun.com/exdb/publis/pdf/lecun-98.pdf> is one of many articles that outline the procedure.
+
+MNIST stands for Modified National Institute of standards and technology. The MNIST dataset is a collection of thousands of images that contain 28x28 pixel handwritten, grayscale numbers, represented as a matrix of 748 comma-separated pixel values
+
+
+The distance between two images is the collection of euclidean distances between corresponding pixel values of each image.
+
+### Eigenvectors
+
+We will use this example to introduce a "model-free" classification approach.  We again are just using data properties that can be extracted mathematically, that is, the eigenvector.
+
+There are some data that are already converted to vectors, some data in "compressed JPG" format, but we will use the PNG data found here: <https://github.com/myleott/mnist_png/blob/master/mnist_png.tar.gz> with an example "european 7" shown here: <IMG src='mnist-png/training/7/518.png' /> 
+ 
+We will use 4 variants for each ideal number, listed below. 
+ 
+#### Training Data  
+```{=html}
+<! WTF: cellpadding or style=padding NO WORKEE! //-->  
+<TABLE cellpadding=5 cellspacing=5>
+	<TR>
+		<TD> variant </TD>
+		<TH> 1 </TH>
+		<TH> 2 </TH>
+		<TH> 3 </TH>
+		<TH> 4 </TH>
+		<TH> 5 </TH>
+		<TH> 6 </TH>
+		<TH> 7 </TH>
+		<TH> 8 </TH>
+		<TH> 9 </TH>
+		<TH> 0 </TH>
+	</TR>
+	<TR>
+		<TH> a </TH>
+		<TD><IMG src='mnist-png/training/1/231.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/117.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/30.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/166.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/1847.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/106.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/263.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/1026.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/170.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/10128.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> b </TH>
+		<TD><IMG src='mnist-png/training/1/24.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/120.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/44.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/2.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/219.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/20087.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/518.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/41.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/383.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/10938.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> c </TH>
+		<TD><IMG src='mnist-png/training/1/2872.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/16.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/49.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/53.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/514.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/218.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/96.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/734.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/48.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/11187.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> d </TH>
+		<TD><IMG src='mnist-png/training/1/5516.png' /> </TD>
+		<TD><IMG src='mnist-png/training/2/5.png' /> </TD>
+		<TD><IMG src='mnist-png/training/3/7.png' /> </TD>
+		<TD><IMG src='mnist-png/training/4/9.png' /> </TD>
+		<TD><IMG src='mnist-png/training/5/679.png' /> </TD>
+		<TD><IMG src='mnist-png/training/6/73.png' /> </TD>
+		<TD><IMG src='mnist-png/training/7/995.png' /> </TD>
+		<TD><IMG src='mnist-png/training/8/740.png' /> </TD>
+		<TD><IMG src='mnist-png/training/9/54.png' /> </TD>
+		<TD><IMG src='mnist-png/training/0/11335.png' /> </TD>
+	</TR>
+</TABLE>
+
+
+
+
+```
+
+Sometimes the number "6" and "9" have a line under it.  I didn't find samples with this case.
+
+From those, we will try to "test" some eigenvector approaches using the first "12" images found in the data set.
+
+
+#### Scan Directories to Get File Names
+```{r}
+
+path.to.nascent = "/Users/lindseykornowske/.git/STAT419/nascent/";
+
+
+folder.mnist = "mnist-png/";
+path.to.mnist = paste0(path.to.nascent, folder.mnist);
+
+cache.file = paste0(path.to.mnist, "files.rds");
+ 
+
+if(!file.exists(cache.file))
+  {
+  # with caching, we only have to do this once.
+  path.training = paste0( path.to.mnist, "training/");
+  path.testing = paste0( path.to.mnist, "testing/");
+  
+  training = list();
+  testing = list();
+  for(i in 1:10)
+    {
+    digit = as.character(i);
+    if(i == 10) { digit = "0"; }
+    
+    sub.training = paste0(path.training, digit,"/");
+    sub.training.files = paste0(folder.mnist,"training/", digit,"/", list.files(sub.training) );
+    training[[i]] = sub.training.files;
+    
+    sub.testing = paste0(path.testing, digit,"/");
+    sub.testing.files = paste0(folder.mnist,"testing/", digit,"/", list.files(sub.testing) );
+    testing[[i]] = sub.testing.files;
+    
+    }
+myfiles = list("training" = training, "testing" = testing);
+
+saveRDS(myfiles, cache.file);
+  } else { myfiles = readRDS(cache.file); }
+
+```
+
+##### Write training.html
+```{r}
+# let's build HTML string ... to a file ... 
+library(humanVerseWSU);
+
+training.html = paste0(path.to.mnist, "training.html");
+
+
+if(!file.exists(training.html))
+  {
+  writeLine("<TABLE>", training.html, append=FALSE);
+  writeLine("\t<TR>", training.html);
+  writeLine("\t\t<TD> variant </TD>", training.html);
+  for(i in 1:10)
+    {
+      digit = as.character(i);
+      if(i == 10) { digit = "0"; }
+  writeLine( paste0("\t\t<TH> ",digit," </TH>"), training.html) ;  
+    }
+  writeLine("\t</TR>", training.html);
+  
+  for(j in 1:4)
+    {
+    writeLine("\t<TR>", training.html);
+    writeLine( paste0("\t\t<TH> ",letters[j]," </TH>"), training.html) ;  
+    for(i in 1:10)
+      {
+        digit = as.character(i);
+        if(i == 10) { digit = "0"; }
+    writeLine( paste0("\t\t<TD><IMG src='",myfiles$training[[i]][j],"' /> </TD>"), training.html) ;  
+      }
+    writeLine("\t</TR>", training.html);
+    }
+  
+  writeLine("/<TABLE>", training.html);
+  }
+  
+```
+
+##### Write testing.html
+```{r}
+# let's build HTML string ... to a file ... 
+library(humanVerseWSU);
+
+testing.html = paste0(path.to.mnist, "testing.html");
+
+
+if(!file.exists(testing.html))
+  {
+  writeLine("<TABLE>", testing.html, append=FALSE);
+  writeLine("\t<TR>", testing.html);
+  writeLine("\t\t<TD> variant </TD>", testing.html);
+  for(i in 1:10)
+    {
+      digit = as.character(i);
+      if(i == 10) { digit = "0"; }
+  writeLine( paste0("\t\t<TH> ",digit," </TH>"), testing.html) ;  
+    }
+  writeLine("\t</TR>", testing.html);
+  
+  for(j in 1:12)
+    {
+    writeLine("\t<TR>", testing.html);
+    writeLine( paste0("\t\t<TH> ",letters[j]," </TH>"), testing.html) ;  
+    for(i in 1:10)
+      {
+        digit = as.character(i);
+        if(i == 10) { digit = "0"; }
+    writeLine( paste0("\t\t<TD><IMG src='",myfiles$testing[[i]][j],"' /> </TD>"), testing.html) ;  
+      }
+    writeLine("\t</TR>", testing.html);
+    }
+  
+  writeLine("</TABLE>", testing.html);
+  }
+  
+```
+
+
+
+#### ImageMagick
+
+We will use "imagemagick" <https://imagemagick.org/index.php> to read the data in as a matrix of numbers.  The `convert` function of this program is very powerful; I have converted over 10 million multi-page TIFF images to over 100 million single-page PNG images on debian servers using this program.  It is nice to see it has some functionality in R at this time.
+
+```{r}
+
+library(magick); #install.packages("magick", dependencies=TRUE);
+# https://cran.r-project.org/web/packages/magick/vignettes/intro.html#The_grid_package
+# https://www.datanovia.com/en/blog/easy-image-processing-in-r-using-the-magick-package/
+# https://www.imagemagick.org/discourse-server/viewtopic.php?t=18433
+# install.packages("tesseract")
+# https://github.com/ropensci/magick/issues/154
+# 
+image_content <- function(x, ...){
+  x <- image_data(x, ...)
+  as.integer(x)
+}
+
+tiger <- image_read_svg('http://jeroen.github.io/images/tiger.svg', width = 350);
+tiger_png <- image_convert(tiger, "png");
+
+tiger_matrix = image_content(tiger_png);
+dim(tiger_matrix);
+# 3D matrix
+# tiger_matrix[,,1];  # x,y, z ... z is likely RGBa
+
+tiger;
+```
+
+##### Tesseract: Optical-character recognition (OCR)
+
+Developed by HP in the 1980s, this engine uses a "Gaussian Bayes classifier" and in the optional notebook I will discuss its weaknesses.  Google has claimed ownership of it in 2006 or so, yet the classifier has not improved much.  That may have changed, since I did a full audit of this approach about 2014 <https://youtu.be/ewmu-gmGosA>.
+
+
+###### Example Multiple Fonts
+```{r}
+library(tesseract); # install.packages("tesseract");
+
+img.file = paste0(path.to.mnist, "iris-ocr.png");
+img = image_read( img.file );
+img.txt = image_ocr(img);
+
+cat(img.txt);
+
+```
+
+<IMG src="mnist-png/iris-ocr.png" style="border: 2px black solid;" />
+<div>**Source: Person & Proprietary**</div>
+
+
+A close examination of this data shows that it does pretty well.  It does not like "changing fonts" and fails in that regard.  It fails "miserably" on the font for "INTRODUCTION".  This is what I learned about this program years ago, and will do an optional video on OCR.
+
+###### Example One Font
+```{r}
+library(tesseract); # install.packages("tesseract");
+
+img.file = paste0(path.to.mnist, "iris-ocr-intro.png");
+img = image_read( img.file );
+img.txt = image_ocr(img);
+
+cat(img.txt);
+
+```
+
+<IMG src="mnist-png/iris-ocr-intro.png" style="border: 2px black solid;" />
+<div>**Source: Person & Proprietary**</div>
+
+Why does it perform so poorly on this single font?  In the optional video, we tried (unsuccessfully) to train tesseract on a plethora of pre-built fonts.  At the time, it would not get smarter, so I prepared a grant-proposal with a team to create a modern-day OCR engine that utilizes GPU computing power as possible.
+
+#### Prepare Matrices and Eigenvalues
+
+##### One-off
+```{r}
+
+
+
+
+img.png = paste0(path.to.nascent,myfiles$training[[7]][2]);
+
+img =  image_read(img.png);
+img.matrix = image_content(img);
+
+dim(img.matrix);
+
+img.matrix.2D = as.matrix(img.matrix[,,1]); # black and white image ... only one layer  
+
+img.matrix.2D.s = img.matrix.2D/255; # scale to between 0 and 1 to get shading ... 0 is perfect black, 1 is perfect white
+
+# we have a square matrix
+
+printImageMatrix = function(matr)
+  {
+  rs = nrow(matr);
+  nmatr = matrix(NA, nrow=rs,ncol=1);
+  info = ceiling(as.matrix(matr));
+  for(r in 1:rs)
+    {
+    nmatr[r] = paste0(info[r,],collapse="");
+    }
+  print(nmatr);
+  }
+
+printImageMatrix(img.matrix.2D.s);
+
+
+img.eigen = eigen(img.matrix.2D.s);
+
+# we have complex numbers in the result ...
+# https://stat.ethz.ch/R-manual/R-devel/library/base/html/complex.html
+
+img.eigen$values;
+# it appears [8] and [9] are conjugates
+# we have no new data from [11] onward
+
+Re(img.eigen$values); # should we truncate and only take real part?
+
+
+
+
+```
+
+
+##### Functional Form
+
+```{r}
+
+# https://github.com/ropensci/magick/issues/154
+image_content = function(x, ...)
+  {
+  x = image_data(x, ...);
+  as.integer(x);
+  }
+
+getMatrixFromImage = function(img.png, dims=2, scale=255)
+  {
+  img =  image_read(img.png);
+  img.matrix = image_content(img);
+  
+  if(dims == 2)
+    {
+    img.matrix = as.matrix(img.matrix[,,1]);
+    }
+  if(!is.null(scale))
+    {
+    img.matrix = img.matrix/scale;
+    }
+  img.matrix;  
+  }
+
+
+img.png = paste0(path.to.nascent,myfiles$training[[7]][3]);
+img.matrix = getMatrixFromImage(img.png);
+img.eigen = eigen(img.matrix);
+
+```
+
+
+##### Read Data In as Matrices
+
+
+```{r}
+
+element.exists <- function(var, element)
+{
+  tryCatch({
+    if(length(var[[element]]) > -1)
+      return(TRUE)
+  }, error = function(e) {
+    return(FALSE)
+  })
+}
+
+
+cache.file = paste0(path.to.mnist, "matrices.rds");
+ 
+
+if(!file.exists(cache.file))
+  {
+  sets = names(myfiles);
+  data = list();
+  for(set in sets)
+    {
+    myset = myfiles[[set]];
+    if(is.null(data[[set]])) { data[[set]] = list();}
+    n = length(myset);
+    for(i in 1:n)
+      {
+      if(!element.exists(data[[set]][[i]])) 
+        { 
+        data[[set]][[i]] = list();
+        data[[set]][[i]]$matrix = list();
+        data[[set]][[i]]$eigen = list();
+        }
+      mysub = myset[[i]];
+      m = length(mysub);
+      for(j in 1:m)
+        {
+        img.png = paste0( path.to.nascent,mysub[j] );
+        img.matrix = getMatrixFromImage(img.png);
+        img.eigen = eigen(img.matrix);
+        
+        data[[set]][[i]]$matrix[[j]] = img.matrix;
+        data[[set]][[i]]$eigen[[j]] = img.eigen$values;
+        }
+      }
+    }
+  saveRDS(data, cache.file);
+  } else { data = readRDS(cache.file); }
+
+```
+
+### Descriptives
+
+The eigenvector in ways represents a "signature" of its corresponding matrix.  Can we use these unique "fingerprints" to classify handwritten numbers?
+
+#### Complex Plots
+```{r}
+# store in a matrix form
+X.eigen = matrix(NA, nrow=28, ncol=10 * 4);
+mycol = 1;
+mynames = c();
+
+
+
+maxx = 0; maxy = 0;
+minx = 9999999; miny = 9999999;
+
+# find global common scale ...
+for(m in 1:10)
+{
+mynumber = m;
+number = data$training[[mynumber]]$eigen;
+
+  mymaxx = max(Re( unlist(number) ));
+    if(mymaxx > maxx) { maxx = mymaxx; }
+  myminx = min(Re( unlist(number) ));
+    if(myminx < minx) { minx = myminx; }
+  mymaxy = max(Im( unlist(number) ));
+    if(mymaxy > maxy) { maxy = mymaxy; }
+  myminy = min(Im( unlist(number) ));
+    if(myminy < miny) { miny = myminy; }
+}
+  
+
+for(m in 1:10)
+{
+mynumber = m;
+
+number = data$training[[mynumber]]$eigen;  
+if(mynumber == 10) { mynumber = 0; } # for plotting
+n = length(number);
+
+
+for(i in 1:n)
+  {
+  mynames = c(mynames, paste0(mynumber,"-",letters[i]));
+  X.eigen[,mycol] = number[[i]];
+  mycol = 1 + mycol;
+  ## COMPLEX PLOT
+  if(i > 1)
+    {
+    
+    
+    par(new=TRUE);
+    plot(number[[i]], xlab="", ylab="", type="l", 
+            xlim = c(minx,maxx), ylim = c(miny,maxy),
+            col=palette()[i]
+            );
+    } else
+        {
+        plot(number[[i]], main=paste0("Number: ",mynumber), 
+            xlab="Real", ylab="Imaginary", type="l", 
+            xlim = c(minx,maxx), ylim = c(miny,maxy),
+            col=palette()[i]
+            );
+        }
+  }
+
+
+
+}
+
+
+colnames(X.eigen) = mynames;
+
+```
+
+#### Real Plots
+```{r}
+
+for(m in 1:10)
+{
+mynumber = m;
+
+number = data$training[[mynumber]]$eigen;  
+if(mynumber == 10) { mynumber = 0; } # for plotting
+n = length(number);
+
+## REAL PLOT
+n.eigen = length( Re(number[[1]]) );
+for(i in 1:n)
+  {
+  if(i > 1)
+    {
+    par(new=TRUE);
+    plot(Re(number[[i]]), xlab="", ylab="", type="l", 
+            xlim = c(0,n.eigen), ylim = c(minx,maxx),
+            col=palette()[i]
+            );
+    } else
+        {
+        plot(Re(number[[i]]), main=paste0("Number: ",mynumber), 
+            xlab="Eigen Index", ylab="Eigen Value", type="l", 
+            xlim = c(0,n.eigen), ylim = c(minx,maxx),
+            col=palette()[i]
+            );
+        }
+  }
+
+}
+
+```
+
+### Euclidean Distances
+
+It should be emphasized we haven't applied any "assumptions" about the nature of the data.  We haven't averaged all the sevens into one "common image and eigenvector" - we have just built a dictionary of unique sevens from our data.  And when we review our data, we may notice that one variant of "one" may be closer to a variant of "seven" than any other of the "ones".  We will have to build a probability or likelihood model to pick the best.  Not with our "training data", we build these variants in intentionally specifically to help distinguish a one from a seven.  Having more variants would help clarify this distinction.
+
+```{r}
+source( paste0(path.github,"humanVerseWSU/R/functions-EDA.R") );
+
+do.nothing = perform.hclust( t(X.eigen), 8);
+
+X.eigen.d = stats::dist( t(X.eigen), method="euclidean");
+
+# library(tripack);
+#plot(X.eigen.d);
+
+
+X.eigen.df = as.data.frame( round( as.matrix(X.eigen.d), 2) );
+  colnames(X.eigen.df) = rownames(X.eigen.df) = mynames;
+
+
+X.eigen.df;
+
+# 1-b and 9-c seem to be neighbors looking at the "distance table" ... visually, is that valid?  If I didn't have these two variants in the "training set" dictionary, I would find a "nearest neighbor" that was incorrect
+
+# similar to the "hometown" issue, we have a data table of distances and can add one "test data" at a time, and find the nearest neighbor ...
+```
+
+
+### Cosine Similarity
+
+Our multivariate data is a vector space, so we can use "cosine similarity" to understand relationships among vectors.  The result can be read similiar to a correlation.  +1 is perfect similarity in the same direction. 0 is perfect dissimilarity (orthogonality).  -1 is perfect similarity in the opposite direction.  <https://en.wikipedia.org/wiki/Cosine_similarity>
+
+```{r}
+library(lsa);  # install.packages("lsa", dependencies=TRUE);
+# cosine(x);
+X.eigen.cos = as.data.frame( round( cosine(X.eigen),2 ) );  ## 40 x 40 
+
+# COMPLEX RESULT
+X.eigen.cos;
+```
+
+
+```{r}
+X.eigen.cos = as.data.frame( round( cosine(Re(X.eigen)),2 ) );  ## 40 x 40 
+
+# REAL RESULT
+X.eigen.cos;
+```
+
+
+### Testing Data  
+
+So we have our computations completed in the "training" stage, let's now apply to the "testing data."  **NOTE:** normally we don't know the correct answer, that is screen from us.  In this case we will use an internal "nearest to a number" approach to develop a solution.  It is often that one splits the "training" data into two subsets to do some algorithm testing with one half using the other half as a temporary "training" set.
+
+```{=html}
+<! WTF: cellpadding or style=padding NO WORKEE! //-->  
+<TABLE cellpadding=5 cellspacing=5>
+	<TR>
+		<TD> variant </TD>
+		<TH> 1 </TH>
+		<TH> 2 </TH>
+		<TH> 3 </TH>
+		<TH> 4 </TH>
+		<TH> 5 </TH>
+		<TH> 6 </TH>
+		<TH> 7 </TH>
+		<TH> 8 </TH>
+		<TH> 9 </TH>
+		<TH> 0 </TH>
+	</TR>
+	<TR>
+		<TH> a </TH>
+		<TD><IMG src='mnist-png/testing/1/14.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/1.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/112.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/19.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/102.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/100.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/0.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/110.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/104.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/10.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> b </TH>
+		<TD><IMG src='mnist-png/testing/1/2.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/106.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/18.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/24.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/120.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/11.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/17.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/128.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/12.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/101.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> c </TH>
+		<TD><IMG src='mnist-png/testing/1/29.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/119.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/30.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/27.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/127.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/123.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/26.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/134.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/16.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/126.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> d </TH>
+		<TD><IMG src='mnist-png/testing/1/31.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/147.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/32.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/33.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/129.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/21.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/34.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/146.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/20.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/13.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> e </TH>
+		<TD><IMG src='mnist-png/testing/1/37.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/149.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/44.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/4.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/132.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/22.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/36.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/177.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/58.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/136.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> f </TH>
+		<TD><IMG src='mnist-png/testing/1/39.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/35.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/51.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/42.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/15.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/50.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/41.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/179.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/62.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/148.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> g </TH>
+		<TD><IMG src='mnist-png/testing/1/40.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/38.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/63.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/48.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/23.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/54.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/60.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/181.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/7.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/25.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> h </TH>
+		<TD><IMG src='mnist-png/testing/1/46.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/43.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/68.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/49.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/45.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/66.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/64.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/184.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/73.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/28.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> i </TH>
+		<TD><IMG src='mnist-png/testing/1/5.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/47.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/76.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/56.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/52.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/81.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/70.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/226.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/78.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/3.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> j </TH>
+		<TD><IMG src='mnist-png/testing/1/57.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/72.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/87.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/6.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/53.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/88.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/75.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/232.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/9.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/55.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> k </TH>
+		<TD><IMG src='mnist-png/testing/1/74.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/77.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/90.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/65.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/59.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/91.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/79.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/61.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/92.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/69.png' /> </TD>
+	</TR>
+	<TR>
+		<TH> l </TH>
+		<TD><IMG src='mnist-png/testing/1/89.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/2/82.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/3/93.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/4/67.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/5/8.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/6/98.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/7/80.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/8/84.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/9/99.png' /> </TD>
+		<TD><IMG src='mnist-png/testing/0/71.png' /> </TD>
+	</TR>
+</TABLE>
+
+
+
+
+
+
+```
+
+#### Let's start with zero `0-c`
+```{r}
+
+myfile = myfiles$testing[[10]][3];  # remember 0 is index 10
+
+img.png = paste0(path.to.nascent,myfile);
+img.matrix = getMatrixFromImage(img.png);
+img.eigen = Re( eigen(img.matrix)$values );  
+
+## Let's use REAL only
+compare = round( cosine( Re(img.eigen), Re(X.eigen) ), 2);
+compare.matrix = matrix(compare, ncol=4, byrow=TRUE);
+
+rownames(compare.matrix) = c(1:9,0);
+colnames(compare.matrix) = letters[1:4];
+
+
+compare.df = as.data.frame(compare.matrix);
+
+## we want to find the top-1, so let's do that first
+computeTop = function(df,howmany=10,method="sum")
+  {
+  df = as.matrix(df);  # abs( if we have negative values?
+  df.sort = sort( unique(as.numeric(df)),
+              decreasing=TRUE)[1:howmany];
+  
+  ndf = df;
+  ndf[ ndf[,1:4] < df.sort[howmany] ] = 0;
+  
+  if(method == "sum") { return (rowSums(ndf)); }
+  }
+
+compare.df$top1  = computeTop(compare.df[,1:4], 1, "sum"); 
+
+
+
+# we can look at some pooling features, using mean
+compare.df$mean = rowMeans(compare.df[,1:4]);
+
+# we can look at some pooling features, using median
+rowMedians = function(df,method="default")
+  {
+  df = as.matrix(df);
+  #print(df);
+  rs = nrow(df);
+  res = c();
+  for(r in 1:rs)
+    {
+    xx = na.omit(df[r,]);
+    #print(xx);
+    if(method=="default")
+      {
+      m = median(xx);
+      } else {
+              m = as.numeric( stats::quantile(xx, 
+                              prob=c(0.5), type=1));
+              }
+    #print(paste0("r: ",r," --> ",m));
+    res = c(res,m);
+    }
+  
+  res;
+  }
+
+compare.df$median =  rowMedians(compare.df[,1:4],"default");
+
+
+
+compare.df;
+
+```
+
+It is worth noting a few things:
+- For this small data (4 elements per number), the mean and standard "median" are performing in tandem.
+- Given the nature of the eigenvector, the number `2` seems to perform about as well as the `0` ... **about** but even with only four data points, the `0` slightly outperforms.
+- Notice at this point, I am thinking about "means" and "medians" because I am trying to ascertain which is the best map.  We will then let "assymptotics" and other assumptions enter into the logical framework as we think about probabilities.
+- Truncating to get the "nearest neighbors" and computing a "median" or "mean" or "sum" will work as a nice isolator.
+- `Top-1` may be the only rule we need.  We could test this.
+
+
+```{r}
+# we could create a weighted index of several statistical factors.  Let's just "add them up" (equally weighted) and pick the max ...
+ncs = ncol(compare.df);
+
+decide = rowSums(compare.df[,5:ncs]);
+# could we get ties here?
+decide.max.idx = whichMax(decide);
+
+
+decide;
+decide.max.idx;
+names(decide)[decide.max.idx];
+
+```
+
+#### Function to Perform All
+
+```{r}
+# let's loop over the data, and store the "truth" with decisions based on various independent and joint rules ...
+
+# wrap above code into a single function
+predictDigit = function(myfile, X.eigen)
+  {
+  img.png = paste0(path.to.nascent,myfile);
+  img.matrix = getMatrixFromImage(img.png);
+  img.eigen = Re( eigen(img.matrix)$values );  
+  
+  ## Let's use REAL only
+  compare = round( cosine( Re(img.eigen), Re(X.eigen) ), 2);
+  compare.matrix = matrix(compare, ncol=4, byrow=TRUE);
+  
+  rownames(compare.matrix) = c(1:9,0);
+  colnames(compare.matrix) = letters[1:4];
+  
+  
+  compare.df = as.data.frame(compare.matrix);
+  compare.df$top1  = computeTop(compare.df[,1:4], 1, "sum"); 
+  compare.df$mean = rowMeans(compare.df[,1:4]);
+  compare.df$median =  rowMedians(compare.df[,1:4],"default");
+  
+  ncs = ncol(compare.df);
+  decide = rowSums(compare.df[,5:ncs]);
+  # could we get ties here?
+  decide.max.idx = whichMax(decide);
+  
+  # for ties, we will let "which.max" decide
+  
+  list( "mean" = as.numeric(which.max(compare.df[,6])),
+        "median" = as.numeric(which.max(compare.df[,7])),
+        "top1" = as.numeric(which.max(compare.df[,5])),
+        "sum3" = decide.max.idx[1]);
+  }
+  
+performClassification = function(myfiles, X.eigen)
+  {
+  n = length(myfiles$testing);
+  m = length(myfiles$testing[[1]]); # we assume equal length
+  
+  total = n * m;
+  # algos:  mean, median, top-1, [all-3] ... 4
+  result = matrix(NA, nrow=total, ncol=5);
+  colnames(result) = c("true", "mean", "median", "top1", "sum3");
+  
+  
+  i = 1;
+  for(d in 1:n) # true digit
+    {
+    for(r in 1:m) # replicate
+      {
+      myfile = myfiles$testing[[d]][r];  # remember 0 is index 10
+      res = predictDigit(myfile,X.eigen);
+      
+      row = c(d, unlist(res));
+      result[i,] = row;
+      i = 1 + i;
+      
+      }
+  
+    }
+  
+  
+  result;  
+  
+  }
+
+
+result = as.data.frame( performClassification(myfiles,X.eigen) );
+result;
+```
+
+
+##### Review of Mean
+```{r}
+library(DescTools);
+
+percent.mean = sum(result$true == result$mean) / nrow(result); # percentage correct %
+percent.mean;
+# CONFUSION MATRIX
+# Conf(x = result$true, ref = result$mean);
+
+```
+
+##### Review of Median
+```{r}
+library(DescTools);
+
+percent.median = sum(result$true == result$median) / nrow(result); # percentage correct %
+percent.median;
+# CONFUSION MATRIX
+# Conf(x = result$true, ref = result$median);
+
+```
+
+##### Review of Top1
+```{r}
+library(DescTools);
+
+percent.top1 = sum(result$true == result$top1) / nrow(result); # percentage correct %
+percent.top1;
+# CONFUSION MATRIX
+# Conf(x = result$true, ref = result$top1);
+
+```
+
+##### Review of Sum3
+```{r}
+library(DescTools);
+
+percent.sum3 = sum(result$true == result$sum3) / nrow(result); # percentage correct %
+percent.sum3;
+# CONFUSION MATRIX
+# Conf(x = result$true, ref = result$sum3, pos=10);
+
+```
+
+#### Summary of Results
+
+```{r}
+
+percents = c(percent.mean, percent.median, percent.top1, percent.sum3);
+
+percents;
+
+```
+
+[What do you observe?]
+
+The row sum was the best predictor for the correct number, followed by the median, then the top value, then the mean. I think the row sum is powerful in this case because it represent many numbers, rather than just a single value, or a calculated value.
+
+### Can you do better?
+
+This notebook demonstrates the process of how classification can play out.  The algorithm in its current form is performing "sub-par" and you should comment above about why you think that is the case.
+
+- Can you improve on the current performance by tweaking the existing algorithm with the existing data?
+
+- Should we truncate the eigenvalues from 28 and remove all of the "zeroes" ... is that creating a problem?
+
+## Conclusion
+
+This shows how "eigen" can be used as a unique fingerprint of a matrix.  This approach is commonly used, where the variants are increased tremendously.  A full "basis space" is built for each digit's variant database.
+
+### Sub-eigens
+An approach based on eigen that I will discuss in an Optional OCR Mastery video divides the "image" into subimages or a subgrid and does the same type of eigen analysis on the sub-elements.  In our scenario, we have an image that is 28x28, so we could divide it in half, providing 4 subimages of 14x14.  Or divide in quarters, providing 16 subimages of 7x7.
+
+<IMG src="mnist-png/A-glyph.png" style="border: 2px black solid;" />
+<div>**Source: Person & Proprietary**</div>
+
+**Note:** The eigen approach requires a square matrix, which is easy to address if you merely surround the result by "zeroes".
+
+### Wavelet
+
+<IMG src="mnist-png/B-wavelet.png" style="border: 2px black solid;" />
+<div>**Source: Person & Proprietary**</div>
+
+### XY-profiling
+
+<IMG src="mnist-png/xy-profiling.png" style="border: 2px black solid;" />
+<div>**Source: Person & Proprietary**</div>
+
+# Final Remarks 
+
+As a data analyst, I personally try to identify "independent" approaches that I could merge into a joint algorithm.  That is, can I develop data signatures of the same number using multiple approaches and integrate those into a classification algorithm.  Once I have several different data signatures, then I would consider applying those into some traditional "machine-learning" classification approaches.

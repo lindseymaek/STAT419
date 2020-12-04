@@ -1,0 +1,29 @@
+---
+title: 'R Notebook: a smart OCR engine'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 4
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+library(devtools);
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+
+```
+
+# Using GPUs and modern classifiers to build a new OCR engine  
+
+<https://youtu.be/ewmu-gmGosA?t=209>
+
+<https://github.com/tesseract-ocr/docs/blob/master/AT-1995.pdf>
+<https://github.com/tesseract-ocr/test/blob/master/unlvtests/README.md>
+
+
+
+# End

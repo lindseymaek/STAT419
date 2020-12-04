@@ -1,0 +1,605 @@
+<!doctype html>
+<HTML lang="en">
+<HEAD>
+<meta charset="UTF-8">
+<title>Strike Dynamics [Hi Tyler]</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+<!-- put stylesheets at end of page //-->
+<!-- https://jakearchibald.com/2016/link-in-body/ //-->
+<script src="https://code.jquery.com/jquery-3.1.1.min.js"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/data.js"></script>
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+
+
+<script src="https://code.highcharts.com/highcharts-more.js"></script>
+<script src="https://code.highcharts.com/modules/boost.js"></script>
+
+
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css" integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" type="text/javascript"></script>
+<!--<script src="https://cdnjs.cloudflare.com/ajax/libs/bootbox.js/4.4.0/bootbox.min.js" type="text/javascript"></script>	//-->
+
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" rel="stylesheet" />
+
+
+
+<STYLE>
+	.highcharts-tooltip span {
+    background-color:white;
+	padding: 2px;
+    border:1px solid green;
+    opacity:1;
+	min-width: 250px;
+	width: 500px;
+	max-width: 750px;
+    z-index:9999!important;
+	white-space:normal !important;
+}
+
+
+
+
+#pleaseWait{
+    width:100%;
+    height:100%;
+    position:fixed;
+    z-index:9999;
+    background:url("https://assets.mypatentideas.com/images/loading/spiral.gif") no-repeat center center rgba(0,0,0,0.25);     
+    background-color: white;
+    
+}
+
+
+	
+	</STYLE>
+    
+ <!-- local scripts //-->
+ <script src="functions.page.js"></script>
+
+ 
+ 
+ <script src="functions.stats.js"></script>
+ <script src="functions.punch.js"></script>
+ <script src="functions.highcharts.js"></script>
+ 
+ <script src="functions.readFromFileJSON.js"></script>     
+
+</HEAD>
+
+<BODY>
+<div id="pleaseWait"></div>
+
+<!-- https://getbootstrap.com/docs/4.0/components/navbar/#nav //-->
+<nav class="navbar fixed-top navbar-expand-lg navbar-dark" style="background-color: #15418c;">
+  <a class="navbar-brand" href="#">Strike Dynamics</a>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <div class="collapse navbar-collapse" id="navbarSupportedContent">
+    
+    <div class="pl-5">
+    <button id="trigger-import-CSV" type="button" class="btn btn-primary" data-toggle="modal" data-target="#dialog-import-CSV">Import (CSV)</button></li>
+    </div>
+    
+    <div class="pl-5">
+    <button id="trigger-import-JSON" type="button" class="btn btn-primary" data-toggle="modal" data-target="#dialog-import-JSON">Import (JSON)</button></li>
+    </div>
+    
+    
+    
+  </div>
+</nav>
+
+<div class="jumbotron">
+      <div class="container">
+            <div id="highchart-container"></div>
+      </div>
+</div>
+<SCRIPT>
+
+// https://www.highcharts.com/docs/chart-design-and-style/design-and-style
+var strike_options	=  {
+                        credits: {
+                                enabled: false
+                        },
+                        legend: {
+                                enabled: true
+                        },
+                        chart: {
+                            height: "100%",
+                            zoomType: "xy",
+                            panning: true,
+                            panKey: 'shift'
+                        },
+                        title: {
+                            text: 'Strike Dynamics'
+                        },
+                        subtitle: {
+                            text: 'Data Imported From WaveForm'
+                        },
+                        xAxis: {
+                            reversed: false,
+                            title: {
+                                enabled: true,
+                                text: 'Time'
+                            },
+                            labels: {
+                                format: '{value} s'
+                            },
+                            maxPadding: 0.05,
+                            showLastLabel: true
+                        },
+yAxis: [{ // Primary yAxis // right side
+        min: 0,
+        max: 3.3,
+        startOnTick: false,
+        endOnTick: false,
+        allowDecimals: true,
+        labels: {
+            format: '{value} V',
+            style: {
+                color: Highcharts.getOptions().colors[2]
+            }
+        },
+        title: {
+            text: 'Raw Voltage',
+            style: {
+                color: Highcharts.getOptions().colors[2]
+            }
+        },
+        opposite: true // left side 
+
+    }, { // Secondary yAxis
+        min: -15,
+        max: 15,
+        //gridLineWidth: 0,
+        title: {
+            text: "f '",
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        },
+        labels: {
+            format: '{value} ',
+            style: {
+                color: Highcharts.getOptions().colors[0]
+            }
+        }
+
+    }, { // Tertiary yAxis // right side #2 
+       min: 0,
+        max: 3.3,
+        startOnTick: false,
+        endOnTick: false,
+        allowDecimals: true,
+        //gridLineWidth: 0,
+        title: {
+            text: 'Trimmed Voltage',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        },
+        labels: {
+            format: '{value} V',
+            style: {
+                color: Highcharts.getOptions().colors[1]
+            }
+        },
+        opposite: true
+    }],
+                        legend: {
+                            enabled: true
+                        },
+                        tooltip: {
+							useHTML: true,
+                            headerFormat: '<b>{series.name}</b><br/>',
+                            pointFormat: 'x: {point.x},  y: {point.y}',
+							shared: false,
+                        },		
+						
+                        plotOptions: {
+                            spline: {
+                                marker: {
+                                    enable: false
+                                }
+                            }
+                        },
+                        series: [{
+                            name: 'RAW',
+                            type: 'spline',
+                            yAxis: 0,
+                            color: Highcharts.getOptions().colors[2],
+                            showInLegend: true,
+                            //data: [[0, 1], [10, 1.65], [20, 2.3], [30, 0.8]]
+                        },
+                        {
+                            name: 'DERIVATIVE',
+                            type: 'spline',
+                            yAxis: 1,
+                            color: Highcharts.getOptions().colors[0],
+                            showInLegend: true,
+                            //data: [[0, 1], [10, 1.65], [20, 2.3], [30, 0.8]]
+                        },
+                        {
+                            name: 'TRIMMED',
+                            type: 'spline',
+                            yAxis: 2,
+                            color: Highcharts.getOptions().colors[1],
+                            showInLegend: true,
+                            //data: [[0, 1], [10, 1.65], [20, 2.3], [30, 0.8]]
+                        }
+						/*,
+						{
+                            name: 'TRIMMED',
+                            type: 'polygon',
+                            yAxis: 0,
+							color: Highcharts.Color(Highcharts.getOptions().colors[2]).setOpacity(0.5).get(),
+							enableMouseTracking: true,
+                            showInLegend: false,
+                            //data: [[0, 1], [10, 1.65], [20, 2.3], [30, 0.8]]
+							//data: [[-10,2],[-8,3],[-8,2]]
+							//data: [[[-8.285,1.7751],[-7.785,2.27401],[-7.785,1.7751]],[[-2.98,1.62274],[-2.765,0.989329],[-2.765,1.62274]],[[-2.725,1.0227],[-2.18,1.35946],[-2.18,1.0227]],[[-2.145,1.34969],[0,0],[0,1.34969]],[[1.095,1.75623],[1.615,2.03871],[1.615,1.75623]],[[1.7,1.99792],[1.84,1.88938],[1.84,1.99792]]]
+							// data: [[-8.285,1.7751],[-7.785,2.27401],[-7.785,1.7751]]
+                        }
+						*/
+						]
+                    };
+
+
+var StrikeChart;
+
+$(document).ready(function () {
+    StrikeChart = Highcharts.chart('highchart-container',strike_options);  
+    
+    console.log(StrikeChart);   
+     
+    });
+</SCRIPT>
+
+
+
+
+
+ 
+<nav class="navbar fixed-bottom navbar-light bg-light">
+  <a class="navbar-brand" href="#">Fixed bottom</a>
+  
+  <h1>Monte says hi!</h1>
+  
+</nav>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal JSON -->
+<div class="modal fade" id="dialog-import-JSON" tabindex="-1" role="dialog" aria-labelledby="dialog-import-JSON-ModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dialog-import-JSON-ModalTitle">Import WaveForm JSON file</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; 
+    opacity: 1;">
+          <span aria-hidden="true" style="display: inline-block; background-color: #15418c; width: 32px; height: 32px; position: relative; top:-10px; right: -10px;" class="rounded-circle">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form>
+      
+      
+      <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Select File</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="dialog-import-JSON-files" accept=".json">
+            <label class="custom-file-label" for="dialog-import-JSON-files">Browse ...</label>
+          </div>
+        </div>
+
+
+        <div id="dialog-import-JSON-msg-container" class="alert alert-primary alert-dismissible fade show" role="alert">
+          <div id="dialog-import-JSON-msg">Message will update here!</div>
+          <button id="dialog-import-JSON-msg-close" type="button" class="close" aria-label="Close">
+          <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"> //-->
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+            
+       
+        
+        <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Raw <BR /> Import</span>
+          </div>
+            <textarea class="form-control" aria-label="With textarea" id="dialog-import-JSON-textarea-loaded" style="height: 100px;"></textarea>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Verified <BR />  JSON</span>
+          </div>
+            <textarea class="form-control" aria-label="With textarea" id="dialog-import-JSON-textarea-verified" style="height: 100px;"></textarea>
+        </div>
+
+
+
+      </form>      
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Update HighCharts</button>
+      </div>
+    </div>
+  </div>
+</div>
+<SCRIPT>
+$(document).ready(function () {
+    // function createFileReadingHandler(myModal,myFiles,myRaw,myVerified)
+    //createFileReadingHandler("dialog-import-JSON","dialog-import-JSON-files","dialog-import-JSON-textarea-loaded","dialog-import-JSON-textarea-verified");
+    
+    createFileReadingHandler("dialog-import-JSON","json");
+    
+    $("#dialog-import-JSON").find(".modal-footer").find(".btn-primary").on("click", function(){
+        // code ... we assume this is a replay of something stored ...
+        }); 
+        
+        
+    });
+</SCRIPT>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Modal CSV -->
+<div class="modal fade" id="dialog-import-CSV" tabindex="-1" role="dialog" aria-labelledby="dialog-import-CSV-ModalTitle" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="dialog-import-CSV-ModalTitle">Import WaveForm CSV file</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" style="color: #fff; 
+    opacity: 1;">
+          <span aria-hidden="true" style="display: inline-block; background-color: #15418c; width: 32px; height: 32px; position: relative; top:-10px; right: -10px;" class="rounded-circle">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+      <form>
+      
+      
+      <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Select File</span>
+          </div>
+          <div class="custom-file">
+            <input type="file" class="custom-file-input" id="dialog-import-CSV-files" accept=".csv">
+            <label class="custom-file-label" for="dialog-import-CSV-files">Browse ...</label>
+          </div>
+        </div>
+
+
+        <div id="dialog-import-CSV-msg-container" class="alert alert-primary alert-dismissible fade show" role="alert">
+          <div id="dialog-import-CSV-msg">Message will update here!</div>
+          <button id="dialog-import-CSV-msg-close" type="button" class="close" aria-label="Close">
+          <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"> //-->
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+            
+       
+        
+        <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Raw <BR /> Import</span>
+          </div>
+            <textarea class="form-control" aria-label="With textarea" id="dialog-import-CSV-textarea-loaded" style="height: 100px;"></textarea>
+        </div>
+        <div class="input-group input-group-sm mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text">Verified <BR />  JSON</span>
+          </div>
+            <textarea class="form-control" aria-label="With textarea" id="dialog-import-CSV-textarea-verified" style="height: 100px;"></textarea>
+        </div>
+
+
+
+      </form>      
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Update HighCharts</button>
+      </div>
+    </div>
+  </div>
+</div>
+<SCRIPT>
+$(document).ready(function () {
+    // function createFileReadingHandler(myModal,myFiles,myRaw,myVerified)
+    // https://learn.jquery.com/using-jquery-core/selecting-elements/
+    // https://stackoverflow.com/questions/27663404/using-this-find-with-click-jquery
+    // https://coderwall.com/p/wxjljq/jquery-find-and-closest-are-your-best-friends
+    // createFileReadingHandler("dialog-import-CSV","dialog-import-CSV-files","dialog-import-CSV-textarea-loaded","dialog-import-CSV-textarea-verified");
+     createFileReadingHandler("dialog-import-CSV");
+   
+    $("#dialog-import-CSV").find(".modal-footer").find(".btn-primary").on("click", function(){
+        
+		$("#dialog-import-CSV").modal('hide');
+         
+		
+		
+        var myPunch = Object.create(PunchAlgorithm);
+		myPunch.init();
+		myPunch.loadSimulation();
+		console.log(myPunch);
+		// n=25, tol=0.5, vtol=0.03, extremeMAD = 0.10, triggerMAD = 0.005
+		
+		updateHighChartImportCSV("highchart-container",myPunch.myCSV);
+			
+			myPunch.setDebug(true);
+		myPunch.seekSimulation();
+        
+        console.log(myPunch.getResults());
+		
+		updateHighChartPunches("highchart-container",myPunch.getResults() );
+		
+        //var punches = streamingPunchAlgorithm(myCSV,24,0.66);
+        
+
+       // var punches = simulatePunch(myCSV); // if non-zero is only one element, it is definitely noise at slope tol=0.5
+        }); 
+     
+     
+    });
+	
+	
+	
+	
+	$(document).ready(function () {
+	
+	
+	
+
+
+		//var myPunch = new PunchAlgorithm();
+		//console.log("myPunch");
+		//console.log(myPunch);
+	
+	
+	});
+	
+	
+	
+
+</SCRIPT>
+
+
+
+<SCRIPT>
+
+</SCRIPT>
+
+   
+  
+ 
+
+
+
+ 
+    
+
+</BODY>
+
+</HTML>
