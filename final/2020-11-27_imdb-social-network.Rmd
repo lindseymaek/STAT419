@@ -1,0 +1,340 @@
+---
+title: 'R Notebook: IMDB (predict gender from biography)'
+output:
+  html_document:
+    df_print: paged
+    toc: true
+    toc_float: true
+    toc_depth: 5
+    fig_caption: true
+    number_sections: true 
+---
+
+```{r}
+
+library(devtools);
+
+library(humanVerseWSU);
+
+path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
+
+include.me = paste0(path.github, "misc/functions-nlp.R");
+source( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-str.R");
+source( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-stack.R");
+source( include.me );
+include.me = paste0(path.github, "misc/functions-nlp-pos.R");
+source( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-encryption.R");
+source( include.me );
+
+
+
+path.to.nascent = "/Users/lindseykornowske/.git/STAT419/nascent/ ";
+
+folder.nlp = "nlp/";
+path.to.nlp = paste0(path.to.nascent, folder.nlp);
+
+
+###### UPDATES TO dataframe subset function ######
+# inflation adjustments for NA ... and improvements on subsetting
+include.me = paste0(path.github, "humanVerseWSU/R/functions-dataframe.R");
+source( include.me );
+
+include.me = paste0(path.github, "humanVerseWSU/R/functions-inflation.R");
+source( include.me );
+
+```
+
+# (IMDB) Social Network
+
+## Ranking an Adjacency Matrix
+
+Ever wonder how the Google Page Rank algorithm works, well you are about to see.  The classic paper (1999) was never published, and explained the idea as a "popular vote" and the web user as a random surfer.  As we will soon see, it is an eigenvector measure of a special type of matrix, an adjacency matrix.
+
+```{r}
+myV = c(0,0,0,0,0,0,0,0,0,0,
+        0,0,0,0,0,0,0,0,0,0,
+      	0,0,0,0,0,0,0,0,0,0,
+      	0,1,1,0,0,0,0,0,0,0,
+      	1,1,0,0,0,0,0,0,0,0,
+      	0,0,0,0,0,0,0,0,0,0,
+      	1,1,0,0,1,1,0,0,0,0,
+      	1,0,0,1,0,1,0,0,0,0,
+      	0,0,1,0,0,0,0,0,0,0,
+      	0,0,0,0,0,1,0,1,0,0);
+
+myA = matrix(myV, nrow=10, byrow=TRUE);
+  rownames(myA) = colnames(myA) = paste0("P.",1:10);
+myA;
+```
+Much of what I describe can be found in my dissertation:  <http://www.mshaffer.com/arizona/dissertation/mjsPRINT.pdf>.  I will include some screenshots of some relevant descriptions.
+
+The Google method does not require sorting (but it does no harm).  The method I use (thanks to some brilliant Italian math colleagues) does require sorting.
+
+### Row sort
+```{r}
+# row sort
+rs = rowSums(myA);
+rs.s = sort(rs);
+rs.idx = as.numeric( gsub("P.","",names(rs.s)) );
+
+myA.s = myA[rs.idx,];
+myA.s;
+```
+### Then, Column sort
+```{r}
+# col sort
+cs = colSums(myA.s);
+cs.s = sort(cs);
+cs.idx = as.numeric( gsub("P.","",names(cs.s)) );
+
+myA.ss = myA.s[,cs.idx];
+myA.ss;
+
+
+```
+### Not exactly, joint sort
+The two-stage approach doesn't work exactly, it doesn't maintain the adjacency feature.  A row/col should represent the same index.  Below is a correct sorting solution.
+```{r}
+order = c(1,2,3,6,4,5,8,7,9,10);
+myA.f = myA[order,order];
+myA.f;
+```
+
+## Relationship to a Network Graph
+
+A network graph is a mathematics define entity relationships linked in an ecosystem.
+
+<IMG src='graph-rank/graph-pg218.png' style="border: 2px black solid;" />
+<div>**Source: Dissertation, pg. 218**</div>
+
+In this example, we have what is called a directed graph.  Each circle represents an entity or node.  In this case, the represent patents.  The direction of the arrow represents the nature of the relationship between the two nodes.  For example $P_7$ links to ${P_6, P_2, P_5}$.  In patents, this link is a legally-required reference to "prior-art" that the new patent builds upon.  
+
+Three patents (1, 2, 6) have three in-bound links (or votes).  Both 1 & 2 share patents (5 & 7) as two of those links.  (1) also has a link from (8) and (2) has a link from (5) which is also linked to (7).  Ergo, (2) should be the winner.  Unless that recursive vote should be discounted because (7) has no incoming votes.  So maybe Google's hackathon approach is "better".  **What do you think?**  Examining this graphic, which node is "best"?
+
+I agree that 2 is probably the best node, but according to the graphic, it is 1?
+
+In this time-constrained graph, we have a triangular adjacency matrix (no data in the top-right, see first matrix before sorting).  **Note:** It is common to definitionally say that a node does not link to itself; the diagonal of the matrix is all zeroes.
+
+### Adjacency Matrix
+<IMG src='graph-rank/adjacency.png' style="border: 2px black solid;" />
+<div>**Source: Dissertation, pg. 218**  The rows represent the "backward links" or citations.  The columns represent the "forward links" or citations.  This square matrix is a representation of the graph with nodes and arrows.</div>
+
+### Network Graph Techniques
+Google applies this same technique to web pages linking to other web pages.  A link is like a vote in a popularity contest, but not all votes are equal.  The nature of the interactions of the entire network determines the overall value of any given node.  This is what I will demonstrate today.
+
+There are other graph approaches.  Multigraph, Shannon's Entropy, and others.  The accomplish similar ideas.  Shannon's entropy was developed in the 1950s before we had any real computing power to ascertain the optimal setup of the old "party-line telephone system".  I have used it to simultaneously rank both the nodes and the links.  A multiclass approach is a research interest of mine:  mingle the networks of patents, inventors, firms, and so on.  In the IMDB data setup, it would be similar:  movies, actors (creatives), production companies, and so on.  A network of networks.  This solution is an iterative one and has been developed by Francesco Romani and Gianna Del Corso.  The basic solution they developed in 2008, and I contacted them to help me perform the computations.  At the time, I had limited computing power.  The network graph had over 5 million nodes.  You can't do that in R.
+
+### Row Stochastic
+
+For the mathematics of eigenvector centrality to work on an adjacency matrix (the rows and columns have the same descriptor), each matrix row must be "stochastic"  This can be accomplished in several ways.
+
+<IMG src='graph-rank/google.png' style="border: 2px black solid;" />
+<div>**Source: Dissertation, pg. 220**</div>
+
+
+#### Google's random surfer, add a little noise
+For simplicity of comparison, we will use the sorted matrix.
+
+<https://en.wikipedia.org/wiki/PageRank>
+
+```{r}
+M = myA.f;
+rs = rowSums(M);
+rs.zeroes = as.numeric( which(rs == 0) );
+M;
+```
+##### Hack 1: dangling nodes
+The first Google hack is to replace rows with all zeroes with all ones.  This addresses the issue of an isolate in the network, called a dangling node.
+
+```{r}
+ones = rep(1, times=10);
+
+M.d = M;
+M.d[rs.zeroes,] = ones;
+M.d;
+```
+##### Hack 2: row normalize
+This is a common procedure, so "hack" may be a bit harsh.  We divide each row by its sum.
+
+```{r}
+M.dr = M.d / rowSums(M.d);
+M.dr;
+```
+##### Hack 3: scaling
+In the random surfer setup, there was some factor of 0.15 related to some assumed probability, so the scaling factor $\alpha = 1-0.15 = 0.85$.
+
+```{r}
+alpha = 0.85;
+M.drs = M.dr * alpha;
+M.drs;
+```
+##### Hack 4: irreducibility
+The eigenvector computation must converge.  When it doesn't, it suffers from an "irreducibility" problem.  Google addresses this by adding a small element to every cell in the matrix.
+
+Final we have a row-stochastic matrix that can be evaluated.
+```{r}
+i.factor = (1-alpha)/nrow(M);  
+M.drsi = M.drs + matrix(i.factor, nrow=10, ncol=10);
+P.g = M.drsi;
+P.g;
+```
+
+#### Supernode approach
+
+<IMG src='graph-rank/supernode.png' style="border: 2px black solid;" />
+<div>**Source: Dissertation, pg. 219**</div>
+
+An alternative to all of the above, is to simply introduce a super-node into the network.  This is a bi-directional link (arrows going both ways).  In the patent space, it could represent the U.S. Patent Office, the gatekeeper of patents.  In the web space, today it could represent Google who dominates search.  In the IMDB space, it could represent the latent concept of "Hollywood."
+
+##### Augment Matrix
+```{r}
+M = myA.f;
+cn = rownames(M);
+
+M.s = matrix(0, nrow=11, ncol=11);
+M.s[1,2:11] = 1;
+M.s[2:11,1] = 1;
+M.s[2:11,2:11] = M;
+
+rownames(M.s) = colnames(M.s) = c("P.0", cn);
+M.s;
+```
+
+##### Row normalize
+
+```{r}
+P.s = M.s / rowSums(M.s);
+P.s;
+```
+
+We are good to go.
+
+### Compute Eigenvector Network Centrality
+
+#### Power Approach
+<https://en.wikipedia.org/wiki/PageRank#Power_method>
+The easiest way to compute is to multiply the matrix by itself a lot of times.  Let's give it a try:
+
+##### Google
+```{r}
+matrixPower = function(M, times=1)
+  {
+  for(i in 1:times)
+    {
+    M = M %*% M;
+    }
+  M;
+  }
+
+P.g10 = matrixPower(P.g,10);
+P.g10;
+P.g.eigen = P.g10[1,]; # any row
+P.g.eigen;
+```
+
+##### Supernode
+```{r}
+P.s10 = matrixPower(P.s,10);
+P.s10;
+P.s.eigen = P.s10[1,]; # any row
+P.s.eigen;
+```
+##### Equal?
+Since my dissertation, I have worked with a mathematician (Mirek) to demonstrate that these are equal (under certain conditions).  Let's just see how they correlate.  Remember, we added the supernode, so let's drop that result to compare the original 10 scores across the two methods.
+
+```{r}
+cor(P.g.eigen, P.s.eigen[-c(1)]);
+```
+Mathematics is a strange thing?
+
+#### Linear Solution (Instead of Power)
+In the real world, we have very large sparse matrices, lots of zeroes.  I reached out to the Italian mathematicians because I felt their solution was more robust and elegant.  They only have to solve the linear system of one sub-block of the data, use substitutions for the other sub-blocks, and we have a solution.
+
+This process is explained on pg. 165 of the dissertation <http://www.mshaffer.com/arizona/dissertation/mjsPRINT.pdf>
+
+```{r}
+M;
+P.s;
+```
+
+We have lots of zeroes.  We can classify them into blocks.  Recall that columns represent forward-citations or links.  Well, ${P_7, P_9, P_{10}$ don't have any of those.  So let's just assign them a minimal "trivial" score, we chose one (1) for these "DUDS".
+
+We solve the matrix ${P_4, P_5, P_8}$ which is described in the dissertation:
+
+```{r}
+sn = c("P.4","P.5","P.8");
+sidx = 6:8;
+
+# pg. 166 is example of computation
+# pg. 80 [EQN 3.6 ... 3.10]  explains the why
+R.bar = t(P.s[sidx,sidx]); # R.bar is a block partition
+LHS = diag(1,nrow=3) - R.bar;
+LHS;
+
+sn = c("P.7","P.9","P.10");
+sidx = 9:11;
+P.s.dud = P.s[sidx,sidx];
+pi.7910 = rep(1, times=3);
+pi.7910;
+
+T.bar = t(P.s[9:11, 6:8]);  # T.bar is a block partition
+one.col3 = matrix(1, ncol=1, nrow=3);
+
+RHS = one.col3 + T.bar %*% one.col3;
+RHS;
+
+pi.458 = solve(LHS,RHS);  # or "inv" function
+pi.458;
+
+# dangling nodes
+one.col4 = matrix(1, ncol=1, nrow=4);
+pi.1236 = one.col4 + t(P.s[6:8, 2:5]) %*% pi.458 + t(P.s[9:11, 2:5])  %*% one.col3;
+
+pi = c(pi.1236, pi.456, pi.7910);
+pi;
+# 
+# cor(pi, P.g.eigen);
+# cor(pi, P.s.eigen[-c(1)]);
+```
+#### Scaling Final Answers
+
+```{r}
+myResults = cbind(( 100 * pi / max(pi)), ( as.numeric( 100 * P.g.eigen / max(P.g.eigen))), (as.numeric( 100 * P.s.eigen[-c(1)] / max(P.s.eigen[-c(1)]))));
+colnames(myResults) = c("Supernode.linear", "Google.power", "Supernode.power");
+rownames(myResults) = rownames(P.g);
+myResults;
+cor(myResults);
+
+#order = as.numeric(gsub("P.","",rownames(myResults)));
+# c(1,2,3,6,4,5,8,7,9,10);
+order = c(1,2,3,5,6,4,8,7,9,10);
+myResults.o = myResults[order,];
+myResults.o;
+```
+
+If you understand the vote-weighting idea, you should be able to review the graphic, and understand why the results are returning the way they are.
+
+<IMG src='graph-rank/graph-pg218.png' style="border: 2px black solid;" />
+<div>**Source: Dissertation, pg. 218**</div>
+
+
+Regardless, the concept of a Supernode is more intuitive than adding a bunch of small elements to a matrix (and altering the sparse matrix into a full-sized matrix).
+
+
+
+
+Albeit a bit more "algebra" at setup, this solution is more precise as it does not rely on asymptotics of a power-convergence.
+
+For larger matrices, computing the power and iterating is a complicated task, but if you understand the nature of matrix multiplication, this can be parallel-processed.  It does have some computational advantages (Google can compute a power-matrix of a 10-billion node network; it originally parallel-processed on simple desktop computers daisy-chained).
+
+Google hacks with assumptions up front, the Super-node approach requires some linear algebra and the inverse of one much smaller matrix.  Albeit nontrivial, once you develop the algorithm and function, this approach is also efficient.  As demonstrated in several papers by my colleagues.
+
+## IMDB data
+
+Back to the research question, after a bit of a detour.  Can we apply this method.
+
+HHI

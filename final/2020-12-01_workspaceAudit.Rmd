@@ -16,6 +16,8 @@ library(devtools);
 
 library(humanVerseWSU);
 
+
+
 path.github = "https://raw.githubusercontent.com/MonteShaffer/humanVerseWSU/master/";
 
 include.me = paste0(path.github, "misc/functions-nlp.R");
@@ -77,8 +79,9 @@ Browse to <https://github.com/MonteShaffer/WSU_STATS419_FALL2020/graphs/commit-a
 
 ## General Workspace Environment Data
 ```{r}
-path.to.git.local = "C:/_git_/WSU_STATS419_FALL2020/";
+path.to.git.local = "/Users/lindseykornowske/.git/STAT419/";
 setwd(path.to.git.local);
+
 
 path.to.git.final = paste0(path.to.git.local,"final/");
 ```
@@ -104,6 +107,8 @@ my.object$packages = as.data.frame(installed.packages());
 
 my.object$local.dirs = list.dirs(path.to.git.local,recursive = FALSE);
 my.object$local.files = list.files(path.to.git.local,recursive = TRUE);
+
+#my.object;
 ```
 
 ## Local Computer Setup
@@ -129,7 +134,7 @@ Now type: `git log --shortstat --pretty=format:'%h|%t|%p|%ai|%ae|%an|%ci|%ce|%cn
 
 
 ```{r}
-#  git log --shortstat --pretty=format:'"%h","%an","%ae","%aD","%s",' | paste - - - > final/git-history.log
+# git log --shortstat --pretty=format:'"%h","%an","%ae","%aD","%s",' | paste - - - > final/git-history.log
 # git log --oneline --decorate > final/git-history.log
 # git log --shortstat --pretty=format:'%h|%t|%p|%ai|%ae|%an|%ci|%ce|%cn|%N|%f|%s|%b' > final/git-history.log
 ###################################################
@@ -158,6 +163,7 @@ date.names = c("month", "day", "year.week", "year.day", "day.week","day.hour");
 
 time.df = convertDateStringToFormat(date.strings, date.types, date.names);
 #time.df;
+raw.df$content.b = as.character(raw.df$content.b);
 
 changes.df = NULL;
 for(i in 1:total.commits)
@@ -276,7 +282,30 @@ This audit is worth 50 points.  Based on your activity in the workspace, self-as
 Be certain to review the graphs and include self-reflective commentary on your work habits: day of week, hour of day, and so on.
 
 <pre style="font-weight: bold; font-family: monospace; white-space: pre-wrap; background-color: #717171; border: 2px solid #981e32;">
--- WRITE SOMETHING HERE --
 
-I deserve XX/50 points because ...
+
+
+
+```{r}
+semester.weeks = c(2:14);
+hours.spent = c(9,16,6,7,8.75,8.5,8,23.5,11.25,14.25,.45,9.5,2.5);
+
+stat419.productivity = as.data.frame(cbind(semester.weeks, hours.spent))
+
+
+average.hours = mean(hours.spent);
+minimum.hours = min(hours.spent);
+maximum.hours = max(hours.spent);
+plot(x= stat419.productivity$semester.weeks, y=stat419.productivity$hours.spent, ylab = "Total Hours Spent on STAT 419", xlab = "Week", main = "Lindsey Kornowske's Weekly STAT 419 Hour Totals: Weeks 2-14" )
+
+
+```
+I deserve 40/50 points.
+
+The git hub productivity data support the fact that I belong to the "developing" category - I think I only incorporated git into my workflow with moderate success, which is shown in the weeks plots that the commits at the middle and end of the semester contributed to sharp uprises, when ideally this would have been more continuous. But I did learn a lot about troubleshooting this process, especially when large files were inadvertently incorporated, and as a result, do feel this reflects mastery above "nascent." Unfortunately, as a result of this limited usage, I don't think the daily and hourly data reflects my habits all that well - weekends and Fridays, and Tuesday afternoons were usually best for my STAT 419 productivity because this fit best around my teaching obligations and meetings. 
+
+Independent of github, I used the workspace in a way that reflects the "developing" category, as well. I write down my hours to be accountable to my advisors, so I've calculated and provided the time I spent specific to STATS 419 here from weeks 2-14 of the semester because I think it is an interesting (and brutally honest) extra data point shown in the plot above. Over the semester, I spent an average of  9.6  hours a week on STAT 419 activities. Over all (I am limited by how clear I was in my daily notes), this count almost always did not include the time I spent working on statistics for my own project, and while I spent a lot of time applying class concepts to this work, I felt that was not a fair reflection of my time with the course content as I am, after all, enrolled in research credit as well. However, I bring this up to explain why the minimum spent in a week is a small  0.45  hours....I did spend 37 hours on the analysis for my own project that week. The maximum time spent in a week was the week of the midterm,  23.5  hours, although the most time spent on any given assignment was undoubtedly for project measure. 9.6 hours a week is reasonable for a 3 credit course, however, I feel that I am in the category of students that would be expected to spend more time given my lack of background in programming and linear algebra, which is part of why I think I fit the "developing" category. I've done work in almost all of the notebooks, and while some are complete and nicely thought-out, I can't say that I would be proud to turn in every one of them at this point in time.
+
+
+
 </pre>
